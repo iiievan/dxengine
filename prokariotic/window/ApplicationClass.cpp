@@ -39,7 +39,7 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) 
     // Create and initialize the model object.
     m_Model = new ModelClass;
 
-    std::wstring model_path = findFullPath("Cube.txt");
+    std::wstring model_path = findFullPath("Sphere.txt");
     std::string modelFilename = WStringToUTF8(model_path);
     std::wstring texture_path = findFullPath("stone01.tga");
     std::string textureFilename = WStringToUTF8(texture_path);
@@ -69,7 +69,9 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) 
 
     m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
     m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-    m_Light->SetDirection(1.0f, 0.0f, 0.0f);
+    m_Light->SetDirection(-1.0f, -1.0f, 1.0f);
+    m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+    m_Light->SetSpecularPower(16.0f);
 
     return true;
 }
@@ -160,7 +162,10 @@ bool ApplicationClass::Render(float rotation)
                                    m_Model->GetTexture(),
                                    m_Light->GetDirection(),
                                    m_Light->GetAmbientColor(),
-                                   m_Light->GetDiffuseColor());
+                                   m_Light->GetDiffuseColor(),
+                                   m_Camera->GetPosition(),
+                                   m_Light->GetSpecularColor(),
+                                   m_Light->GetSpecularPower());
     if(!result)
         return false;
 
