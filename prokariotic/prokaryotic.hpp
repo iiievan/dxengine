@@ -5,5 +5,4 @@
 #include "utils/Utils.hpp"
 #include "window/SystemClass.hpp"
 
-
-#endif //__PROKARYOTIC_HPP
+#endif  //__PROKARYOTIC_HPP

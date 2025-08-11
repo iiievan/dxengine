@@ -2,16 +2,56 @@
 #define __UTILS_H_
 
 #include <Windows.h>
+#include <directxmath.h>
 #include <filesystem>
 #include <string>
 
+using namespace DirectX;
 
-#define ReleaseCOM(x) { if(x) { x->Release(); x = 0; } }
+#define ReleaseCOM(x)     \
+    {                     \
+        if (x)            \
+        {                 \
+            x->Release(); \
+            x = 0;        \
+        }                 \
+    }
 
 namespace fs = std::filesystem;
 
-LPCSTR ConvertWideToANSI(LPCWSTR wideStr);
-std::wstring findFullPath(const std::string& targetFileName, bool searchInHidden = false);
-std::string WStringToUTF8(const std::wstring& wstr);
+LPCSTR       ConvertWideToANSI(LPCWSTR wideStr);
+std::wstring findFullPath(const std::string &targetFileName, bool searchInHidden = false);
+std::string  WStringToUTF8(const std::wstring &wstr);
 
-#endif	// __UTILS_H_	
+typedef enum
+{
+    DBG_WHITE = 0,
+    DBG_SCARLET,
+    DBG_PINK,
+    DBG_PURPLE,
+    DBG_LIGHT_BLUE,
+    DBG_BLUE,
+    DBG_AZURE,
+    DBG_GREEN,
+    DBG_DARK_GREEN,
+    DBG_LEMON,
+    DBG_AMBER,
+    DBG_ORANGE,
+    DBG_COLORS_MAX
+} DEBUG_COLORS;
+
+class ColorPalette
+{
+public:
+    ColorPalette();
+    ~ColorPalette() {}
+
+    XMFLOAT4 GetColor(DEBUG_COLORS color);
+
+private:
+    const XMFLOAT4 m_Palette[DBG_COLORS_MAX];
+};
+
+extern ColorPalette color_palette;
+
+#endif // __UTILS_H_

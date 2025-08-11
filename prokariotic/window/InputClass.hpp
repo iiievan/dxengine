@@ -1,7 +1,8 @@
 #ifndef __INPUTCLASS_H_
 #define __INPUTCLASS_H_
 
-class InputClass {
+class InputClass
+{
 public:
     InputClass();
 
@@ -21,4 +22,4 @@ private:
     bool m_keys[256];
 };
 
-#endif	//__INPUTCLASS_H_
+#endif //__INPUTCLASS_H_

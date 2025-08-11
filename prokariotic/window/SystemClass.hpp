@@ -2,12 +2,13 @@
 #define __SYSTEMCLASS_H
 
 #include <windows.h>
-#include "InputClass.hpp"
 #include "ApplicationClass.hpp"
+#include "InputClass.hpp"
 
 #define WIN32_LEAN_AND_MEAN
 
-class SystemClass {
+class SystemClass
+{
 public:
     SystemClass();
 
@@ -31,18 +32,16 @@ private:
     void ShutdownWindows();
 
 private:
-    LPCWSTR m_applicationName;
+    LPCWSTR   m_applicationName;
     HINSTANCE m_hinstance;
-    HWND m_hwnd;
+    HWND      m_hwnd;
 
-    InputClass *m_Input;
+    InputClass       *m_Input;
     ApplicationClass *m_Application;
 };
-
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 static SystemClass *ApplicationHandle = 0;
 
-
-#endif	//__SYSTEMCLASS_H
+#endif //__SYSTEMCLASS_H

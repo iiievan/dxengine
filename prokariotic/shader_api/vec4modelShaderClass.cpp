@@ -1,7 +1,10 @@
-#include "ColorShaderClass.h"
+#include "vec4modelShaderClass.hpp"
+#include <fstream>
 #include "utils/Utils.hpp"
 
-ColorShaderClass::ColorShaderClass()
+using namespace std;
+
+vec4modelShaderClass::vec4modelShaderClass()
 {
     m_vertexShader = nullptr;
     m_pixelShader = nullptr;
@@ -9,19 +12,19 @@ ColorShaderClass::ColorShaderClass()
     m_matrixBuffer = nullptr;
 }
 
-ColorShaderClass::ColorShaderClass(const ColorShaderClass &other) {}
+vec4modelShaderClass::vec4modelShaderClass(const vec4modelShaderClass &) {}
 
-ColorShaderClass::~ColorShaderClass() {}
+vec4modelShaderClass::~vec4modelShaderClass() {}
 
-bool ColorShaderClass::Initialize(ID3D11Device *device, HWND hwnd)
+bool vec4modelShaderClass::Initialize(ID3D11Device *device, HWND hwnd)
 {
     bool    result;
     wchar_t vsFilename[128];
     wchar_t psFilename[128];
     int     error;
 
-    std::wstring vertex_path = findFullPath("vertex.hlsl");
-    std::wstring pixel_path = findFullPath("pixel.hlsl");
+    std::wstring vertex_path = findFullPath("vec4model_vs.hlsl");
+    std::wstring pixel_path = findFullPath("vec4model_ps.hlsl");
 
     // Set the filename of the vertex shader.
     error = wcscpy_s(vsFilename, 128, vertex_path.c_str());
@@ -41,19 +44,16 @@ bool ColorShaderClass::Initialize(ID3D11Device *device, HWND hwnd)
     return true;
 }
 
-void ColorShaderClass::Shutdown()
+void vec4modelShaderClass::Shutdown()
 {
-    // Shutdown the vertex and pixel shaders as well as the related objects.
     ShutdownShader();
-
-    return;
 }
 
-bool ColorShaderClass::Render(ID3D11DeviceContext *deviceContext,
-                              int                  indexCount,
-                              XMMATRIX             worldMatrix,
-                              XMMATRIX             viewMatrix,
-                              XMMATRIX             projectionMatrix)
+bool vec4modelShaderClass::Render(ID3D11DeviceContext *deviceContext,
+                                       int             indexCount,
+                                  XMMATRIX             worldMatrix,
+                                  XMMATRIX             viewMatrix,
+                                  XMMATRIX             projectionMatrix)
 {
     bool result;
 
@@ -63,12 +63,12 @@ bool ColorShaderClass::Render(ID3D11DeviceContext *deviceContext,
         return false;
 
     // Now render the prepared buffers with the shader.
-    RenderShader(deviceContext, indexCount);
+    RenderShader(deviceContext,indexCount);
 
     return true;
 }
 
-bool ColorShaderClass::InitializeShader(ID3D11Device *device, HWND hwnd, WCHAR *vsFilename, WCHAR *psFilename)
+bool vec4modelShaderClass::InitializeShader(ID3D11Device *device, HWND hwnd, WCHAR *vsFilename, WCHAR *psFilename)
 {
     HRESULT   result;
     ID3DBlob *errorMessage = nullptr;
@@ -76,9 +76,15 @@ bool ColorShaderClass::InitializeShader(ID3D11Device *device, HWND hwnd, WCHAR *
     DWORD     dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG;
 
     // Compile the vertex shader code.
-    result = D3DCompileFromFile(
-        vsFilename, NULL, NULL, "ColorVertexShader", "vs_5_0", dwShaderFlags, NULL, &vertexShaderBuffer, &errorMessage);
-
+    result = D3DCompileFromFile(vsFilename,
+                                NULL,
+                                NULL,
+                                "vec4modelVertexShader",
+                                "vs_5_0",
+                                dwShaderFlags,
+                                NULL,
+                                &vertexShaderBuffer,
+                                &errorMessage);
     if (FAILED(result))
     {
         // If the shader failed to compile it should have writen something to the error message.
@@ -89,16 +95,21 @@ bool ColorShaderClass::InitializeShader(ID3D11Device *device, HWND hwnd, WCHAR *
         }
         // If there was  nothing in the error message then it simply could not find the shader file itself.
         else
-            MessageBox(hwnd, (LPCSTR)vsFilename, "Missing vertex shader file", MB_OK);
+            MessageBox(hwnd, (LPCSTR)vsFilename, "Missing VEC4DBG vertex shader file", MB_OK);
 
         return false;
     }
 
     ID3DBlob *pixelShaderBuffer = nullptr;
-
-    // Compile the pixel shader code.
-    result = D3DCompileFromFile(
-        psFilename, NULL, NULL, "ColorPixelShader", "ps_5_0", dwShaderFlags, NULL, &pixelShaderBuffer, &errorMessage);
+    result = D3DCompileFromFile(psFilename,
+                        NULL,
+                        NULL,
+                        "vec4modelPixelShader",
+                        "ps_5_0",
+                        dwShaderFlags,
+                        NULL,
+                        &pixelShaderBuffer,
+                        &errorMessage);
 
     if (FAILED(result))
     {
@@ -129,13 +140,10 @@ bool ColorShaderClass::InitializeShader(ID3D11Device *device, HWND hwnd, WCHAR *
     if (FAILED(result))
         return false;
 
-    D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
-
-    // Create the vertex input layout description.
-    // This setup needs to match the VertexType stucture in the ModelClass and in the shader.
+    D3D11_INPUT_ELEMENT_DESC polygonLayout[2] = {};
     polygonLayout[0].SemanticName = "POSITION";
     polygonLayout[0].SemanticIndex = 0;
-    polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    polygonLayout[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
     polygonLayout[0].InputSlot = 0;
     polygonLayout[0].AlignedByteOffset = 0;
     polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
@@ -166,8 +174,6 @@ bool ColorShaderClass::InitializeShader(ID3D11Device *device, HWND hwnd, WCHAR *
     ReleaseCOM(pixelShaderBuffer);
 
     D3D11_BUFFER_DESC matrixBufferDesc;
-
-    // Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
     matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
     matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
     matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -183,7 +189,7 @@ bool ColorShaderClass::InitializeShader(ID3D11Device *device, HWND hwnd, WCHAR *
     return true;
 }
 
-void ColorShaderClass::ShutdownShader()
+void vec4modelShaderClass::ShutdownShader()
 {
     if (m_matrixBuffer)
         ReleaseCOM(m_matrixBuffer);
@@ -196,11 +202,9 @@ void ColorShaderClass::ShutdownShader()
 
     if (m_vertexShader)
         ReleaseCOM(m_vertexShader);
-
-    return;
 }
 
-void ColorShaderClass::OutputShaderErrorMessage(ID3DBlob *errorMessage, HWND hwnd, WCHAR *shaderFilename)
+void vec4modelShaderClass::OutputShaderErrorMessage(ID3DBlob *errorMessage, HWND hwnd, WCHAR *shaderFilename)
 {
     ofstream           fout;
     char              *compileErrors = (char *)(errorMessage->GetBufferPointer());
@@ -218,14 +222,12 @@ void ColorShaderClass::OutputShaderErrorMessage(ID3DBlob *errorMessage, HWND hwn
 
     // Pop a message up on the screen to notify the user to check the text file for compile errors.
     MessageBox(hwnd, "Error compiling shader.  Check shader-error.txt for message.", (LPCSTR)shaderFilename, MB_OK);
-
-    return;
 }
 
-bool ColorShaderClass::SetShaderParameters(ID3D11DeviceContext *deviceContext,
-                                           XMMATRIX             worldMatrix,
-                                           XMMATRIX             viewMatrix,
-                                           XMMATRIX             projectionMatrix)
+bool vec4modelShaderClass::SetShaderParameters(ID3D11DeviceContext *deviceContext,
+                                               XMMATRIX             worldMatrix,
+                                               XMMATRIX             viewMatrix,
+                                               XMMATRIX             projectionMatrix)
 {
     HRESULT                  result;
     D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -261,7 +263,7 @@ bool ColorShaderClass::SetShaderParameters(ID3D11DeviceContext *deviceContext,
     return true;
 }
 
-void ColorShaderClass::RenderShader(ID3D11DeviceContext *deviceContext, int indexCount)
+void vec4modelShaderClass::RenderShader(ID3D11DeviceContext *deviceContext,int indexCount)
 {
     // Set the vertex input layout.
     deviceContext->IASetInputLayout(m_layout);
@@ -271,7 +273,5 @@ void ColorShaderClass::RenderShader(ID3D11DeviceContext *deviceContext, int inde
     deviceContext->PSSetShader(m_pixelShader, NULL, 0);
 
     // Render the triangle.
-    deviceContext->DrawIndexed(indexCount, 0, 0);
-
-    return;
+    deviceContext->DrawIndexed(indexCount,0, 0);
 }

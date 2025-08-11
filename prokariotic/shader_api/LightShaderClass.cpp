@@ -11,23 +11,19 @@ LightShaderClass::LightShaderClass()
     m_lightBuffer = 0;
 }
 
-LightShaderClass::LightShaderClass(const LightShaderClass& other)
-{
-}
+LightShaderClass::LightShaderClass(const LightShaderClass &other) {}
 
-LightShaderClass::~LightShaderClass()
-{
-}
+LightShaderClass::~LightShaderClass() {}
 
-bool LightShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
+bool LightShaderClass::Initialize(ID3D11Device *device, HWND hwnd)
 {
     wchar_t vsFilename[128];
     wchar_t psFilename[128];
-    int error;
-    bool result;
+    int     error;
+    bool    result;
 
     std::wstring vertex_path = findFullPath("light_vs.hlsl");
-    std::wstring pixel_path = findFullPath( "light_ps.hlsl");
+    std::wstring pixel_path = findFullPath("light_ps.hlsl");
 
     // Set the filename of the vertex shader.
     error = wcscpy_s(vsFilename, 128, vertex_path.c_str());
@@ -41,12 +37,11 @@ bool LightShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 
     // Initialize the vertex and pixel shaders.
     result = InitializeShader(device, hwnd, vsFilename, psFilename);
-    if(!result)
+    if (!result)
         return false;
 
     return true;
 }
-
 
 void LightShaderClass::Shutdown()
 {
@@ -56,52 +51,44 @@ void LightShaderClass::Shutdown()
     return;
 }
 
-bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext,
-                              int indexCount,
-                              XMMATRIX worldMatrix,
-                              XMMATRIX viewMatrix,
-                              XMMATRIX projectionMatrix,
-                              ID3D11ShaderResourceView* texture,
-                              XMFLOAT3 lightDirection,
-                              XMFLOAT4 ambientColor,
-                              XMFLOAT4 diffuseColor)
+bool LightShaderClass::Render(ID3D11DeviceContext      *deviceContext,
+                              int                       indexCount,
+                              XMMATRIX                  worldMatrix,
+                              XMMATRIX                  viewMatrix,
+                              XMMATRIX                  projectionMatrix,
+                              ID3D11ShaderResourceView *texture,
+                              XMFLOAT3                  lightDirection,
+                              XMFLOAT4                  ambientColor,
+                              XMFLOAT4                  diffuseColor)
 {
     bool result;
 
     // Set the shader parameters that it will use for rendering.
-    result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambientColor, diffuseColor);
-    if(!result)
+    result = SetShaderParameters(
+        deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambientColor, diffuseColor);
+    if (!result)
         return false;
 
     // Now render the prepared buffers with the shader.
     RenderShader(deviceContext, indexCount);
 
     return true;
-} 
+}
 
-
-bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
+bool LightShaderClass::InitializeShader(ID3D11Device *device, HWND hwnd, WCHAR *vsFilename, WCHAR *psFilename)
 {
-    HRESULT result;
-    ID3DBlob* errorMessage = nullptr;
-    DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG;
-
+    HRESULT   result;
+    ID3DBlob *errorMessage = nullptr;
+    DWORD     dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG;
 
     // Compile the vertex shader code.
-    ID3DBlob* vertexShaderBuffer = nullptr;
-    result = D3DCompileFromFile(vsFilename,
-                        NULL,
-                        NULL,
-                     "LightVertexShader",
-                        "vs_5_0",
-                         dwShaderFlags,
-                         NULL,
-                        &vertexShaderBuffer,
-                     &errorMessage);
-    if(FAILED(result))
+    ID3DBlob *vertexShaderBuffer = nullptr;
+    result = D3DCompileFromFile(
+        vsFilename, NULL, NULL, "LightVertexShader", "vs_5_0", dwShaderFlags, NULL, &vertexShaderBuffer, &errorMessage);
+    if (FAILED(result))
     {
         // If the shader failed to compile it should have writen something to the error message.
-        if(errorMessage)
+        if (errorMessage)
         {
             OutputShaderErrorMessage(errorMessage, hwnd, vsFilename);
             ReleaseCOM(errorMessage);
@@ -114,20 +101,13 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
     }
 
     // Compile the pixel shader code.
-    ID3DBlob* pixelShaderBuffer = nullptr;
-    result = D3DCompileFromFile(psFilename,
-                        NULL,
-                        NULL,
-                      "LightPixelShader",
-                         "ps_5_0",
-                          dwShaderFlags,
-                          NULL,
-                         &pixelShaderBuffer,
-                      &errorMessage);
-    if(FAILED(result))
+    ID3DBlob *pixelShaderBuffer = nullptr;
+    result = D3DCompileFromFile(
+        psFilename, NULL, NULL, "LightPixelShader", "ps_5_0", dwShaderFlags, NULL, &pixelShaderBuffer, &errorMessage);
+    if (FAILED(result))
     {
         // If the shader failed to compile it should have writen something to the error message.
-        if(errorMessage)
+        if (errorMessage)
         {
             OutputShaderErrorMessage(errorMessage, hwnd, psFilename);
             ReleaseCOM(errorMessage);
@@ -140,21 +120,16 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
     }
 
     // Create the vertex shader from the buffer.
-    result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(),
-                                         vertexShaderBuffer->GetBufferSize(),
-                                          NULL,
-                                                      &m_vertexShader);
-    if(FAILED(result))
+    result = device->CreateVertexShader(
+        vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &m_vertexShader);
+    if (FAILED(result))
         return false;
 
     // Create the pixel shader from the buffer.
-    result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(),
-                                        pixelShaderBuffer->GetBufferSize(),
-                                         NULL,
-                                                    &m_pixelShader);
-    if(FAILED(result))
+    result = device->CreatePixelShader(
+        pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
+    if (FAILED(result))
         return false;
-
 
     // Create the vertex input layout description.
     // This setup needs to match the VertexType stucture in the ModelClass and in the shader.
@@ -189,16 +164,15 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
     // Create the vertex input layout.
     result = device->CreateInputLayout(polygonLayout,
                                        numElements,
-           vertexShaderBuffer->GetBufferPointer(),
-                          vertexShaderBuffer->GetBufferSize(),
+                                       vertexShaderBuffer->GetBufferPointer(),
+                                       vertexShaderBuffer->GetBufferSize(),
                                        &m_layout);
-    if(FAILED(result))
+    if (FAILED(result))
         return false;
 
     // Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
     ReleaseCOM(vertexShaderBuffer);
     ReleaseCOM(pixelShaderBuffer);
-
 
     // Create a texture sampler state description.
     D3D11_SAMPLER_DESC samplerDesc;
@@ -218,7 +192,7 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 
     // Create the texture sampler state.
     result = device->CreateSamplerState(&samplerDesc, &m_sampleState);
-    if(FAILED(result))
+    if (FAILED(result))
         return false;
 
     // Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
@@ -232,11 +206,12 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 
     // Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
     result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
-    if(FAILED(result))
+    if (FAILED(result))
         return false;
 
     // Setup the description of the light dynamic constant buffer that is in the pixel shader.
-    // Note that ByteWidth always needs to be a multiple of 16 if using D3D11_BIND_CONSTANT_BUFFER or CreateBuffer will fail.
+    // Note that ByteWidth always needs to be a multiple of 16 if using D3D11_BIND_CONSTANT_BUFFER or CreateBuffer will
+    // fail.
     D3D11_BUFFER_DESC lightBufferDesc;
     lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
     lightBufferDesc.ByteWidth = sizeof(LightBufferType);
@@ -247,48 +222,47 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 
     // Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
     result = device->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
-    if(FAILED(result))
+    if (FAILED(result))
         return false;
 
     return true;
 }
 
-
 void LightShaderClass::ShutdownShader()
 {
-    if(m_lightBuffer)
+    if (m_lightBuffer)
         ReleaseCOM(m_lightBuffer);
 
-    if(m_matrixBuffer)
+    if (m_matrixBuffer)
         ReleaseCOM(m_matrixBuffer);
 
-    if(m_sampleState)
+    if (m_sampleState)
         ReleaseCOM(m_sampleState);
 
-    if(m_layout)
+    if (m_layout)
         ReleaseCOM(m_layout);
 
-    if(m_pixelShader)
+    if (m_pixelShader)
         ReleaseCOM(m_pixelShader);
 
-    if(m_vertexShader)
+    if (m_vertexShader)
         ReleaseCOM(m_vertexShader);
 
     return;
 }
 
-void LightShaderClass::OutputShaderErrorMessage(ID3DBlob* errorMessage, HWND hwnd, WCHAR* shaderFilename)
+void LightShaderClass::OutputShaderErrorMessage(ID3DBlob *errorMessage, HWND hwnd, WCHAR *shaderFilename)
 {
     ofstream fout;
 
-     char* compileErrors = (char*)(errorMessage->GetBufferPointer());
+    char *compileErrors = (char *)(errorMessage->GetBufferPointer());
 
     unsigned __int64 bufferSize = errorMessage->GetBufferSize();
 
     fout.open("shader-error.txt");
 
     // Write out the error message.
-    for(unsigned __int64 i=0; i < bufferSize; i++)
+    for (unsigned __int64 i = 0; i < bufferSize; i++)
     {
         fout << compileErrors[i];
     }
@@ -302,18 +276,18 @@ void LightShaderClass::OutputShaderErrorMessage(ID3DBlob* errorMessage, HWND hwn
     return;
 }
 
-bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
-                                           XMMATRIX worldMatrix,
-                                           XMMATRIX viewMatrix,
-                                           XMMATRIX projectionMatrix,
-                                           ID3D11ShaderResourceView* texture,
-                                           XMFLOAT3 lightDirection,
-                                           XMFLOAT4 ambientColor,
-                                           XMFLOAT4 diffuseColor)
+bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext      *deviceContext,
+                                           XMMATRIX                  worldMatrix,
+                                           XMMATRIX                  viewMatrix,
+                                           XMMATRIX                  projectionMatrix,
+                                           ID3D11ShaderResourceView *texture,
+                                           XMFLOAT3                  lightDirection,
+                                           XMFLOAT4                  ambientColor,
+                                           XMFLOAT4                  diffuseColor)
 {
-    HRESULT result;
+    HRESULT                  result;
     D3D11_MAPPED_SUBRESOURCE mappedResource;
-    unsigned int bufferNumber;
+    unsigned int             bufferNumber;
 
     // Transpose the matrices to prepare them for the shader.
     worldMatrix = XMMatrixTranspose(worldMatrix);
@@ -322,11 +296,11 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 
     // Lock the constant buffer so it can be written to.
     result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    if(FAILED(result))
+    if (FAILED(result))
         return false;
 
     // Get a pointer to the data in the constant buffer.
-    MatrixBufferType* dataPtr = (MatrixBufferType*)mappedResource.pData;
+    MatrixBufferType *dataPtr = (MatrixBufferType *)mappedResource.pData;
     dataPtr->world = worldMatrix;
     dataPtr->view = viewMatrix;
     dataPtr->projection = projectionMatrix;
@@ -345,12 +319,11 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 
     // Lock the light constant buffer so it can be written to.
     result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    if(FAILED(result))
+    if (FAILED(result))
         return false;
 
-
     // Get a pointer to the data in the constant buffer.
-    LightBufferType* dataPtr2 = (LightBufferType*)mappedResource.pData;
+    LightBufferType *dataPtr2 = (LightBufferType *)mappedResource.pData;
     dataPtr2->ambientColor = ambientColor;
     dataPtr2->diffuseColor = diffuseColor;
     dataPtr2->lightDirection = lightDirection;
@@ -368,7 +341,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
     return true;
 }
 
-void LightShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+void LightShaderClass::RenderShader(ID3D11DeviceContext *deviceContext, int indexCount)
 {
     // Set the vertex input layout.
     deviceContext->IASetInputLayout(m_layout);

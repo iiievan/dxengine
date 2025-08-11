@@ -1,4 +1,4 @@
-#include "ModelClass.h"
+#include "ModelClass.hpp"
 #include "utils/Utils.hpp"
 
 ModelClass::ModelClass()
@@ -9,15 +9,14 @@ ModelClass::ModelClass()
     m_model = nullptr;
 }
 
-ModelClass::ModelClass(const ModelClass& other)
-{
-}
+ModelClass::ModelClass(const ModelClass &other) {}
 
-ModelClass::~ModelClass()
-{
-}
+ModelClass::~ModelClass() {}
 
-bool ModelClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, char* modelFilename, char* textureFilename)
+bool ModelClass::Initialize(ID3D11Device        *device,
+                            ID3D11DeviceContext *deviceContext,
+                            char                *modelFilename,
+                            char                *textureFilename)
 {
     bool result;
 
@@ -28,7 +27,7 @@ bool ModelClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 
     // Initialize the vertex and index buffers.
     result = InitializeBuffers(device);
-    if(!result)
+    if (!result)
         return false;
 
     // Load the texture for this model.
@@ -53,7 +52,7 @@ void ModelClass::Shutdown()
     return;
 }
 
-void ModelClass::Render(ID3D11DeviceContext* deviceContext)
+void ModelClass::Render(ID3D11DeviceContext *deviceContext)
 {
     // Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
     RenderBuffers(deviceContext);
@@ -66,21 +65,21 @@ int ModelClass::GetIndexCount()
     return m_indexCount;
 }
 
-ID3D11ShaderResourceView* ModelClass::GetTexture()
+ID3D11ShaderResourceView *ModelClass::GetTexture()
 {
     return m_Texture->GetTexture();
 }
 
-bool ModelClass::InitializeBuffers(ID3D11Device* device)
+bool ModelClass::InitializeBuffers(ID3D11Device *device)
 {
-    VertexType* vertices;
-    unsigned long* indices;
+    VertexType    *vertices;
+    unsigned long *indices;
 
     vertices = new VertexType[m_vertexCount];
     indices = new unsigned long[m_indexCount];
 
     // Load the vertex array and index array with data.
-    for(int i = 0; i < m_vertexCount; i++)
+    for (int i = 0; i < m_vertexCount; i++)
     {
         vertices[i].position = XMFLOAT3(m_model[i].x, m_model[i].y, m_model[i].z);
         vertices[i].texture = XMFLOAT2(m_model[i].tu, m_model[i].tv);
@@ -106,7 +105,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
     // Now create the vertex buffer.
     HRESULT result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
-    if(FAILED(result))
+    if (FAILED(result))
         return false;
 
     // Set up the description of the static index buffer.
@@ -126,14 +125,14 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
     // Create the index buffer.
     result = device->CreateBuffer(&indexBufferDesc, &indexData, &m_indexBuffer);
-    if(FAILED(result))
+    if (FAILED(result))
         return false;
 
     // Release the arrays now that the vertex and index buffers have been created and loaded.
-    delete [] vertices;
+    delete[] vertices;
     vertices = nullptr;
 
-    delete [] indices;
+    delete[] indices;
     indices = nullptr;
 
     return true;
@@ -141,24 +140,24 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 
 void ModelClass::ShutdownBuffers()
 {
-    if(m_indexBuffer)
+    if (m_indexBuffer)
         ReleaseCOM(m_indexBuffer);
 
-    if(m_vertexBuffer)
+    if (m_vertexBuffer)
         ReleaseCOM(m_vertexBuffer);
 
     return;
 }
 
-void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void ModelClass::RenderBuffers(ID3D11DeviceContext *deviceContext)
 {
     unsigned int stride;
     unsigned int offset;
 
     // Set vertex buffer stride and offset.
-    stride = sizeof(VertexType); 
+    stride = sizeof(VertexType);
     offset = 0;
-    
+
     // Set the vertex buffer to active in the input assembler so it can be rendered.
     deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 
@@ -171,7 +170,7 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
     return;
 }
 
-bool ModelClass::LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, char* filename)
+bool ModelClass::LoadTexture(ID3D11Device *device, ID3D11DeviceContext *deviceContext, char *filename)
 {
     bool result;
 
@@ -198,16 +197,16 @@ void ModelClass::ReleaseTexture()
     return;
 }
 
-bool ModelClass::LoadModel(char* filename)
+bool ModelClass::LoadModel(char *filename)
 {
     ifstream fin;
-    char input;
+    char     input;
 
     // Open the model file.
     fin.open(filename);
 
     // If it could not open the file then exit.
-    if(fin.fail())
+    if (fin.fail())
         return false;
 
     // Read up to the value of vertex count.
@@ -236,7 +235,7 @@ bool ModelClass::LoadModel(char* filename)
     fin.get(input);
 
     // Read in the vertex data.
-    for(int i = 0; i < m_vertexCount; i++)
+    for (int i = 0; i < m_vertexCount; i++)
     {
         fin >> m_model[i].x >> m_model[i].y >> m_model[i].z;
         fin >> m_model[i].tu >> m_model[i].tv;
@@ -251,9 +250,9 @@ bool ModelClass::LoadModel(char* filename)
 
 void ModelClass::ReleaseModel()
 {
-    if(m_model)
+    if (m_model)
     {
-        delete [] m_model;
+        delete[] m_model;
         m_model = 0;
     }
 

@@ -16,9 +16,8 @@ include_directories(${PROJECT_SOURCE_DIR}/camera
                     ${PROJECT_SOURCE_DIR}/utils
                     ${PROJECT_SOURCE_DIR}/window)
 
-add_library(${PROJECT_NAME} STATIC prokaryotic.cpp
-        light/LightClass.hpp
-        light/LightClass.cpp)
+set(SOURCE_FILES prokaryotic.cpp)
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 target_link_libraries(
         ${PROJECT_NAME}
@@ -34,6 +33,20 @@ target_link_libraries(
         d3d11
         d3dcompiler
 )
+
+# clang-format настройки
+find_program(CLANG_FORMAT_EXE NAMES clang-format clang-format-15 clang-format-14 clang-format-13)
+if(CLANG_FORMAT_EXE)
+    message(STATUS "Found clang-format: ${CLANG_FORMAT_EXE}")
+
+    add_custom_target(${PROJECT_NAME}_format
+            COMMAND ${CLANG_FORMAT_EXE} -i --style=file ${SOURCE_FILES}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Formatting source files with clang-format > cmake --build . --target format_models"
+    )
+else()
+    message(WARNING "Could not locate clang-format for models - formatting target will not be available")
+endif()
 
 add_subdirectory(camera)
 add_subdirectory(d3d_api)

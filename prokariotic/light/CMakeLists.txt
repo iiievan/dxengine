@@ -6,16 +6,22 @@ project(light
         "api for light sources")
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(${PROJECT_NAME} STATIC LightClass.cpp)
+set(SOURCE_FILES LightClass.cpp)
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
-# clang-format
-find_program(clang_format NAMES clang-format)
-if (NOT clang_format)
-    message(STATUS "Could not locate clang-format")
-else ()
-    file(GLOB format_files ${FORMATTING})
-    add_custom_target(${PROJECT_NAME}_format_code COMMAND ${clang_format} -i -fallback-style=none -style=file --verbose ${format_files})
-endif ()
+# clang-format настройки
+find_program(CLANG_FORMAT_EXE NAMES clang-format clang-format-15 clang-format-14 clang-format-13)
+if(CLANG_FORMAT_EXE)
+    message(STATUS "Found clang-format: ${CLANG_FORMAT_EXE}")
+
+    add_custom_target(${PROJECT_NAME}_format
+            COMMAND ${CLANG_FORMAT_EXE} -i --style=file ${SOURCE_FILES}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMENT "Formatting source files with clang-format"
+    )
+else()
+    message(WARNING "Could not locate clang-format for models - formatting target will not be available")
+endif()
 
 
 

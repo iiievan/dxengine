@@ -1,25 +1,19 @@
-#include "Utils.hpp"
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include "Utils.hpp"
 
 // Маркеры корня проекта (можно добавлять свои)
-const std::vector<std::string> PROJECT_ROOT_MARKERS = {
-    ".git",
-    "README.md"
-};
+const std::vector<std::string> PROJECT_ROOT_MARKERS = {".git", "README.md"};
 
 // Папки, которые нужно игнорировать
 const std::vector<std::string> IGNORE_DIRS =
-{
-    "build", "debug", "release", "bin", "obj",
-    ".vs", "node_modules", ".idea"
-};
+    {"build", "debug", "release", "bin", "obj", ".vs", "node_modules", ".idea"};
 
 // Проверка, является ли директория корнем проекта
-bool isProjectRoot(const fs::path& dir)
+bool isProjectRoot(const fs::path &dir)
 {
-    for (const auto& marker : PROJECT_ROOT_MARKERS)
+    for (const auto &marker : PROJECT_ROOT_MARKERS)
     {
         if (fs::exists(dir / marker))
             return true;
@@ -45,7 +39,7 @@ fs::path findProjectRoot()
 }
 
 // Проверка, нужно ли игнорировать папку
-bool shouldIgnoreDirectory(const fs::path& dir)
+bool shouldIgnoreDirectory(const fs::path &dir)
 {
     std::string dirName = dir.filename().string();
 
@@ -53,11 +47,12 @@ bool shouldIgnoreDirectory(const fs::path& dir)
 }
 
 // Рекурсивный поиск файла с выводом всех совпадений
-std::wstring findFile(const fs::path& directory, const std::string& targetFileName, bool searchInHidden = false)
+std::wstring findFile(const fs::path &directory, const std::string &targetFileName, bool searchInHidden = false)
 {
     try
     {
-        for (const auto& entry : fs::directory_iterator(directory)) {
+        for (const auto &entry : fs::directory_iterator(directory))
+        {
             // Пропускаем скрытые папки (если не разрешено иное)
             if (!searchInHidden && entry.path().filename().string()._Starts_with("."))
                 continue;
@@ -73,10 +68,12 @@ std::wstring findFile(const fs::path& directory, const std::string& targetFileNa
             }
             else if (entry.is_regular_file() && entry.path().filename() == targetFileName)
             {
-                return  entry.path().wstring(); // Возвращаем путь, если файл найден
+                return entry.path().wstring(); // Возвращаем путь, если файл найден
             }
         }
-    } catch (const fs::filesystem_error& e) {
+    }
+    catch (const fs::filesystem_error &e)
+    {
         std::cerr << "Ошибка доступа к " << directory << ": " << e.what() << std::endl;
     }
 
@@ -84,10 +81,9 @@ std::wstring findFile(const fs::path& directory, const std::string& targetFileNa
 }
 
 // Рекурсивный поиск файла с выводом всех совпадений
-std::wstring findFullPath(const std::string& targetFileName, bool searchInHidden)
+std::wstring findFullPath(const std::string &targetFileName, bool searchInHidden)
 {
     fs::path root_dir = findProjectRoot();
 
-    return findFile(root_dir,targetFileName,searchInHidden);
+    return findFile(root_dir, targetFileName, searchInHidden);
 }
-

@@ -9,7 +9,7 @@ class LightClass
 {
 public:
     LightClass();
-    LightClass(const LightClass&);
+    LightClass(const LightClass &);
     ~LightClass();
 
     void SetAmbientColor(float, float, float, float);
@@ -21,9 +21,9 @@ public:
     XMFLOAT3 GetDirection();
 
 private:
-    XMFLOAT4 m_ambientColor;
-    XMFLOAT4 m_diffuseColor;
-    XMFLOAT3 m_direction;
+    XMFLOAT4  m_ambientColor;
+    XMFLOAT4  m_diffuseColor;
+    XMFLOAT3  m_direction;
 };
 
 #endif //__LIGHTCLASS_HPP

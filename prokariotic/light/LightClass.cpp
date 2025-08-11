@@ -1,16 +1,10 @@
 #include "LightClass.hpp"
 
-LightClass::LightClass()
-{
-}
+LightClass::LightClass() {}
 
-LightClass::LightClass(const LightClass& other)
-{
-}
+LightClass::LightClass(const LightClass &other) {}
 
-LightClass::~LightClass()
-{
-}
+LightClass::~LightClass() {}
 
 void LightClass::SetAmbientColor(float red, float green, float blue, float alpha)
 {
