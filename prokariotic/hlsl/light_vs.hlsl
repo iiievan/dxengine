@@ -1,3 +1,5 @@
+#define NUM_LIGHTS 4
+
 cbuffer MatrixBuffer
 {
     matrix worldMatrix;
@@ -5,10 +7,9 @@ cbuffer MatrixBuffer
     matrix projectionMatrix;
 };
 
-cbuffer CameraBuffer
+cbuffer LightPositionBuffer
 {
-    float3 cameraPosition;
-    float padding;
+    float4 lightPosition[NUM_LIGHTS];
 };
 
 struct VertexInputType
@@ -23,13 +24,14 @@ struct PixelInputType
     float4 position : SV_POSITION;
     float2 tex : TEXCOORD0;
     float3 normal : NORMAL;
-    float3 viewDirection : TEXCOORD1;
+    float3 lightPos[NUM_LIGHTS] : TEXCOORD1;
 };
 
 PixelInputType LightVertexShader(VertexInputType input)
 {
     PixelInputType output;
     float4 worldPosition;
+    int i;
 
     // Change the position vector to be 4 units for proper matrix calculations.
     input.position.w = 1.0f;
@@ -51,11 +53,14 @@ PixelInputType LightVertexShader(VertexInputType input)
     // Calculate the position of the vertex in the world.
     worldPosition = mul(input.position, worldMatrix);
 
-    // Determine the viewing direction based on the position of the camera and the position of the vertex in the world.
-    output.viewDirection = cameraPosition.xyz - worldPosition.xyz;
+    for(i = 0; i < NUM_LIGHTS; i++)
+    {
+        // Determine the light positions based on the position of the lights and the position of the vertex in the world.
+        output.lightPos[i] = lightPosition[i].xyz - worldPosition.xyz;
 
-    // Normalize the viewing direction vector.
-    output.viewDirection = normalize(output.viewDirection);
+        // Normalize the light position vectors.
+        output.lightPos[i] = normalize(output.lightPos[i]);
+    }
 
     return output;
 }
