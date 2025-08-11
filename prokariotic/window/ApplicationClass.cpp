@@ -67,9 +67,8 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) 
     // Create and initialize the light object.
     m_Light = new LightClass;
 
-    m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
     m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-    m_Light->SetDirection(1.0f, 0.0f, 0.0f);
+    m_Light->SetDirection(0.0f, 0.0f, 1.0f);
 
     return true;
 }
@@ -131,8 +130,16 @@ bool ApplicationClass::Frame() {
 
 bool ApplicationClass::Render(float rotation)
 {
-    XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+    XMMATRIX viewMatrix, projectionMatrix;
     bool result;
+
+    float angleOrbit = rotation;
+    float angleLocal = angleOrbit * 2.0f;
+    const float orbitRadius = 2.5f;
+    const float localRadius = 3.0f;
+    XMMATRIX WorldMatrixCube1 = XMMatrixIdentity();
+    XMMATRIX WorldMatrixCube1_save;
+
 
     // Clear the buffers to begin the scene.
     m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -141,12 +148,19 @@ bool ApplicationClass::Render(float rotation)
     m_Camera->Render();
 
     // Get the world, view, and projection matrices from the camera and d3d objects.
-    m_Direct3D->GetWorldMatrix(worldMatrix);
+    //m_Direct3D->GetWorldMatrix(worldMatrix);
     m_Camera->GetViewMatrix(viewMatrix);
     m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
-    // Rotate the world matrix by the rotation value so that the model will spin.
-    worldMatrix = XMMatrixRotationY(rotation);
+    XMMATRIX scaleMatrixCube1 = XMMatrixScaling(0.5f, 0.5f, 0.5f);
+    XMMATRIX orbitRotation = XMMatrixRotationZ(angleOrbit);
+    XMMATRIX translateToOrbit = XMMatrixTranslation(orbitRadius, 0.0f, 0.0f);
+
+    // Multiply them together to create the final world transformation matrix.
+    WorldMatrixCube1_save = scaleMatrixCube1 * translateToOrbit * orbitRotation;
+
+    XMMATRIX LocalRotationCube1 = XMMatrixRotationZ(angleOrbit*3.0f);
+    WorldMatrixCube1 = scaleMatrixCube1 * LocalRotationCube1 * translateToOrbit * orbitRotation;
 
     // Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
     m_Model->Render(m_Direct3D->GetDeviceContext());
@@ -154,12 +168,36 @@ bool ApplicationClass::Render(float rotation)
     // Render the model using the light shader.
     result = m_LightShader->Render(m_Direct3D->GetDeviceContext(),
                                    m_Model->GetIndexCount(),
-                                   worldMatrix,
+                                   WorldMatrixCube1,
                                    viewMatrix,
                                    projectionMatrix,
                                    m_Model->GetTexture(),
                                    m_Light->GetDirection(),
-                                   m_Light->GetAmbientColor(),
+                                   m_Light->GetDiffuseColor());
+    if(!result)
+        return false;
+
+    XMMATRIX WorldMatrixCube2 = XMMatrixIdentity();
+    XMMATRIX scaleMatrixCube2 = XMMatrixScaling(0.5f, 0.5f, 0.5f);
+    XMMATRIX localOrbitMatrix = XMMatrixRotationZ(angleLocal);
+    XMMATRIX localRotation = XMMatrixRotationY(angleLocal * 4.0f);
+    XMMATRIX translateToLocalOrbit = XMMatrixTranslation(localRadius, 0.0f, 0.0f);
+    XMMATRIX localTransform = scaleMatrixCube2 * localRotation * translateToLocalOrbit *  localOrbitMatrix;
+
+    // Multiply them together to create the final world transformation matrix.
+    WorldMatrixCube2 = localTransform * WorldMatrixCube1_save;
+
+    // Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+    m_Model->Render(m_Direct3D->GetDeviceContext());
+
+    // Render the model using the light shader.
+    result = m_LightShader->Render(m_Direct3D->GetDeviceContext(),
+                                   m_Model->GetIndexCount(),
+                                   WorldMatrixCube2,
+                                   viewMatrix,
+                                   projectionMatrix,
+                                   m_Model->GetTexture(),
+                                   m_Light->GetDirection(),
                                    m_Light->GetDiffuseColor());
     if(!result)
         return false;

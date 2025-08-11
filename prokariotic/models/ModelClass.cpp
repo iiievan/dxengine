@@ -104,8 +104,10 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
     vertexData.SysMemPitch = 0;
     vertexData.SysMemSlicePitch = 0;
 
+    HRESULT result;
+
     // Now create the vertex buffer.
-    HRESULT result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
+    result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_vertexBuffer);
     if(FAILED(result))
         return false;
 
