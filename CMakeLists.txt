@@ -7,7 +7,12 @@ project(DXEngine
 
 set(CMAKE_CXX_STANDARD 17)
 
-include_directories(${PROJECT_SOURCE_DIR}/app)
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
+include_directories(${PROJECT_SOURCE_DIR}/app
+                    ${PROJECT_SOURCE_DIR}/utils)
 
 add_executable(${PROJECT_NAME} WIN32 app/WinMain.cpp)
 
@@ -33,6 +38,11 @@ target_link_options(${PROJECT_NAME} PRIVATE
 
 target_link_libraries(${PROJECT_NAME} 
                       PRIVATE
+                      utils
+                      kernel32.lib  # OutputDebugString needs kernel32.lib
+                      user32.lib
                       d3d11
                       d3dcompiler)
+
+add_subdirectory(utils)
 

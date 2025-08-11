@@ -1,5 +1,9 @@
 #include <windows.h>
 
+#include <iostream>
+
+#include "Utils.hpp"
+
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -54,6 +58,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    static WindowsMessageMap mm;
+    DebugPrint( mm( msg,lParam,wParam ).c_str() );
+
     switch (msg)
     {
         case WM_CLOSE:
