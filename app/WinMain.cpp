@@ -66,6 +66,14 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         case WM_CLOSE:
             PostQuitMessage(69);
             break;
+        case WM_KEYDOWN:
+            if (wParam == 'F')
+                SetWindowText(hwnd,"Hola, Amigo:)");
+            break;
+        case WM_KEYUP:
+            if (wParam == 'F')
+                SetWindowText(hwnd,"I'am an App!");
+            break;
     }
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
