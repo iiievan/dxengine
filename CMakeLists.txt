@@ -12,7 +12,8 @@ if(MSVC)
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/app
-                    ${PROJECT_SOURCE_DIR}/utils)
+                    ${PROJECT_SOURCE_DIR}/utils
+                    ${PROJECT_SOURCE_DIR}/window)
 
 add_executable(${PROJECT_NAME} WIN32 app/WinMain.cpp)
 
@@ -39,10 +40,12 @@ target_link_options(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} 
                       PRIVATE
                       utils
+                      window
                       kernel32.lib  # OutputDebugString needs kernel32.lib
                       user32.lib
                       d3d11
                       d3dcompiler)
 
 add_subdirectory(utils)
+add_subdirectory(window)
 
