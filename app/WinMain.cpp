@@ -1,6 +1,6 @@
 #include <windows.h>
-
 #include <iostream>
+#include <sstream>
 
 #include "Utils.hpp"
 
@@ -74,6 +74,21 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             if (wParam == 'F')
                 SetWindowText(hwnd,"I'am an App!");
             break;
+        case WM_CHAR:
+        {
+            static std::string title;
+            title.push_back((char)wParam);
+            SetWindowText(hwnd,title.c_str());
+        }
+        break;
+        case WM_LBUTTONDOWN:
+        {
+            POINTS pt = MAKEPOINTS(lParam);
+            std::ostringstream oss;
+            oss << "(" << pt.x << ", " << pt.y << ")";
+            SetWindowText(hwnd,oss.str().c_str());
+        }
+        break;
     }
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
