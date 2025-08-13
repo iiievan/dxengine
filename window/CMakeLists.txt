@@ -7,8 +7,7 @@ project(window
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES Window.cpp
-        ChiliException.cpp
-        resources.h)
+        ChiliException.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 

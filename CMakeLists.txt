@@ -12,26 +12,19 @@ if(MSVC)
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/app
+                    ${PROJECT_SOURCE_DIR}/resources
                     ${PROJECT_SOURCE_DIR}/utils
                     ${PROJECT_SOURCE_DIR}/window)
 
-if(WIN32)
-    set(ICON_NAME sphere.ico)
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/app.rc
-            "#include \"resources.h\"\n"
-            "IDI_ICON1 ICON \"${CMAKE_CURRENT_SOURCE_DIR}/resources/${ICON_NAME}\"\n")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(ConfigureResources)
 
-    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/resources/${ICON_NAME}")
-        message(FATAL_ERROR "Icon file not found: ${CMAKE_CURRENT_SOURCE_DIR}/resources/${ICON_NAME}")
-    endif()
+# Настраиваем ресурсы
+configure_application_resources(${PROJECT_NAME})
 
-    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/resources/${ICON_NAME}"
-            DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/resources")
 
-    set(RC_FILE ${CMAKE_CURRENT_BINARY_DIR}/app.rc)
-    # Добавляем файл ресурсов к проекту
-    add_executable(${PROJECT_NAME} WIN32 ${RC_FILE} app/WinMain.cpp)
-endif()
+add_executable(${PROJECT_NAME} WIN32 ${RC_FILE} app/WinMain.cpp)
+
 
 
 target_compile_definitions(${PROJECT_NAME}
