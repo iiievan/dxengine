@@ -6,7 +6,8 @@ project(window
         "DX window library")
 set(CMAKE_CXX_STANDARD 17)
 
-set(SOURCE_FILES Window.cpp)
+set(SOURCE_FILES Window.cpp
+        ChiliException.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
