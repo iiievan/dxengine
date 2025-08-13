@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <sstream>
+#include "resources.h"
 
 // Window Class Stuff
 Window::WindowClass Window::WindowClass::wndClass;
@@ -13,12 +14,12 @@ Window::WindowClass::WindowClass() noexcept : hInst(GetModuleHandle(nullptr))
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = GetInstance();
-    wc.hIcon = nullptr;
+    wc.hIcon = static_cast<HICON>(LoadImage(GetInstance(), MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON,32,32,0));
     wc.hCursor = nullptr;
     wc.hbrBackground = nullptr;
     wc.lpszMenuName = nullptr;
     wc.lpszClassName = GetName();
-    wc.hIconSm = nullptr;
+    wc.hIconSm = static_cast<HICON>(LoadImage(GetInstance(), MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON,16,16,0));
     RegisterClassEx(&wc);
 }
 
@@ -99,10 +100,6 @@ Window::Window(int width, int height, const char *name)
     wr.top = 100;
     wr.bottom = height + wr.top;
     AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
-
-    //throw CHWND_EXCEPT(ERROR_ARENA_TRASHED);
-    //throw std::runtime_error("Chili Window Buttheads Error!");
-    throw 69696969;
 
     // create window & get hWnd
     m_hWnd = CreateWindow(
