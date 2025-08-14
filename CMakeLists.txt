@@ -23,8 +23,9 @@ include(ConfigureResources)
 configure_application_resources(${PROJECT_NAME})
 
 
-add_executable(${PROJECT_NAME} WIN32 ${RC_FILE} app/WinMain.cpp)
-
+add_executable(${PROJECT_NAME} WIN32 ${RC_FILE} app/WinMain.cpp
+                                                app/App.cpp
+                                                app/ChiliTimer.cpp)
 
 
 target_compile_definitions(${PROJECT_NAME}
