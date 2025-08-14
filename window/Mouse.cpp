@@ -1,5 +1,7 @@
 #include "Mouse.h"
 
+#include "Utils.hpp"
+
 Mouse::Event Mouse::Read() noexcept
 {
     if( m_buffer.size() > 0u )
@@ -80,8 +82,25 @@ void Mouse::OnWheelUp(int x, int y) noexcept
 
 void Mouse::OnWheelDown(int x, int y) noexcept
 {
-    m_buffer.push(Event(Event::Type::WHEEL_DOWN,*this));
+    m_buffer.push(Event(Event::Type::WHEEL_DOWN, *this));
     TrimBuffer();
+}
+
+void Mouse::OnWheelDelta(int x, int y, int delta) noexcept
+{
+    m_wheel_delta_carry += delta;
+    // generate events for every 120 tics
+    while (m_wheel_delta_carry >= WHEEL_DELTA)
+    {
+        m_wheel_delta_carry -= WHEEL_DELTA;
+        OnWheelUp(x,y);
+    }
+
+    while (m_wheel_delta_carry <= -WHEEL_DELTA)
+    {
+        m_wheel_delta_carry += WHEEL_DELTA;
+        OnWheelDown(x,y);
+    }
 }
 
 void Mouse::TrimBuffer() noexcept

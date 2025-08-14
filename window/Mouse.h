@@ -81,6 +81,7 @@ private:
     void OnRightReleased(int , int ) noexcept;
     void OnWheelUp(int , int ) noexcept;
     void OnWheelDown(int , int ) noexcept;
+    void OnWheelDelta(int,int,int ) noexcept;
     void TrimBuffer() noexcept;
 
 private:
@@ -90,6 +91,7 @@ private:
     bool m_leftIsPressed = false;
     bool m_rightIsPressed = false;
     bool m_is_in_window = false;
+    int m_wheel_delta_carry = 0;
     std::queue<Event> m_buffer;
 };
 

@@ -259,17 +259,12 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
             }
             break;
         }
-        case WM_MOUSEHWHEEL:
+        case WM_MOUSEWHEEL:
         {
             const POINTS pt = MAKEPOINTS( lParam );
-            if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
-                m_mouse.OnWheelUp(pt.x,pt.y);
-            else
-            if (GET_WHEEL_DELTA_WPARAM(wParam) < 0)
-                m_mouse.OnWheelDown(pt.x,pt.y);
-
+            const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+            m_mouse.OnWheelDelta(pt.x,pt.y,delta);
             break;
-
         }
         /*********** Mouse handle **********/
     }
