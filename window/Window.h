@@ -57,8 +57,8 @@ public:
     Mouse m_mouse;
 
 private:
-    int  width;
-    int  height;
+    int  m_width;
+    int  m_height;
     HWND m_hWnd;
     static inline int s_windowCount = 0;
 };

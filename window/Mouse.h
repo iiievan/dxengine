@@ -20,6 +20,8 @@ public:
             WHEEL_UP,
             WHEEL_DOWN,
             MOVE,
+            ENTER,      // cursor enter window area
+            LEAVE,      // cursor leave window area
             INVALID
         };
 
@@ -62,6 +64,7 @@ public:
     std::pair<int, int> GetPos() const noexcept { return {m_x, m_y}; }
     int GetX() const noexcept { return m_x; }
     int GetY() const noexcept { return m_y; }
+    bool IsInWindow() const noexcept { return m_is_in_window; }
     bool LeftIsPressed() const noexcept { return m_leftIsPressed; }
     bool RightIsPressed() const noexcept { return m_rightIsPressed; }
     Mouse::Event Read() noexcept;
@@ -70,6 +73,8 @@ public:
 
 private:
     void OnMouseMove(int , int ) noexcept;
+    void OnMouseLeave() noexcept;
+    void OnMouseEnter() noexcept;
     void OnLeftPressed(int , int ) noexcept;
     void OnLeftReleased(int , int ) noexcept;
     void OnRightPressed(int , int ) noexcept;
@@ -84,6 +89,7 @@ private:
     int m_y;
     bool m_leftIsPressed = false;
     bool m_rightIsPressed = false;
+    bool m_is_in_window = false;
     std::queue<Event> m_buffer;
 };
 

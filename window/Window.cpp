@@ -95,6 +95,7 @@ HINSTANCE Window::WindowClass::GetInstance() noexcept
 
 // Window Stuff
 Window::Window(int width, int height, const char *name)
+: m_width(width), m_height(height)
 {
     s_windowCount++;
     // calculate window size based on desired client region size
@@ -199,8 +200,29 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
         /*********** Mouse handle **********/
         case WM_MOUSEMOVE:
         {
-            POINTS pt = MAKEPOINTS( lParam );
-            m_mouse.OnMouseMove(pt.x, pt.y);
+            const POINTS pt = MAKEPOINTS( lParam );
+            // if cursor in client region -> log move, and log enter + capture mouse (if not previously in window)
+            if (pt.x > 0 && pt.x < m_width && pt.y > 0 && pt.y < m_height )
+            {
+                m_mouse.OnMouseMove(pt.x, pt.y);
+                if (!m_mouse.IsInWindow())
+                {
+                    SetCapture(hWnd);
+                    m_mouse.OnMouseEnter();
+                }
+            }
+            //if cursor not in client -> log move / maintain capture if button down
+            else
+            {
+                if (wParam & (MK_LBUTTON | MK_RBUTTON))
+                    m_mouse.OnMouseMove(pt.x, pt.y);
+                else
+                {
+                    ReleaseCapture();   // buttons L and R released -> we are not draggind by mouse!
+                    m_mouse.OnMouseLeave();
+                }
+            }
+            break;
         }
         case WM_LBUTTONDOWN:
         {
@@ -218,12 +240,23 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
         {
             const POINTS pt = MAKEPOINTS( lParam );
             m_mouse.OnLeftReleased(pt.x,pt.y);
+
+            if (pt.x < 0 || pt.x >= m_width || pt.y < 0 || pt.y >= m_height )
+            {
+                ReleaseCapture();   // button L released -> we are not draggind by mouse!
+                m_mouse.OnMouseLeave();
+            }
             break;
         }
         case WM_RBUTTONUP:
         {
             const POINTS pt = MAKEPOINTS( lParam );
             m_mouse.OnRightReleased(pt.x,pt.y);
+            if (pt.x < 0 || pt.x >= m_width || pt.y < 0 || pt.y >= m_height )
+            {
+                ReleaseCapture();   // button R released -> we are not draggind by mouse!
+                m_mouse.OnMouseLeave();
+            }
             break;
         }
         case WM_MOUSEHWHEEL:

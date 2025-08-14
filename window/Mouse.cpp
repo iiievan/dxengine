@@ -26,6 +26,20 @@ void Mouse::OnMouseMove(int newx, int newy) noexcept
     TrimBuffer();
 }
 
+void Mouse::OnMouseLeave() noexcept
+{
+    m_is_in_window = false;
+    m_buffer.push(Event(Event::Type::LEAVE,*this));
+    TrimBuffer();
+}
+
+void Mouse::OnMouseEnter() noexcept
+{
+    m_is_in_window = true;
+    m_buffer.push(Event(Event::Type::ENTER,*this));
+    TrimBuffer();
+}
+
 void Mouse::OnLeftPressed(int x, int y) noexcept
 {
     m_leftIsPressed = true;

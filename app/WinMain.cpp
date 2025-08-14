@@ -7,7 +7,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 {
     try
     {
-        Window wnd( 800,300,"Donkey Fart Box" );
+        Window wnd( 800,600,"Donkey Fart Box" );
 
         MSG msg;
         BOOL gResult;
@@ -19,11 +19,20 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             while (!wnd.m_mouse.IsEmpty())
             {
                 const auto e = wnd.m_mouse.Read();
-                if (e.GetType() == Mouse::Event::Type::MOVE)
+                switch (e.GetType())
                 {
-                    std::ostringstream oss;
-                    oss << "Mouse Position: (" << e.GetX() << ", " << e.GetY() << ")";
-                    wnd.SetTitle(oss.str());
+                    case Mouse::Event::Type::LEAVE:
+                        wnd.SetTitle("Mouse Gone!");
+                        break;
+                    case Mouse::Event::Type::MOVE:
+                        {
+                            std::ostringstream oss;
+                            oss << "Mouse moved to: (" << e.GetX() << ", " << e.GetY() << ")";
+                            wnd.SetTitle(oss.str());
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
          }
