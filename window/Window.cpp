@@ -79,8 +79,6 @@ std::string Window::Exception::GetErrorString() const noexcept
     return TranslateErrorCode(m_hr);
 }
 
-
-
 const char *Window::WindowClass::GetName() noexcept
 {
     return wndClassName;
@@ -166,6 +164,16 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
             if (--s_windowCount == 0)
                 PostQuitMessage(0); // Закрыть приложение, если это было последнее окно
             return 0;   // destroy window once by Destructor: Window::~Window()
+        case WM_KILLFOCUS:
+           m_kbd.ClearState();
+       case WM_KEYDOWN:
+           m_kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
+           break;
+       case WM_KEYUP:
+           m_kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
+       case WM_CHAR:
+           m_kbd.OnChar(static_cast<unsigned char>(wParam));
+           break;
     }
 
     return DefWindowProc(hWnd, msg, wParam, lParam);
