@@ -7,7 +7,8 @@
 // Window Class Stuff
 Window::WindowClass Window::WindowClass::wndClass;
 
-Window::WindowClass::WindowClass() noexcept : hInst(GetModuleHandle(nullptr))
+Window::WindowClass::WindowClass() noexcept
+    : hInst(GetModuleHandle(nullptr))
 {
     WNDCLASSEX wc = {0};
     wc.cbSize = sizeof(wc);
@@ -16,12 +17,12 @@ Window::WindowClass::WindowClass() noexcept : hInst(GetModuleHandle(nullptr))
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = GetInstance();
-    wc.hIcon = static_cast<HICON>(LoadImage(GetInstance(), MAKEINTRESOURCE(APP_ICON), IMAGE_ICON,128,128,0));
+    wc.hIcon = static_cast<HICON>(LoadImage(GetInstance(), MAKEINTRESOURCE(APP_ICON), IMAGE_ICON, 128, 128, 0));
     wc.hCursor = nullptr;
     wc.hbrBackground = nullptr;
     wc.lpszMenuName = nullptr;
     wc.lpszClassName = GetName();
-    wc.hIconSm = static_cast<HICON>(LoadImage(GetInstance(), MAKEINTRESOURCE(APP_ICON), IMAGE_ICON,64,64,0));
+    wc.hIconSm = static_cast<HICON>(LoadImage(GetInstance(), MAKEINTRESOURCE(APP_ICON), IMAGE_ICON, 64, 64, 0));
     RegisterClassEx(&wc);
 }
 
@@ -31,8 +32,10 @@ Window::WindowClass::~WindowClass()
 }
 
 Window::Exception::Exception(int line, const char *file, HRESULT hr) noexcept
-:ChiliException(line,file),m_hr(hr)
-{}
+    : ChiliException(line, file),
+      m_hr(hr)
+{
+}
 
 const char *Window::Exception::what() const noexcept
 {
@@ -54,14 +57,15 @@ const char *Window::Exception::GetType() const noexcept
 
 std::string Window::Exception::TranslateErrorCode(HRESULT hr) noexcept
 {
-    char* pMsgBuf = nullptr;
-    DWORD nMsgLen = FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                                   nullptr,
-                                   hr,
-                                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                                   reinterpret_cast<LPSTR>(&pMsgBuf),
-                                   0,
-                                   nullptr);
+    char *pMsgBuf = nullptr;
+    DWORD nMsgLen = FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr,
+        hr,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        reinterpret_cast<LPSTR>(&pMsgBuf),
+        0,
+        nullptr);
 
     if (nMsgLen == 0)
         return "Undefined error code";
@@ -72,7 +76,7 @@ std::string Window::Exception::TranslateErrorCode(HRESULT hr) noexcept
     return errorString;
 }
 
-HRESULT     Window::Exception::GetErrorCode() const noexcept { return m_hr; }
+HRESULT Window::Exception::GetErrorCode() const noexcept { return m_hr; }
 
 std::string Window::Exception::GetErrorString() const noexcept
 {
@@ -99,7 +103,8 @@ Window::Window(int width, int height, const char *name)
     wr.right = width + wr.left;
     wr.top = 100;
     wr.bottom = height + wr.top;
-    AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
+    if (AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE) == 0)
+        throw CHWND_LAST_EXCEPT();
 
     // create window & get hWnd
     m_hWnd = CreateWindow(
@@ -113,7 +118,11 @@ Window::Window(int width, int height, const char *name)
         nullptr,
         nullptr,
         WindowClass::GetInstance(),
-        this);  // here we send a pointer for CREATESTRUCTW
+        this); // here we send a pointer for CREATESTRUCTW
+
+    if (m_hWnd == nullptr)
+        throw CHWND_LAST_EXCEPT();
+
     // show window
     ShowWindow(m_hWnd, SW_SHOWDEFAULT);
 }
@@ -125,6 +134,12 @@ Window::~Window()
         DestroyWindow(m_hWnd);
         m_hWnd = nullptr;
     }
+}
+
+void Window::SetTitle(const std::string &title)
+{
+    if (SetWindowText(m_hWnd,title.c_str()) == 0)
+        throw CHWND_LAST_EXCEPT();
 }
 
 LRESULT CALLBACK Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -160,23 +175,70 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
     {
         case WM_CLOSE:
             DestroyWindow(m_hWnd);
-            m_hWnd = nullptr;   // предупреждаем повторное уничтожение окна в деструкторе.
+            m_hWnd = nullptr; // предупреждаем повторное уничтожение окна в деструкторе.
             if (--s_windowCount == 0)
                 PostQuitMessage(0); // Закрыть приложение, если это было последнее окно
-            return 0;   // destroy window once by Destructor: Window::~Window()
+            return 0;               // destroy window once by Destructor: Window::~Window()
         case WM_KILLFOCUS:
-           m_kbd.ClearState();
-       case WM_KEYDOWN:
-       case WM_SYSKEYDOWN:
+            m_kbd.ClearState();
+            break;
+        /********* Keyboard handle *********/
+        case WM_KEYDOWN:
+        // syskey commands need to be handled to track ALT key (VK_MENU) and F10
+        case WM_SYSKEYDOWN:
             if (!(lParam & 0x40000000) || m_kbd.AutorepeatIsEnabled())
                 m_kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
-           break;
-       case WM_KEYUP:
-       case WM_SYSKEYUP:
-           m_kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
-       case WM_CHAR:
-           m_kbd.OnChar(static_cast<unsigned char>(wParam));
-           break;
+            break;
+        case WM_KEYUP:
+        case WM_SYSKEYUP:
+            m_kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
+        case WM_CHAR:
+            m_kbd.OnChar(static_cast<unsigned char>(wParam));
+            break;
+        /********* Keyboard handle *********/
+        /*********** Mouse handle **********/
+        case WM_MOUSEMOVE:
+        {
+            POINTS pt = MAKEPOINTS( lParam );
+            m_mouse.OnMouseMove(pt.x, pt.y);
+        }
+        case WM_LBUTTONDOWN:
+        {
+            const POINTS pt = MAKEPOINTS( lParam );
+            m_mouse.OnLeftPressed(pt.x,pt.y);
+            break;
+        }
+        case WM_RBUTTONDOWN:
+        {
+            const POINTS pt = MAKEPOINTS( lParam );
+            m_mouse.OnRightPressed(pt.x,pt.y);
+            break;
+        }
+        case WM_LBUTTONUP:
+        {
+            const POINTS pt = MAKEPOINTS( lParam );
+            m_mouse.OnLeftReleased(pt.x,pt.y);
+            break;
+        }
+        case WM_RBUTTONUP:
+        {
+            const POINTS pt = MAKEPOINTS( lParam );
+            m_mouse.OnRightReleased(pt.x,pt.y);
+            break;
+        }
+        case WM_MOUSEHWHEEL:
+        {
+            const POINTS pt = MAKEPOINTS( lParam );
+            if (GET_WHEEL_DELTA_WPARAM(wParam) > 0)
+                m_mouse.OnWheelUp(pt.x,pt.y);
+            else
+            if (GET_WHEEL_DELTA_WPARAM(wParam) < 0)
+                m_mouse.OnWheelDown(pt.x,pt.y);
+
+            break;
+
+        }
+        /*********** Mouse handle **********/
     }
 
     return DefWindowProc(hWnd, msg, wParam, lParam);

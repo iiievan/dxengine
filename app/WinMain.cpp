@@ -1,6 +1,7 @@
 #include <windows.h>
 #include "Utils.hpp"
 #include "Window.h"
+#include <sstream>
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -15,9 +16,17 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             // TranslateMessage will post auxilliary WM_CHAR messages from key msgs
             TranslateMessage( &msg );
             DispatchMessage( &msg );
-            if (wnd.m_kbd.KeyIsPressed(VK_MENU))
-                MessageBox(nullptr,"Something is Happon","the Alt Key was Pressed!",MB_OK | MB_ICONEXCLAMATION );
-        }
+            while (!wnd.m_mouse.IsEmpty())
+            {
+                const auto e = wnd.m_mouse.Read();
+                if (e.GetType() == Mouse::Event::Type::MOVE)
+                {
+                    std::ostringstream oss;
+                    oss << "Mouse Position: (" << e.GetX() << ", " << e.GetY() << ")";
+                    wnd.SetTitle(oss.str());
+                }
+            }
+         }
 
         // check if GetMessage call itself borked
         if( gResult == -1 )
