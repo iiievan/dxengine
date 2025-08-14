@@ -15,8 +15,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             // TranslateMessage will post auxilliary WM_CHAR messages from key msgs
             TranslateMessage( &msg );
             DispatchMessage( &msg );
-            if (wnd.m_kbd.KeyIsPressed(VK_SPACE))
-                MessageBox(nullptr,"Something is Happon","Space Key was Pressed!",MB_OK | MB_ICONEXCLAMATION );
+            if (wnd.m_kbd.KeyIsPressed(VK_MENU))
+                MessageBox(nullptr,"Something is Happon","the Alt Key was Pressed!",MB_OK | MB_ICONEXCLAMATION );
         }
 
         // check if GetMessage call itself borked
