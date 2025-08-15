@@ -14,15 +14,30 @@ class Window
 public:
     class Exception : public ChiliException
     {
+        using ChiliException::ChiliException;
     public:
-        Exception(int line, const char *file, HRESULT hr) noexcept;
-        const char *what() const noexcept override;
-        virtual const char *GetType() const noexcept;
         static std::string TranslateErrorCode(HRESULT hr) noexcept;
-        HRESULT GetErrorCode() const noexcept;
-        std::string GetErrorString() const noexcept;
+    };
+
+    class HrException : public Exception
+    {
+    public:
+        HrException(int line, const char* file, HRESULT hr) noexcept
+        :Exception(line,file),m_hr(hr)
+        {}
+        const char* what() const noexcept override;
+        const char* GetType() const noexcept override   { return "Chili Window Exception"; }
+        HRESULT GetErrorCode() const noexcept           { return m_hr; }
+        std::string GetErrorDescription() const noexcept;
     private:
         HRESULT m_hr;
+    };
+
+    class NoGfxException : public Exception
+    {
+    public:
+        using Exception::Exception;
+        const char* GetType() const noexcept override { return "Chili Window Exception [No Graphics]";}
     };
 
 private:
@@ -49,7 +64,7 @@ public:
     Window(const Window &) = delete;
     Window &operator=(const Window &) = delete;
     void SetTitle(const std::string &title);
-    static std::optional<WPARAM> ProcessMessages();
+    static std::optional<WPARAM> ProcessMessages() noexcept;
     Graphics& Gfx();
 
 private:
@@ -69,7 +84,8 @@ private:
     std::unique_ptr<Graphics> m_pGfx;
 };
 
-#define  CHWND_EXCEPT(hr) Window::Exception(__LINE__,__FILE__, hr)
-#define  CHWND_LAST_EXCEPT() Window::Exception(__LINE__,__FILE__,GetLastError())
+#define CHWND_EXCEPT( hr ) Window::HrException( __LINE__,__FILE__,(hr) )
+#define CHWND_LAST_EXCEPT() Window::HrException( __LINE__,__FILE__,GetLastError() )
+#define CHWND_NOGFX_EXCEPT() Window::NoGfxException( __LINE__,__FILE__ )
 
 #endif // __WINDOW_H

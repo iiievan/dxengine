@@ -7,11 +7,14 @@ project(window
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES Window.cpp
-        ChiliException.cpp
-        Keyboard.cpp
-        Mouse.cpp)
+                 ChiliException.cpp
+                 Keyboard.cpp
+                 Mouse.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+
+# PUBLIC, так как заголовки нужны и window, и её зависимостям
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_compile_definitions(${PROJECT_NAME}
         PRIVATE

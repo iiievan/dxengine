@@ -31,34 +31,10 @@ Window::WindowClass::~WindowClass()
     UnregisterClass(wndClassName, GetInstance());
 }
 
-Window::Exception::Exception(int line, const char *file, HRESULT hr) noexcept
-    : ChiliException(line, file),
-      m_hr(hr)
-{
-}
-
-const char *Window::Exception::what() const noexcept
-{
-    std::ostringstream oss;
-    oss << GetType() << std::endl
-        << "[Error Code]" << GetErrorCode() << std::endl
-        << "[Description]" << GetErrorString() << std::endl
-        << GetOriginString();
-
-    m_whatBuffer = oss.str().c_str();
-
-    return m_whatBuffer.c_str();
-}
-
-const char *Window::Exception::GetType() const noexcept
-{
-    return "Chili Window Exception";
-}
-
 std::string Window::Exception::TranslateErrorCode(HRESULT hr) noexcept
 {
-    char *pMsgBuf = nullptr;
-    DWORD nMsgLen = FormatMessage(
+    char       *pMsgBuf = nullptr;
+    const DWORD nMsgLen = FormatMessage(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         nullptr,
         hr,
@@ -76,11 +52,21 @@ std::string Window::Exception::TranslateErrorCode(HRESULT hr) noexcept
     return errorString;
 }
 
-HRESULT Window::Exception::GetErrorCode() const noexcept { return m_hr; }
-
-std::string Window::Exception::GetErrorString() const noexcept
+const char *Window::HrException::what() const noexcept
 {
-    return TranslateErrorCode(m_hr);
+    std::ostringstream oss;
+    oss << GetType() << std::endl
+        << "[Error Code] 0x" << std::hex << std::uppercase << GetErrorCode()
+        << std::dec << " (" << (unsigned long)GetErrorCode() << ")" << std::endl
+        << "[Description] " << GetErrorDescription() << std::endl
+        << GetOriginString();
+    m_whatBuffer = oss.str();
+    return m_whatBuffer.c_str();
+}
+
+std::string Window::HrException::GetErrorDescription() const noexcept
+{
+    return Exception::TranslateErrorCode(m_hr);
 }
 
 const char *Window::WindowClass::GetName() noexcept
@@ -146,7 +132,7 @@ void Window::SetTitle(const std::string &title)
         throw CHWND_LAST_EXCEPT();
 }
 
-std::optional<WPARAM> Window::ProcessMessages()
+std::optional<WPARAM> Window::ProcessMessages() noexcept
 {
     MSG msg;
     // while queue has messages, remove and dispatch them (but do not block on empty queue)
@@ -168,6 +154,9 @@ std::optional<WPARAM> Window::ProcessMessages()
 
 Graphics &Window::Gfx()
 {
+    if (!m_pGfx)
+        throw CHWND_NOGFX_EXCEPT();
+
     return *m_pGfx;
 }
 

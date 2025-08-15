@@ -14,13 +14,11 @@ endif()
 include_directories(${PROJECT_SOURCE_DIR}/app
                     ${PROJECT_SOURCE_DIR}/resources
                     ${PROJECT_SOURCE_DIR}/utils
-                    ${PROJECT_SOURCE_DIR}/graphics
-                    ${PROJECT_SOURCE_DIR}/window)
+                    ${PROJECT_SOURCE_DIR}/graphics)
 
+# Подключаем модуль и настраиваем ресурсы
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(ConfigureResources)
-
-# Настраиваем ресурсы
 configure_application_resources(${PROJECT_NAME})
 
 

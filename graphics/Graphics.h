@@ -2,27 +2,53 @@
 #define __GRAPHICS_H
 
 #include <d3d11.h>
+#include "ChiliException.h"
 #include "WinDefs.h"
 
 class Graphics
 {
+public:
+    class Exception : public ChiliException
+    {
+        using ChiliException::ChiliException;
+    };
+
+    class HrException : public Exception
+    {
+    public:
+        HrException(int line, const char *file, HRESULT hr) noexcept
+        : Exception(line, file), m_hr(hr)
+        {}
+        const char *what() const noexcept override;
+        const char *GetType() const noexcept override { return "Chili Graphics Exception"; }
+        HRESULT     GetErrorCode() const noexcept     { return m_hr;  }
+        std::string GetErrorString() const noexcept;
+        std::string GetErrorDescription() const noexcept;
+
+    private:
+        HRESULT m_hr;
+    };
+    class DeviceRemovedException : public HrException
+    {
+        using HrException::HrException;
+
+    public:
+        const char *GetType() const noexcept override;
+    };
+
 public:
     Graphics(HWND hWnd);
     Graphics(const Graphics &graphics) = delete;
     Graphics &operator=(const Graphics &graphics) = delete;
     ~Graphics();
     void EndFrame();
-    void ClearBuffer(float red, float green, float blue) noexcept
-    {
-        const float color[] = { red, green, blue, 1.0f };
-        m_pContext->ClearRenderTargetView(m_pTarget,color);
-    }
+    void ClearBuffer(float red, float green, float blue) noexcept;
 
 private:
     ID3D11Device           *m_pDevice {nullptr};
     IDXGISwapChain         *m_pSwapChain {nullptr};
     ID3D11DeviceContext    *m_pContext {nullptr};
-    ID3D11RenderTargetView *m_pTarget {nullptr};
+    ID3D11RenderTargetView *m_pTargetView {nullptr};
 };
 
 #endif //__GRAPHICS_H
