@@ -5,7 +5,9 @@
 #include "ChiliException.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include "Graphics.h"
 #include <optional>
+#include <memory>
 
 class Window
 {
@@ -48,6 +50,7 @@ public:
     Window &operator=(const Window &) = delete;
     void SetTitle(const std::string &title);
     static std::optional<WPARAM> ProcessMessages();
+    Graphics& Gfx();
 
 private:
     static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
@@ -57,12 +60,13 @@ private:
 public:
     Keyboard m_kbd;
     Mouse m_mouse;
-
 private:
     int  m_width;
     int  m_height;
     HWND m_hWnd;
     static inline int s_windowCount = 0;
+
+    std::unique_ptr<Graphics> m_pGfx;
 };
 
 #define  CHWND_EXCEPT(hr) Window::Exception(__LINE__,__FILE__, hr)

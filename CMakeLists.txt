@@ -14,6 +14,7 @@ endif()
 include_directories(${PROJECT_SOURCE_DIR}/app
                     ${PROJECT_SOURCE_DIR}/resources
                     ${PROJECT_SOURCE_DIR}/utils
+                    ${PROJECT_SOURCE_DIR}/graphics
                     ${PROJECT_SOURCE_DIR}/window)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -51,6 +52,7 @@ target_link_options(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} 
                       PRIVATE
                       utils
+                      graphics
                       window
                       kernel32.lib  # OutputDebugString needs kernel32.lib
                       user32.lib
@@ -59,5 +61,6 @@ target_link_libraries(${PROJECT_NAME}
 
 add_subdirectory(utils)
 add_subdirectory(window)
+add_subdirectory(graphics)
 
 

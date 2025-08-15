@@ -2,12 +2,12 @@
 
 using namespace std::chrono;
 
-ChiliTimer::ChiliTimer()
+ChiliTimer::ChiliTimer() noexcept
 {
     m_last = steady_clock::now();
 }
 
-float ChiliTimer::Mark()
+float ChiliTimer::Mark() noexcept
 {
     const auto old = m_last;
     m_last = steady_clock::now();
@@ -15,7 +15,7 @@ float ChiliTimer::Mark()
     return frameTime.count();
 }
 
-float ChiliTimer::Peek() const
+float ChiliTimer::Peek() const noexcept
 {
     return duration<float>( steady_clock::now() - m_last).count();
 }
