@@ -38,11 +38,15 @@ const char *Graphics::HrException::what() const noexcept
 {
     std::ostringstream oss;
     oss << GetType() << std::endl
-        << "[Error Code] 0x" << std::hex << std::uppercase << GetErrorCode() << std::dec << " ("
-        << (unsigned long)GetErrorCode() << ")" << std::endl
+        << "[Error Code] 0x" << std::hex << std::uppercase << GetErrorCode()
+        << std::dec << " (" << (unsigned long)GetErrorCode() << ")" << std::endl
         << "[Error String] " << GetErrorString() << std::endl
-        << "[Description] " << GetErrorDescription() << std::endl
-        << GetOriginString();
+        << "[Description] " << GetErrorDescription() << std::endl;
+    if( !m_info.empty() )
+    {
+        oss << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
+    }
+    oss << GetOriginString();
     m_whatBuffer = oss.str();
     return m_whatBuffer.c_str();
 }
@@ -57,6 +61,10 @@ std::string Graphics::HrException::GetErrorDescription() const noexcept
     char buf[512];
     DXGetErrorDescription(m_hr, buf, sizeof(buf));
     return buf;
+}
+std::string Graphics::HrException::GetErrorInfo() const noexcept
+{
+    return m_info;
 }
 
 const char *Graphics::DeviceRemovedException::GetType() const noexcept
@@ -78,7 +86,7 @@ Graphics::Graphics(HWND hWnd)
     swchd.SampleDesc.Quality = 0;                                             //
     swchd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;                      //
     swchd.BufferCount = 1;                                                    // one Back buffer
-    swchd.OutputWindow = (HWND)696969;                                                //
+    swchd.OutputWindow = hWnd;                                                //
     swchd.Windowed = TRUE;                                                    //  no fullscreen
     swchd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;                              //
     swchd.Flags = 0;                                                          //
