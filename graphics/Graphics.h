@@ -4,6 +4,8 @@
 #include <d3d11.h>
 #include "ChiliException.h"
 #include "WinDefs.h"
+#include <vector>
+#include "DxgiInfoManager.h"
 
 class Graphics
 {
@@ -16,17 +18,18 @@ public:
     class HrException : public Exception
     {
     public:
-        HrException(int line, const char *file, HRESULT hr) noexcept
-        : Exception(line, file), m_hr(hr)
-        {}
+        HrException(int line, const char *file, HRESULT hr, std::vector<std::string> infoMsgs = {}) noexcept;
+
         const char *what() const noexcept override;
         const char *GetType() const noexcept override { return "Chili Graphics Exception"; }
         HRESULT     GetErrorCode() const noexcept     { return m_hr;  }
         std::string GetErrorString() const noexcept;
         std::string GetErrorDescription() const noexcept;
+        std::string GetErrorInfo() const noexcept;
 
     private:
         HRESULT m_hr;
+        std::string m_info;
     };
     class DeviceRemovedException : public HrException
     {
@@ -34,6 +37,8 @@ public:
 
     public:
         const char *GetType() const noexcept override;
+    private:
+        std::string m_reason;
     };
 
 public:
@@ -43,6 +48,10 @@ public:
     ~Graphics();
     void EndFrame();
     void ClearBuffer(float red, float green, float blue) noexcept;
+
+#ifndef NDEBUG
+    DxgiInfoManager infoManager;
+#endif
 
 private:
     ID3D11Device           *m_pDevice {nullptr};

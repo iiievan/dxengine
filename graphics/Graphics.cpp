@@ -3,12 +3,36 @@
 #include "Utils.hpp"
 #include "dxerr.h"
 
-#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib,"d3d11.lib")
 
-#define GFX_THROW_FAILED(hrcall) \
-    if (FAILED(hr = (hrcall)))   \
-    throw Graphics::HrException(__LINE__, __FILE__, hr)
-#define GFX_DEVICE_REMOVED_EXCEPT(hr) Graphics::DeviceRemovedException(__LINE__, __FILE__, (hr))
+// graphics exception checking/throwing macros (some with dxgi infos)
+#define GFX_EXCEPT_NOINFO(hr) Graphics::HrException( __LINE__,__FILE__,(hr) )
+#define GFX_THROW_NOINFO(hrcall) if( FAILED( hr = (hrcall) ) ) throw Graphics::HrException( __LINE__,__FILE__,hr )
+
+#ifndef NDEBUG
+#define GFX_EXCEPT(hr) Graphics::HrException( __LINE__,__FILE__,(hr),infoManager.GetMessages() )
+#define GFX_THROW_INFO(hrcall) infoManager.Set(); if( FAILED( hr = (hrcall) ) ) throw GFX_EXCEPT(hr)
+#define GFX_DEVICE_REMOVED_EXCEPT(hr) Graphics::DeviceRemovedException( __LINE__,__FILE__,(hr),infoManager.GetMessages() )
+#else
+#define GFX_EXCEPT(hr) Graphics::HrException( __LINE__,__FILE__,(hr) )
+#define GFX_THROW_INFO(hrcall) GFX_THROW_NOINFO(hrcall)
+#define GFX_DEVICE_REMOVED_EXCEPT(hr) Graphics::DeviceRemovedException( __LINE__,__FILE__,(hr) )
+#endif
+
+
+Graphics::HrException::HrException(int line, const char *file, HRESULT hr, std::vector<std::string> infoMsgs) noexcept
+: Exception(line, file), m_hr(hr)
+{
+    for (const auto &m : infoMsgs)
+    {
+        m_info += m;
+        m_info.push_back('\n');
+    }
+
+    // remove final new line if exist
+    if (!m_info.empty())
+        m_info.pop_back();
+}
 
 const char *Graphics::HrException::what() const noexcept
 {
@@ -54,19 +78,25 @@ Graphics::Graphics(HWND hWnd)
     swchd.SampleDesc.Quality = 0;                                             //
     swchd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;                      //
     swchd.BufferCount = 1;                                                    // one Back buffer
-    swchd.OutputWindow = (HWND)6969696;                                                //
+    swchd.OutputWindow = (HWND)696969;                                                //
     swchd.Windowed = TRUE;                                                    //  no fullscreen
     swchd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;                              //
     swchd.Flags = 0;                                                          //
 
+
+    UINT swapCreateFlags = 0u;
+#ifndef NDEBUG
+    swapCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
     // for checking results of d3d functions
     HRESULT hr;
 
-    GFX_THROW_FAILED(D3D11CreateDeviceAndSwapChain(
+    GFX_THROW_INFO(D3D11CreateDeviceAndSwapChain(
         nullptr,
         D3D_DRIVER_TYPE_HARDWARE,
         nullptr,
-        D3D11_CREATE_DEVICE_DEBUG,
+        swapCreateFlags,
         nullptr,
         0,
         D3D11_SDK_VERSION,
@@ -77,8 +107,8 @@ Graphics::Graphics(HWND hWnd)
         &m_pContext));
 
     ID3D11Resource *pBackBuffer = nullptr;
-    GFX_THROW_FAILED(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), reinterpret_cast<void **>(&pBackBuffer)));
-    GFX_THROW_FAILED(m_pDevice->CreateRenderTargetView(pBackBuffer, nullptr, &m_pTargetView));
+    GFX_THROW_INFO(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), reinterpret_cast<void **>(&pBackBuffer)));
+    GFX_THROW_INFO(m_pDevice->CreateRenderTargetView(pBackBuffer, nullptr, &m_pTargetView));
     ReleaseCOM(pBackBuffer);
 }
 
@@ -100,12 +130,16 @@ Graphics::~Graphics()
 void Graphics::EndFrame()
 {
     HRESULT hr;
+#ifndef NDEBUG
+    infoManager.Set();
+#endif
+
     if (FAILED(hr = m_pSwapChain->Present(1u, 0u)))
     {
         if (hr == DXGI_ERROR_DEVICE_REMOVED)
             throw GFX_DEVICE_REMOVED_EXCEPT(m_pDevice->GetDeviceRemovedReason());
         else
-            GFX_THROW_FAILED(hr);
+            throw GFX_EXCEPT(hr);
     }
 }
 

@@ -7,7 +7,9 @@ project(graphics
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES Graphics.cpp
-                 dxerr.cpp)
+                 dxerr.cpp
+        DxgiInfoManager.cpp
+        DxgiInfoManager.h)
 
 set(HEADER_FILES dxerr.h
                  DXGetErrorString.inl
