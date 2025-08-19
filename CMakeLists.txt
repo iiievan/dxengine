@@ -21,10 +21,17 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(ConfigureResources)
 configure_application_resources(${PROJECT_NAME})
 
-
 add_executable(${PROJECT_NAME} WIN32 ${RC_FILE} app/WinMain.cpp
                                                 app/App.cpp
                                                 app/ChiliTimer.cpp)
+
+include(CompileHLSL)
+compile_hlsl_shaders()
+
+# Добавляем зависимость если шейдеры были скомпилированы
+if(HLSL_COMPILED)
+    add_dependencies(${PROJECT_NAME} compile_shaders)
+endif()
 
 
 target_compile_definitions(${PROJECT_NAME}

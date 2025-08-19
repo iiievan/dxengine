@@ -31,6 +31,18 @@ public:
         HRESULT m_hr;
         std::string m_info;
     };
+
+    class InfoException : public Exception
+    {
+    public:
+        InfoException(int line, const char *file, std::vector<std::string> infoMsgs) noexcept;
+        const char *what() const noexcept override;
+        const char *GetType() const noexcept override { return "Chili Graphics Info Exception"; }
+        std::string GetErrorInfo() const noexcept { return m_info; }
+    private:
+        std::string m_info;
+    };
+
     class DeviceRemovedException : public HrException
     {
         using HrException::HrException;
@@ -48,6 +60,8 @@ public:
     ~Graphics() = default;
     void EndFrame();
     void ClearBuffer(float red, float green, float blue) noexcept;
+    void DrawTestTriangle();
+
 
 #ifndef NDEBUG
     DxgiInfoManager infoManager;
