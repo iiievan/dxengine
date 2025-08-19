@@ -2,14 +2,16 @@
 #define __DXGIINFOMANAGER_H
 
 #include "WinDefs.h"
+#include <wrl.h>
 #include <vector>
 #include <string>
+#include <dxgidebug.h>
 
 class DxgiInfoManager
 {
 public:
     DxgiInfoManager();
-    ~DxgiInfoManager();
+    ~DxgiInfoManager() = default;
     DxgiInfoManager(const DxgiInfoManager &) = delete;
     DxgiInfoManager &operator=(const DxgiInfoManager &) = delete;
 
@@ -18,10 +20,7 @@ public:
 
 private:
     unsigned long long m_next {0u};
-    struct IDXGIInfoQueue* m_pDxgiInfoQueue {nullptr};
-
+    Microsoft::WRL::ComPtr<IDXGIInfoQueue> m_pDxgiInfoQueue;
 };
-
-
 
 #endif //__DXGIINFOMANAGER_H
