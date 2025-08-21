@@ -6,7 +6,7 @@ struct VSOut
 
 cbuffer Cbuf
 {
-	row_major matrix transform;
+	matrix transform;
 };
 
 VSOut VSMain(float2 pos : Position, float3 color : Color)
