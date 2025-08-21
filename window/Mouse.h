@@ -2,6 +2,7 @@
 #define __DXENGINE_MOUSE_H
 
 #include <queue>
+#include <optional>
 
 class Mouse
 {
@@ -21,8 +22,7 @@ public:
             WHEEL_DOWN,
             MOVE,
             ENTER,      // cursor enter window area
-            LEAVE,      // cursor leave window area
-            INVALID
+            LEAVE       // cursor leave window area
         };
 
     private:
@@ -33,13 +33,6 @@ public:
         int  m_y;
 
     public:
-        Event() noexcept
-            : m_type(Type::INVALID),
-              m_left_pressed(false),
-              m_right_pressed(false),
-              m_x(0),
-              m_y(0)
-        {}
         Event(Type type, const Mouse& parent) noexcept
         : m_type(type),
         m_left_pressed(parent.m_leftIsPressed),
@@ -47,7 +40,7 @@ public:
         m_x(parent.m_x),
         m_y(parent.m_y)
         {}
-        bool isValid() const noexcept { return m_type != Type::INVALID; }
+
         Type GetType() const noexcept { return m_type; }
         std::pair<int, int> GetPos() const noexcept { return {m_x, m_y}; }
         int GetX() const noexcept { return m_x; }
@@ -67,7 +60,7 @@ public:
     bool IsInWindow() const noexcept { return m_is_in_window; }
     bool LeftIsPressed() const noexcept { return m_leftIsPressed; }
     bool RightIsPressed() const noexcept { return m_rightIsPressed; }
-    Mouse::Event Read() noexcept;
+    std::optional<Mouse::Event> Read() noexcept;
     bool IsEmpty() const noexcept { return m_buffer.empty(); }
     void Flush() noexcept;
 

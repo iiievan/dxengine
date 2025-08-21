@@ -1,8 +1,8 @@
 #include "Mouse.h"
-
 #include "Utils.hpp"
+#include "WinDefs.h"
 
-Mouse::Event Mouse::Read() noexcept
+std::optional<Mouse::Event> Mouse::Read() noexcept
 {
     if( m_buffer.size() > 0u )
     {
@@ -11,7 +11,7 @@ Mouse::Event Mouse::Read() noexcept
         return e;
     }
 
-    return Event();
+    return { };
 }
 
 void Mouse::Flush() noexcept
