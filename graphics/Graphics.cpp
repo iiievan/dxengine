@@ -183,11 +183,12 @@ void Graphics::ClearBuffer(float red, float green, float blue) noexcept
     const float color[] = {red, green, blue, 1.0f};
     m_pContext->ClearRenderTargetView(m_pTargetView.Get(), color);
 }
-void Graphics::DrawTestTriangle()
+void Graphics::DrawTestTriangle(float angle)
 {
     namespace wrl = Microsoft::WRL;
     HRESULT hr;
 
+    /********************************************************* Create Vertex Buffer ***********************************************************************/
     struct Vertex
     {
         struct
@@ -212,11 +213,10 @@ void Graphics::DrawTestTriangle()
     /*2*/    {-0.5f, -0.5f, 0, 0, 255, 0},
     /*3*/    {-0.3f, 0.3f, 0, 255, 0, 0},
     /*4*/    {0.3f, 0.3f, 0, 0, 255, 0},
-    /*5*/    {0.0f, -0.8f, 255, 0, 0, 0}
+    /*5*/    {0.0f, -1.0f, 255, 0, 0, 0}
     };
 
     vertices[0].color.g = 255;
-
 
     wrl::ComPtr<ID3D11Buffer> pVertexBuffer;
 
@@ -234,7 +234,7 @@ void Graphics::DrawTestTriangle()
     GFX_THROW_INFO(m_pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
     m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
 
-
+    /******************************************************** Create Index buffer ******************************************************************/
     const unsigned short indices[] =
     {
         0,1,2,
@@ -254,9 +254,42 @@ void Graphics::DrawTestTriangle()
     isd.pSysMem = indices;
 
     GFX_THROW_INFO(m_pDevice->CreateBuffer(&ibd, &isd, &pIndexBuffer));
-
     m_pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
 
+
+    /***************************************************** Create Index Buffer ***************************************************************/
+    // create constant beffer for transformation matrix
+    struct ConstantBuffer
+    {
+        struct
+        {
+            float element[4][4];
+        }transformation;
+    };
+
+    const ConstantBuffer cb =
+    {
+        {
+            (3.0f/4.0f) * std::cos(angle), std::sin(angle), 0.0f, 0.0f,
+            (3.0f/4.0f) * -std::sin(angle), std::cos(angle), 0.0f,0.0f,
+            0.0f, 0.0f, 1.0f,0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        }
+    };
+    wrl::ComPtr<ID3D11Buffer> pConstantBuffer;
+    D3D11_BUFFER_DESC cbd = {};
+    cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.Usage = D3D11_USAGE_DYNAMIC;
+    cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    cbd.ByteWidth = sizeof(cb);
+    cbd.StructureByteStride = 0u;
+
+    D3D11_SUBRESOURCE_DATA csd = {};
+    csd.pSysMem = &cb;
+    GFX_THROW_INFO(m_pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer));
+    m_pContext->VSSetConstantBuffers(0u,1u, pConstantBuffer.GetAddressOf());
+
+    /************************************************** Create Shaders *************************************************************************/
     // create pixel shader
     wrl::ComPtr<ID3DBlob>          pBlob;
     wrl::ComPtr<ID3D11PixelShader> pPixelShader;
@@ -276,6 +309,8 @@ void Graphics::DrawTestTriangle()
     // bind vertex shader
     m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0);
 
+
+    /****************************************************** Create Input Layout *********************************************************************/
     wrl::ComPtr<ID3D11InputLayout> pIL;
     const D3D11_INPUT_ELEMENT_DESC ied[] = {
         {"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -287,6 +322,8 @@ void Graphics::DrawTestTriangle()
     // bind vertex layout
     m_pContext->IASetInputLayout(pIL.Get());
 
+
+    /******************************************************** Rendering Process ********************************************************************/
     // set pixels of Back Buffer
     m_pContext->OMSetRenderTargets(1u, m_pTargetView.GetAddressOf(), nullptr);
 
@@ -296,12 +333,12 @@ void Graphics::DrawTestTriangle()
     //  "Рисуй на всю цель рендера (800x600), преобразовывая глубину из диапазона [0,1] в этот же диапазон".
     // Это преобразует координаты из NDC (-1 до 1) в координаты экрана (0 до 800, 0 до 600).
     D3D11_VIEWPORT vp = {};
-    vp.Width = 400;
-    vp.Height = 300;
+    vp.Width = 800;
+    vp.Height = 600;
     vp.MinDepth = 0;
     vp.MaxDepth = 1;
-    vp.TopLeftX = 100;
-    vp.TopLeftY = 100;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
     m_pContext->RSSetViewports(1u, &vp);
 
     GFX_THROW_INFO_ONLY(m_pContext->DrawIndexed((UINT)std::size(indices),0u, 0u));
