@@ -245,6 +245,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
         {
             const POINTS pt = MAKEPOINTS( lParam );
             m_mouse.OnLeftPressed(pt.x,pt.y);
+            SetForegroundWindow(hWnd);
             break;
         }
         case WM_RBUTTONDOWN:
