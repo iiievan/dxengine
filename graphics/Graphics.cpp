@@ -203,29 +203,19 @@ void Graphics::DrawTestTriangle(float angle, float x, float y)
             float y;
             float z;
         } pos;
-
-        struct
-        {
-            unsigned char r;
-            unsigned char g;
-            unsigned char b;
-            unsigned char a;
-        } color;
     };
 
     Vertex vertices[] =
     {
-    /*0*/    {-1.0f, -1.0f, -1.0f, 255, 0, 0, 0},
-    /*1*/    {1.0f, -1.0f, -1.0f, 0, 255, 0, 0},
-    /*2*/    {-1.0f, 1.0f, -1.0f, 0, 0, 255, 0},
-    /*3*/    {1.0f, 1.0f, -1.0f, 255, 255, 0, 0},
-    /*4*/    {-1.0f, -1.0f, 1.0f, 255, 0, 255, 0},
-    /*5*/    {1.0f, -1.0f, 1.0f, 0, 255, 255, 0},
-    /*6*/    {-1.0f, 1.0f, 1.0f, 0, 0, 0, 0},
-    /*7*/    {1.0f, 1.0f, 1.0f, 255, 255, 255, 0}
+    /*0*/    {-1.0f, -1.0f, -1.0f},
+    /*1*/    {1.0f, -1.0f, -1.0f},
+    /*2*/    {-1.0f, 1.0f, -1.0f},
+    /*3*/    {1.0f, 1.0f, -1.0f},
+    /*4*/    {-1.0f, -1.0f, 1.0f},
+    /*5*/    {1.0f, -1.0f, 1.0f},
+    /*6*/    {-1.0f, 1.0f, 1.0f},
+    /*7*/    {1.0f, 1.0f, 1.0f}
     };
-
-    vertices[0].color.g = 255;
 
     wrl::ComPtr<ID3D11Buffer> pVertexBuffer;
 
@@ -297,6 +287,44 @@ void Graphics::DrawTestTriangle(float angle, float x, float y)
     GFX_THROW_INFO(m_pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer));
     m_pContext->VSSetConstantBuffers(0u,1u, pConstantBuffer.GetAddressOf());
 
+    /***************************************************** Create face color lookup buffer ***************************************************************/
+
+    struct ConstantBuffer2
+    {
+        struct
+        {
+            float r;
+            float g;
+            float b;
+            float a;
+        } face_colors[6];
+    };
+
+    const ConstantBuffer2 cb2 =
+    {
+        {
+            {1.0f,0.0f,1.0f,0.0f},
+            {1.0f,0.0f,0.0f,0.0f},
+            {0.0f,1.0f,0.0f,0.0f},
+            {0.0f,0.0f,1.0f,0.0f},
+            {1.0f,1.0f,0.0f,0.0f},
+            {0.0f,1.0f,1.0f,0.0f},
+        }
+    };
+
+    wrl::ComPtr<ID3D11Buffer> pConstantBuffer2;
+    D3D11_BUFFER_DESC cbd2 = {};
+    cbd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd2.Usage = D3D11_USAGE_DEFAULT;
+    cbd2.CPUAccessFlags = 0u;
+    cbd2.ByteWidth = sizeof(cb2);
+    cbd2.StructureByteStride = 0u;
+
+    D3D11_SUBRESOURCE_DATA csd2 = {};
+    csd2.pSysMem = &cb2;
+    GFX_THROW_INFO(m_pDevice->CreateBuffer(&cbd2, &csd2, &pConstantBuffer2));
+    m_pContext->PSSetConstantBuffers(0u,1u, pConstantBuffer2.GetAddressOf());
+
     /************************************************** Create Shaders *************************************************************************/
     // create pixel shader
     wrl::ComPtr<ID3DBlob>          pBlob;
@@ -321,8 +349,7 @@ void Graphics::DrawTestTriangle(float angle, float x, float y)
     /****************************************************** Create Input Layout *********************************************************************/
     wrl::ComPtr<ID3D11InputLayout> pIL;
     const D3D11_INPUT_ELEMENT_DESC ied[] = {
-        {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 12u, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
     };
     GFX_THROW_INFO(m_pDevice->CreateInputLayout(
         ied, (UINT)std::size(ied), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pIL));
