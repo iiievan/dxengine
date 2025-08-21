@@ -201,14 +201,25 @@ void Graphics::DrawTestTriangle()
             unsigned char g;
             unsigned char b;
             unsigned char a;
-        }color;
+        } color;
     };
 
-    Vertex vertices[] =
-    {
-        {0.0f, 0.5f, 255, 0, 0},      // White
-        {0.5f, -0.5f,0, 255, 0},      // Green
-        {-0.5f, -0.5f,0, 0, 255},      // Green
+    Vertex vertices[] = {
+        {0.0f, 0.5f, 255, 0, 0, 0},
+        {0.5f, -0.5f, 0, 255, 0, 0},
+        {-0.5f, -0.5f, 0, 0, 255, 0},
+
+        {0.0f, 0.5f, 255, 0, 0, 0},
+        {-0.5f, -0.5f, 0, 0, 255, 0},
+        {-0.3f, 0.3f, 0, 255, 0, 0},
+
+        {0.0f, 0.5f, 255, 0, 0, 0},
+        {0.3f, 0.3f, 0, 0, 255, 0},
+        {0.5f, -0.5f, 0, 255, 0, 0},
+
+        {0.0f, -0.8f, 255, 0, 0, 0},
+        {-0.5f, -0.5f, 0, 0, 255, 0},
+        {0.5f, -0.5f, 0, 255, 0, 0},
     };
 
     vertices[0].color.g = 255;
@@ -232,7 +243,7 @@ void Graphics::DrawTestTriangle()
     m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
 
     // create pixel shader
-    wrl::ComPtr<ID3DBlob>           pBlob;
+    wrl::ComPtr<ID3DBlob>          pBlob;
     wrl::ComPtr<ID3D11PixelShader> pPixelShader;
     GFX_THROW_INFO(D3DReadFileToBlob(L"shaders/Triangle.ps.cso", &pBlob)); // set path in cmake-build-debug folder
     GFX_THROW_INFO(
@@ -251,8 +262,7 @@ void Graphics::DrawTestTriangle()
     m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0);
 
     wrl::ComPtr<ID3D11InputLayout> pIL;
-    const D3D11_INPUT_ELEMENT_DESC ied[] =
-    {
+    const D3D11_INPUT_ELEMENT_DESC ied[] = {
         {"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
         {"Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 8u, D3D11_INPUT_PER_VERTEX_DATA, 0},
     };
