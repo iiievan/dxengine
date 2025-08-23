@@ -24,7 +24,7 @@ configure_application_resources(${PROJECT_NAME})
 add_executable(${PROJECT_NAME} WIN32 ${RC_FILE} app/WinMain.cpp
                                                 app/App.cpp
                                                 app/ChiliTimer.cpp)
-
+# Подключаем модуль и компилируем шейдеры
 include(CompileHLSL)
 compile_hlsl_shaders()
 
@@ -33,11 +33,12 @@ if(HLSL_COMPILED)
     add_dependencies(${PROJECT_NAME} compile_shaders)
 endif()
 
-
+# настройки препроцессора
 target_compile_definitions(${PROJECT_NAME}
         PRIVATE
         $<$<CONFIG:Release>:NDEBUG>
-)
+        $<$<CONFIG:Debug>:IS_DEBUG=true>
+        $<$<CONFIG:Release>:IS_DEBUG=false>)
 
 target_compile_options(${PROJECT_NAME} PRIVATE
         $<$<CONFIG:Release>:/Ot>                # Оптимизация по скорости (включена в /O2)
@@ -59,6 +60,7 @@ target_link_libraries(${PROJECT_NAME}
                       utils
                       graphics
                       window
+                      drawable
                       kernel32.lib  # OutputDebugString needs kernel32.lib
                       user32.lib
                       d3d11
@@ -67,5 +69,7 @@ target_link_libraries(${PROJECT_NAME}
 add_subdirectory(utils)
 add_subdirectory(window)
 add_subdirectory(graphics)
+add_subdirectory(bindable)
+add_subdirectory(drawable)
 
 

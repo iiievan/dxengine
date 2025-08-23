@@ -1,6 +1,7 @@
 #include "Window.h"
 #include <sstream>
 #include "../resources/resources.h"
+#include "WindowThrowMacroses.h"
 
 #define APP_ICON IDI_CUBE_ICON
 

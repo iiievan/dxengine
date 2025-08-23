@@ -6,9 +6,14 @@
 #include <wrl.h>
 #include <vector>
 #include "DxgiInfoManager.h"
+#include <d3dcompiler.h>
+#include <DirectXMath.h>
+#include <memory>
+#include <random>
 
 class Graphics
 {
+    friend class Bindable;
 public:
     class Exception : public ChiliException
     {
@@ -60,14 +65,15 @@ public:
     ~Graphics() = default;
     void EndFrame();
     void ClearBuffer(float red, float green, float blue) noexcept;
-    void DrawTestTriangle(float angle, float x, float y);
-
-
-#ifndef NDEBUG
-    DxgiInfoManager infoManager;
-#endif
+    void DrawIndexed( UINT count ) noexcept(!IS_DEBUG);
+    void SetProjection( DirectX::FXMMATRIX proj ) noexcept;
+    DirectX::XMMATRIX GetProjection() const noexcept;
 
 private:
+    DirectX::XMMATRIX m_projection;
+#ifndef NDEBUG
+    DxgiInfoManager m_infoManager;
+#endif
     Microsoft::WRL::ComPtr<ID3D11Device>           m_pDevice;
     Microsoft::WRL::ComPtr<IDXGISwapChain>         m_pSwapChain;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_pContext;

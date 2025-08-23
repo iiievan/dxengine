@@ -7,6 +7,9 @@ class App
 {
 public:
     App();
+    ~App();
+
+    // master frame/message loop
     int Go();
 
 private:
@@ -14,6 +17,7 @@ private:
 private:
     Window m_wnd;
     ChiliTimer m_timer;
+    std::vector<std::unique_ptr<class Box>> boxes;
 };
 
 #endif // __APP_H

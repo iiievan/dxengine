@@ -1,35 +1,30 @@
 cmake_minimum_required(VERSION 3.24)
-project(graphics
+project(drawable
         VERSION 1.0
         LANGUAGES CXX
         DESCRIPTION
-        "DX graphics library")
+        "Drawable objects DirecX API")
 set(CMAKE_CXX_STANDARD 17)
 
-set(SOURCE_FILES Graphics.cpp
-                 dxerr.cpp
-        DxgiInfoManager.cpp
-        DxgiInfoManager.h
-        GraphicsThrowMacroses.h)
+set(SOURCE_FILES Drawable.cpp
+                 Box.cpp)
 
-set(HEADER_FILES dxerr.h
-                 DXGetErrorString.inl
-                 DXGetErrorDescription.inl
-                 DXTrace.inl)
+set(HEADER_FILES Drawable.h
+                 Box.h)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 target_link_libraries(${PROJECT_NAME}
-                      PRIVATE
-                      window
-                      bindable
-                      drawable)
+                     PRIVATE
+                     bindable
+                     graphics
+                     window)
 
 # Добавляем заголовочные файлы в цель, чтобы они были доступны при сборке(видимы в IDE)
 target_sources(${PROJECT_NAME} PRIVATE ${HEADER_FILES})
 
 # добавляет текущую директорию в список путей для поиска заголовочных файлов для других проектов/библиотек
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 # настройки препроцессора
