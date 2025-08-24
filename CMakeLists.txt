@@ -11,10 +11,7 @@ if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
-include_directories(${PROJECT_SOURCE_DIR}/app
-                    ${PROJECT_SOURCE_DIR}/resources
-                    ${PROJECT_SOURCE_DIR}/utils
-                    ${PROJECT_SOURCE_DIR}/graphics)
+include_directories(${PROJECT_SOURCE_DIR}/resources)
 
 # Подключаем модуль и настраиваем ресурсы
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -33,27 +30,16 @@ if(HLSL_COMPILED)
     add_dependencies(${PROJECT_NAME} compile_shaders)
 endif()
 
-# настройки препроцессора
-target_compile_definitions(${PROJECT_NAME}
-        PRIVATE
-        $<$<CONFIG:Release>:NDEBUG>
-        $<$<CONFIG:Debug>:IS_DEBUG=true>
-        $<$<CONFIG:Release>:IS_DEBUG=false>)
+# настройки препроцессора для всего проекта
+add_compile_definitions($<$<CONFIG:Release>:NDEBUG>
+                        $<$<CONFIG:Debug>:IS_DEBUG=true>
+                        $<$<CONFIG:Release>:IS_DEBUG=false>)
 
-target_compile_options(${PROJECT_NAME} PRIVATE
-        $<$<CONFIG:Release>:/Ot>                # Оптимизация по скорости (включена в /O2)
-        $<$<CONFIG:Debug>:/Od /fp:fast>         # Отключение оптимизации (по умолчанию в Debug)
-)
+include(SetCommonCompileSettings)
 
-target_compile_options(${PROJECT_NAME} PRIVATE
-        $<$<CONFIG:Release>:/MT>
-        $<$<CONFIG:Debug>:/MTd>
-)
+# Применяем настройки к основному исполняемому файлу
+set_common_compile_settings(${PROJECT_NAME})
 
-target_link_options(${PROJECT_NAME} PRIVATE
-        $<$<CONFIG:Release>:/MT>
-        $<$<CONFIG:Debug>:/MTd>
-)
 
 target_link_libraries(${PROJECT_NAME} 
                       PRIVATE
@@ -71,4 +57,8 @@ add_subdirectory(window)
 add_subdirectory(graphics)
 add_subdirectory(dxbindraw)
 
-
+# После добавления всех поддиректорий применяем настройки ко всем библиотекам
+set_common_compile_settings(utils)
+set_common_compile_settings(window)
+set_common_compile_settings(graphics)
+set_common_compile_settings(dxbindraw)

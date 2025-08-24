@@ -13,15 +13,8 @@ set(SOURCE_FILES Utils.cpp
                  WindowsMessageMap.cpp)
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_compile_definitions(${PROJECT_NAME}
-        PRIVATE
-        $<$<CONFIG:Release>:NDEBUG>
-)
-
-target_compile_options(${PROJECT_NAME} PRIVATE
-        $<$<CONFIG:Release>:/Ot>                # Оптимизация по скорости (включена в /O2)
-        $<$<CONFIG:Debug>:/Od /fp:fast>         # Отключение оптимизации (по умолчанию в Debug)
-)
+# добавляет текущую директорию в список путей для поиска заголовочных файлов для других проектов/библиотек
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # clang-format настройки
 find_program(CLANG_FORMAT_EXE NAMES clang-format clang-format-15 clang-format-14 clang-format-13)
