@@ -60,7 +60,7 @@ target_link_libraries(${PROJECT_NAME}
                       utils
                       graphics
                       window
-                      drawable
+                      dxbindraw
                       kernel32.lib  # OutputDebugString needs kernel32.lib
                       user32.lib
                       d3d11
@@ -69,7 +69,6 @@ target_link_libraries(${PROJECT_NAME}
 add_subdirectory(utils)
 add_subdirectory(window)
 add_subdirectory(graphics)
-add_subdirectory(bindable)
-add_subdirectory(drawable)
+add_subdirectory(dxbindraw)
 
 

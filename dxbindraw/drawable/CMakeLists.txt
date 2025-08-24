@@ -10,7 +10,8 @@ set(SOURCE_FILES Drawable.cpp
                  Box.cpp)
 
 set(HEADER_FILES Drawable.h
-                 Box.h)
+                 Box.h
+        DrawableBase.h)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
