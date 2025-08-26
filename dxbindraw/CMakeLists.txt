@@ -44,6 +44,12 @@ set(DRAWABLE_HEADERS
 set(SOURCE_FILES
         ${BINDABLE_SOURCES}
         ${DRAWABLE_SOURCES}
+        geometry/Cone.h
+        geometry/IndexedTriangleList.h
+        geometry/Cube.h
+        geometry/Plane.h
+        geometry/Prism.h
+        geometry/Sphere.h
 )
 
 set(HEADER_FILES
@@ -55,6 +61,7 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 target_link_libraries(${PROJECT_NAME}
                      PRIVATE
+                     utils
                      graphics
                      window)
 

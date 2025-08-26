@@ -5,5 +5,5 @@ cbuffer CBuf
 
 float4 PSMain(uint tid : SV_PrimitiveID) : SV_Target
 {
-  return face_colors[tid/2]; // cuz one face - 2 triangles
+      return face_colors[(tid/2) % 6]; // cuz one face - 2 triangles
 }

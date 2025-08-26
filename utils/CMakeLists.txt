@@ -11,7 +11,14 @@ set(SOURCE_FILES Utils.cpp
                  WStringToUTF8.cpp
                  ColorPalette.cpp
                  WindowsMessageMap.cpp)
+
+ set(HEADER_FILES Utils.hpp
+                  ChiliMath.h)
+
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
+
+# Добавляем заголовочные файлы в цель, чтобы они были доступны при сборке(видимы в IDE)
+target_sources(${PROJECT_NAME} PRIVATE ${HEADER_FILES})
 
 # добавляет текущую директорию в список путей для поиска заголовочных файлов для других проектов/библиотек
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
