@@ -18,6 +18,8 @@ private:
     Window m_wnd;
     ChiliTimer m_timer;
     std::vector<std::unique_ptr<class Box>> boxes;
+    std::vector<std::unique_ptr<class Drawable>> m_drawables;
+    static constexpr size_t m_nDrawables = 180;
 };
 
 #endif // __APP_H

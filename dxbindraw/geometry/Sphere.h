@@ -12,7 +12,7 @@ public:
     static IndexedTriangleList<V> MakeTesselated(int lat_div, int long_div)
     {
         /*
-                    Северный полюс
+           Северный полюс
                ▲
                │
             ◄-----┼-----► долготы

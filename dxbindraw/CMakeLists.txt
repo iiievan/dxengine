@@ -50,6 +50,10 @@ set(SOURCE_FILES
         geometry/Plane.h
         geometry/Prism.h
         geometry/Sphere.h
+        drawable/Melon.cpp
+        drawable/Melon.h
+        drawable/Pyramid.cpp
+        drawable/Pyramid.h
 )
 
 set(HEADER_FILES
