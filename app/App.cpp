@@ -5,6 +5,10 @@
 #include <memory>
 #include <algorithm>
 #include "ChiliMath.h"
+#include "Surface.h"
+#include "GDIPlusManager.h"
+
+GDIPlusManager gdipm;
 
 #define ever (;;)
 
@@ -59,6 +63,9 @@ App::App()
     Factory f( m_wnd.Gfx() );
     m_drawables.reserve( m_nDrawables );
     std::generate_n( std::back_inserter( m_drawables ),m_nDrawables,f );
+
+    const auto s = Surface::FromFile( "images\\kappa50.png" );
+
     m_wnd.Gfx().SetProjection( DirectX::XMMatrixPerspectiveLH( 1.0f,3.0f / 4.0f,0.5f,40.0f ) );
 }
 

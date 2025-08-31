@@ -12,8 +12,8 @@ set(SOURCE_FILES Utils.cpp
                  ColorPalette.cpp
                  WindowsMessageMap.cpp)
 
- set(HEADER_FILES Utils.hpp
-                  ChiliMath.h)
+set(HEADER_FILES Utils.hpp
+                 ChiliMath.h)
 
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
 

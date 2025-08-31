@@ -35,6 +35,11 @@ add_compile_definitions($<$<CONFIG:Release>:NDEBUG>
                         $<$<CONFIG:Debug>:IS_DEBUG=true>
                         $<$<CONFIG:Release>:IS_DEBUG=false>)
 
+# Unicode определения только для Windows
+#if(WIN32)
+#    add_compile_definitions(UNICODE _UNICODE)
+#endif()
+
 include(SetCommonCompileSettings)
 
 # Применяем настройки к основному исполняемому файлу
@@ -50,7 +55,8 @@ target_link_libraries(${PROJECT_NAME}
                       kernel32.lib  # OutputDebugString needs kernel32.lib
                       user32.lib
                       d3d11
-                      d3dcompiler)
+                      d3dcompiler
+                      gdiplus)
 
 add_subdirectory(utils)
 add_subdirectory(window)

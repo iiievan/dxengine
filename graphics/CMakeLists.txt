@@ -10,7 +10,11 @@ set(SOURCE_FILES Graphics.cpp
                  dxerr.cpp
         DxgiInfoManager.cpp
         DxgiInfoManager.h
-        GraphicsThrowMacroses.h)
+        GraphicsThrowMacroses.h
+        Surface.cpp
+        Surface.h
+        GDIPlusManager.cpp
+        GDIPlusManager.h)
 
 set(HEADER_FILES dxerr.h
                  DXGetErrorString.inl
