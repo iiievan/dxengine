@@ -54,6 +54,14 @@ set(SOURCE_FILES
         drawable/Melon.h
         drawable/Pyramid.cpp
         drawable/Pyramid.h
+        bindable/Texture.cpp
+        bindable/Texture.h
+        bindable/Sampler.cpp
+        bindable/Sampler.h
+        drawable/Sheet.cpp
+        drawable/Sheet.h
+        drawable/SkinnedBox.cpp
+        drawable/SkinnedBox.h
 )
 
 set(HEADER_FILES

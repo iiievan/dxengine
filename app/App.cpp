@@ -2,12 +2,13 @@
 #include "drawable/Box.h"
 #include "drawable/Melon.h"
 #include "drawable/Pyramid.h"
+#include "drawable/Sheet.h"
+#include "drawable/SkinnedBox.h"
 #include <memory>
 #include <algorithm>
 #include "ChiliMath.h"
 #include "Surface.h"
 #include "GDIPlusManager.h"
-#include "Utils.hpp"
 
 GDIPlusManager gdipm;
 
@@ -43,6 +44,16 @@ App::App()
                         gfx,rng,adist,ddist,
                         odist,rdist,longdist,latdist
                     );
+                case 3:
+                    return std::make_unique<Sheet>(
+                        gfx,rng,adist,ddist,
+                        odist,rdist
+                    );
+                case 4:
+                    return std::make_unique<SkinnedBox>(
+                        gfx,rng,adist,ddist,
+                        odist,rdist
+                    );
                 default:
                     assert( false && "bad drawable type in factory" );
                     return {};
@@ -58,18 +69,13 @@ App::App()
         std::uniform_real_distribution<float> bdist{ 0.4f,3.0f };
         std::uniform_int_distribution<int> latdist{ 5,20 };
         std::uniform_int_distribution<int> longdist{ 10,40 };
-        std::uniform_int_distribution<int> typedist{ 0,2 };
+        std::uniform_int_distribution<int> typedist{ 0,4 };
     };
 
-    Factory f( m_wnd.Gfx() );
-    m_drawables.reserve( m_nDrawables );
-    std::generate_n( std::back_inserter( m_drawables ),m_nDrawables,f );
+    m_drawables.reserve(m_nDrawables);
+    std::generate_n(std::back_inserter(m_drawables), m_nDrawables, Factory {m_wnd.Gfx()});
 
-    std::string kappa50_path = findFullPath("kappa50.png");
-
-    const auto s = Surface::FromFile(kappa50_path);
-
-    m_wnd.Gfx().SetProjection( DirectX::XMMatrixPerspectiveLH( 1.0f,3.0f / 4.0f,0.5f,40.0f ) );
+    m_wnd.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
 }
 
 App::~App()
@@ -96,7 +102,7 @@ void App::DoFrame()
     m_wnd.Gfx().ClearBuffer(0.07f, 0.0f, 0.12f);
     for (auto &d : m_drawables)
     {
-        d->Update(dt);
+        d->Update( m_wnd.m_kbd.KeyIsPressed( VK_SPACE ) ? 0.0f : dt );
         d->Draw(m_wnd.Gfx());
     }
     m_wnd.Gfx().EndFrame();

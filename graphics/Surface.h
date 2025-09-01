@@ -60,7 +60,6 @@ public:
     };
 
 public:
-    Surface(unsigned int width, unsigned int height, unsigned int pitch) noexcept;
     Surface(unsigned int width, unsigned int height) noexcept;
     Surface(Surface &&s) noexcept;
     Surface(Surface &s) = delete;
