@@ -7,6 +7,7 @@
 #include "ChiliMath.h"
 #include "Surface.h"
 #include "GDIPlusManager.h"
+#include "Utils.hpp"
 
 GDIPlusManager gdipm;
 
@@ -64,7 +65,9 @@ App::App()
     m_drawables.reserve( m_nDrawables );
     std::generate_n( std::back_inserter( m_drawables ),m_nDrawables,f );
 
-    const auto s = Surface::FromFile( "images\\kappa50.png" );
+    std::string kappa50_path = findFullPath("kappa50.png");
+
+    const auto s = Surface::FromFile(kappa50_path);
 
     m_wnd.Gfx().SetProjection( DirectX::XMMatrixPerspectiveLH( 1.0f,3.0f / 4.0f,0.5f,40.0f ) );
 }

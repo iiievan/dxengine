@@ -22,7 +22,8 @@ using namespace DirectX;
 namespace fs = std::filesystem;
 
 LPCSTR       ConvertWideToANSI(LPCWSTR wideStr);
-std::wstring findFullPath(const std::string &targetFileName, bool searchInHidden = false);
+std::wstring findFullPathw(const std::string &targetFileName, bool searchInHidden = false);
+std::string  findFullPath(const std::string &targetFileName, bool searchInHidden = false);
 std::string  WStringToUTF8(const std::wstring &wstr);
 
 typedef enum

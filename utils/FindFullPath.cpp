@@ -81,9 +81,17 @@ std::wstring findFile(const fs::path &directory, const std::string &targetFileNa
 }
 
 // Рекурсивный поиск файла с выводом всех совпадений
-std::wstring findFullPath(const std::string &targetFileName, bool searchInHidden)
+std::wstring findFullPathw(const std::string &targetFileName, bool searchInHidden)
 {
     fs::path root_dir = findProjectRoot();
 
     return findFile(root_dir, targetFileName, searchInHidden);
+}
+
+std::string findFullPath(const std::string &targetFileName, bool searchInHidden)
+{
+    fs::path root_dir = findProjectRoot();
+    std::wstring foundPath = findFile(root_dir, targetFileName, searchInHidden);
+    std::string result = WStringToUTF8(foundPath);
+    return result;
 }
