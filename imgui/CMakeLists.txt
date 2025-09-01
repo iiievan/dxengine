@@ -1,34 +1,28 @@
 cmake_minimum_required(VERSION 3.24)
-project(graphics
-        VERSION 1.0
+project(imgui
+        VERSION 1.69
         LANGUAGES CXX
         DESCRIPTION
-        "DX graphics library")
+        "ImGUI library")
 set(CMAKE_CXX_STANDARD 17)
 
-set(SOURCE_FILES Graphics.cpp
-                 dxerr.cpp
-        DxgiInfoManager.cpp
-        DxgiInfoManager.h
-        GraphicsThrowMacroses.h
-        Surface.cpp
-        Surface.h
-        GDIPlusManager.cpp
-        GDIPlusManager.h)
+set(SOURCE_FILES imgui.cpp
+                 imgui_demo.cpp
+                 imgui_draw.cpp
+                 imgui_impl_dx11.cpp
+                 imgui_impl_win32.cpp
+                 imgui_widgets.cpp)
 
-set(HEADER_FILES dxerr.h
-                 DXGetErrorString.inl
-                 DXGetErrorDescription.inl
-                 DXTrace.inl)
+set(HEADER_FILES imgui.h
+                 imconfig.h
+                 imgui_impl_dx11.h
+                 imgui_impl_win32.h
+                 imgui_internal.h
+                 imstb_rectpack.h
+                 imstb_textedit.h
+                 imstb_truetype.h)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
-
-target_link_libraries(${PROJECT_NAME}
-                      PRIVATE
-                      window
-                      dxbindraw
-                      imgui
-                      utils)
+add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
 # Добавляем заголовочные файлы в цель, чтобы они были доступны при сборке(видимы в IDE)
 target_sources(${PROJECT_NAME} PRIVATE ${HEADER_FILES})

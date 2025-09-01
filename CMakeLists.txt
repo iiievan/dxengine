@@ -52,6 +52,7 @@ target_link_libraries(${PROJECT_NAME}
                       graphics
                       window
                       dxbindraw
+                      imgui
                       kernel32.lib  # OutputDebugString needs kernel32.lib
                       user32.lib
                       d3d11
@@ -62,6 +63,7 @@ add_subdirectory(utils)
 add_subdirectory(window)
 add_subdirectory(graphics)
 add_subdirectory(dxbindraw)
+add_subdirectory(imgui)
 
 # После добавления всех поддиректорий применяем настройки ко всем библиотекам
 set_common_compile_settings(utils)
