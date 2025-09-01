@@ -24,6 +24,11 @@ set(HEADER_FILES imgui.h
 
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
+target_link_libraries(${PROJECT_NAME}
+                     PRIVATE
+                     window
+                     graphics)
+
 # Добавляем заголовочные файлы в цель, чтобы они были доступны при сборке(видимы в IDE)
 target_sources(${PROJECT_NAME} PRIVATE ${HEADER_FILES})
 

@@ -2,6 +2,7 @@
 #include <sstream>
 #include "../resources/resources.h"
 #include "WindowThrowMacroses.h"
+#include "imgui_impl_win32.h"
 
 #define APP_ICON IDI_CUBE_ICON
 
@@ -114,6 +115,9 @@ Window::Window(int width, int height, const char *name)
     // show window
     ShowWindow(m_hWnd, SW_SHOWDEFAULT);
 
+    // init imgui
+    ImGui_ImplWin32_Init(m_hWnd);
+
     // create graphics object
     m_pGfx = std::make_unique<Graphics>(m_hWnd);
 }
@@ -122,6 +126,7 @@ Window::~Window()
 {
     if (m_hWnd != nullptr)
     {
+        ImGui_ImplWin32_Shutdown();
         DestroyWindow(m_hWnd);
         m_hWnd = nullptr;
     }
@@ -190,6 +195,9 @@ LRESULT CALLBACK Window::HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPAR
 
 LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+        return true;
+
     switch (msg)
     {
         case WM_CLOSE:

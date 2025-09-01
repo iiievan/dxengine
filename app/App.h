@@ -2,6 +2,7 @@
 #define __APP_H
 #include "Window.h"
 #include "ChiliTimer.h"
+#include "ImguiManager.h"
 
 class App
 {
@@ -15,6 +16,7 @@ public:
 private:
     void DoFrame();
 private:
+    ImguiManager m_imgui;
     Window m_wnd;
     ChiliTimer m_timer;
     std::vector<std::unique_ptr<class Box>> boxes;

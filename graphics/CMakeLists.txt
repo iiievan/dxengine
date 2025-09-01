@@ -14,7 +14,9 @@ set(SOURCE_FILES Graphics.cpp
         Surface.cpp
         Surface.h
         GDIPlusManager.cpp
-        GDIPlusManager.h)
+        GDIPlusManager.h
+        ImguiManager.cpp
+        ImguiManager.h)
 
 set(HEADER_FILES dxerr.h
                  DXGetErrorString.inl
