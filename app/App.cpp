@@ -10,8 +10,6 @@
 #include "Surface.h"
 #include "GDIPlusManager.h"
 #include "imgui.h"
-#include "imgui_impl_win32.h"
-#include "imgui_impl_dx11.h"
 
 GDIPlusManager gdipm;
 
@@ -101,26 +99,24 @@ int App::Go()
 
 void App::DoFrame()
 {
-    const auto dt = m_timer.Mark();
-    m_wnd.Gfx().ClearBuffer(0.07f, 0.0f, 0.12f);
+    const auto dt = m_timer.Mark() * m_speed_factor;
+
+    m_wnd.Gfx().BeginFrame(0.07f, 0.0f, 0.12f);
+
     for (auto &d : m_drawables)
     {
-        d->Update( m_wnd.m_kbd.KeyIsPressed( VK_SPACE ) ? 0.0f : dt );
+        d->Update(m_wnd.m_kbd.KeyIsPressed(VK_SPACE) ? 0.0f : dt);
         d->Draw(m_wnd.Gfx());
     }
 
-    // imgui stuff
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
-
-    static bool show_demo_window = true;
-    if( show_demo_window )
+    static char buffer[1024];
+    if (ImGui::Begin("Simulation Speed"))
     {
-        ImGui::ShowDemoWindow( &show_demo_window );
+        ImGui::SliderFloat("Speed factor", &m_speed_factor, 0.0f, 4.0f);
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",1000.0f/ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::InputText("Butts",buffer,sizeof(buffer));
     }
-    ImGui::Render();
-    ImGui_ImplDX11_RenderDrawData( ImGui::GetDrawData() );
+    ImGui::End();
 
     // present
     m_wnd.Gfx().EndFrame();

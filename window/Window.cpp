@@ -198,6 +198,8 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
     if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
         return true;
 
+    const auto imio = ImGui::GetIO();
+
     switch (msg)
     {
         case WM_CLOSE:
@@ -213,19 +215,31 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
         case WM_KEYDOWN:
         // syskey commands need to be handled to track ALT key (VK_MENU) and F10
         case WM_SYSKEYDOWN:
+            if (imio.WantCaptureKeyboard)
+                break;
+
             if (!(lParam & 0x40000000) || m_kbd.AutorepeatIsEnabled())
                 m_kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
             break;
         case WM_KEYUP:
         case WM_SYSKEYUP:
+            if (imio.WantCaptureKeyboard)
+                break;
+
             m_kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
         case WM_CHAR:
+            if (imio.WantCaptureKeyboard)
+                break;
+
             m_kbd.OnChar(static_cast<unsigned char>(wParam));
             break;
         /********* Keyboard handle *********/
         /*********** Mouse handle **********/
         case WM_MOUSEMOVE:
         {
+            if (imio.WantCaptureKeyboard)
+                break;
+
             const POINTS pt = MAKEPOINTS( lParam );
             // if cursor in client region -> log move, and log enter + capture mouse (if not previously in window)
             if (pt.x > 0 && pt.x < m_width && pt.y > 0 && pt.y < m_height )
@@ -252,19 +266,29 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
         }
         case WM_LBUTTONDOWN:
         {
+            SetForegroundWindow(hWnd);
+            if (imio.WantCaptureKeyboard)
+                break;
+
             const POINTS pt = MAKEPOINTS( lParam );
             m_mouse.OnLeftPressed(pt.x,pt.y);
-            SetForegroundWindow(hWnd);
+
             break;
         }
         case WM_RBUTTONDOWN:
         {
+            if (imio.WantCaptureKeyboard)
+                break;
+
             const POINTS pt = MAKEPOINTS( lParam );
             m_mouse.OnRightPressed(pt.x,pt.y);
             break;
         }
         case WM_LBUTTONUP:
         {
+            if (imio.WantCaptureKeyboard)
+                break;
+
             const POINTS pt = MAKEPOINTS( lParam );
             m_mouse.OnLeftReleased(pt.x,pt.y);
 
@@ -277,6 +301,9 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
         }
         case WM_RBUTTONUP:
         {
+            if (imio.WantCaptureKeyboard)
+                break;
+
             const POINTS pt = MAKEPOINTS( lParam );
             m_mouse.OnRightReleased(pt.x,pt.y);
             if (pt.x < 0 || pt.x >= m_width || pt.y < 0 || pt.y >= m_height )
@@ -288,6 +315,9 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
         }
         case WM_MOUSEWHEEL:
         {
+            if (imio.WantCaptureKeyboard)
+                break;
+
             const POINTS pt = MAKEPOINTS( lParam );
             const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
             m_mouse.OnWheelDelta(pt.x,pt.y,delta);

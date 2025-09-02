@@ -64,12 +64,17 @@ public:
     Graphics &operator=(const Graphics &graphics) = delete;
     ~Graphics() = default;
     void EndFrame();
-    void ClearBuffer(float red, float green, float blue) noexcept;
+    void BeginFrame(float red, float green, float blue) noexcept;
     void DrawIndexed( UINT count ) noexcept(!IS_DEBUG);
     void SetProjection( DirectX::FXMMATRIX proj ) noexcept;
     DirectX::XMMATRIX GetProjection() const noexcept;
 
+    void EnableImgui() noexcept { m_imguiEnabled = true; }
+    void DisableImgui() noexcept { m_imguiEnabled = false; }
+    bool IsImguiEnabled() const noexcept { return m_imguiEnabled; }
+
 private:
+    bool m_imguiEnabled {true};
     DirectX::XMMATRIX m_projection;
 #ifndef NDEBUG
     DxgiInfoManager m_infoManager;
