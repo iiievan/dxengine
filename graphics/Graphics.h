@@ -63,27 +63,34 @@ public:
     Graphics(const Graphics &graphics) = delete;
     Graphics &operator=(const Graphics &graphics) = delete;
     ~Graphics() = default;
-    void EndFrame();
+
     void BeginFrame(float red, float green, float blue) noexcept;
+    void EndFrame();
     void DrawIndexed( UINT count ) noexcept(!IS_DEBUG);
     void SetProjection( DirectX::FXMMATRIX proj ) noexcept;
     DirectX::XMMATRIX GetProjection() const noexcept;
+    void SetCamera(DirectX::FXMMATRIX camera) noexcept { m_camera = camera;}
+    DirectX::XMMATRIX GetCamera() const noexcept { return m_camera; }
 
     void EnableImgui() noexcept { m_imguiEnabled = true; }
     void DisableImgui() noexcept { m_imguiEnabled = false; }
     bool IsImguiEnabled() const noexcept { return m_imguiEnabled; }
 
 private:
-    bool m_imguiEnabled {true};
     DirectX::XMMATRIX m_projection;
+    DirectX::XMMATRIX m_camera;
+
 #ifndef NDEBUG
     DxgiInfoManager m_infoManager;
 #endif
+
     Microsoft::WRL::ComPtr<ID3D11Device>           m_pDevice;
     Microsoft::WRL::ComPtr<IDXGISwapChain>         m_pSwapChain;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext>    m_pContext;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_pTargetView;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_pDSView;
+
+    bool m_imguiEnabled {true};
 };
 
 #endif //__GRAPHICS_H

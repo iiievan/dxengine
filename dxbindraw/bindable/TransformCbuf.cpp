@@ -10,7 +10,9 @@ TransformCbuf::TransformCbuf(Graphics &gfx, const Drawable &parent)
 
 void TransformCbuf::Bind(Graphics &gfx) noexcept
 {
-    m_pVcbuf->Update(gfx,DirectX::XMMatrixTranspose(m_parent.GetTransformXM() * gfx.GetProjection()));
+    m_pVcbuf->Update(gfx,DirectX::XMMatrixTranspose(m_parent.GetTransformXM() *
+                                                                gfx.GetCamera() *
+                                                                gfx.GetProjection()));
     m_pVcbuf->Bind(gfx);
 }
 

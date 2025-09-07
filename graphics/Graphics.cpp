@@ -181,6 +181,22 @@ Graphics::Graphics(HWND hWnd)
     ImGui_ImplDX11_Init(m_pDevice.Get(),m_pContext.Get());
 }
 
+
+void Graphics::BeginFrame(float red, float green, float blue) noexcept
+{
+    if (m_imguiEnabled)
+    {
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+    }
+
+    const float color[] = {red, green, blue, 1.0f};
+    m_pContext->ClearRenderTargetView(m_pTargetView.Get(), color);
+    m_pContext->ClearDepthStencilView(m_pDSView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+}
+
+
 void Graphics::EndFrame()
 {
     if (m_imguiEnabled)
@@ -202,20 +218,6 @@ void Graphics::EndFrame()
         else
             throw GFX_EXCEPT(hr);
     }
-}
-
-void Graphics::BeginFrame(float red, float green, float blue) noexcept
-{
-    if (m_imguiEnabled)
-    {
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
-    }
-
-    const float color[] = {red, green, blue, 1.0f};
-    m_pContext->ClearRenderTargetView(m_pTargetView.Get(), color);
-    m_pContext->ClearDepthStencilView(m_pDSView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 }
 
 void Graphics::DrawIndexed(UINT count) noexcept(!IS_DEBUG)

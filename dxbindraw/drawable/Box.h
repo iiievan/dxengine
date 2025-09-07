@@ -20,22 +20,39 @@ public:
     void Update(float dt) noexcept override;
     DirectX::XMMATRIX GetTransformXM() const noexcept override;
 private:
-    // positional
-    float m_r;
-    float m_roll {0.0f};
-    float m_pitch {0.0f};
-    float m_yaw {0.0f};
-    float m_theta;
-    float m_phi;
-    float m_chi;
 
-    // speed(delta/s)
-    float m_droll;      // rotation around model center
-    float m_dpitch;     // rotation around model center
-    float m_dyaw;       // rotation around model center
-    float m_dtheta;     // rotation around world space
-    float m_dphi;       // rotation around world space
-    float m_dchi;       // rotation around world space
+    // Позиционные параметры
+    float m_r;              // Радиус орбиты - расстояние от центра вращения
+    float m_roll {0.0f};    // Угол крена вокруг собственной оси Z
+    float m_pitch {0.0f};   // Угол тангажа вокруг собственной оси X
+    float m_yaw {0.0f};     // Угол рысканья вокруг собственной оси Y
+    // Параметры вращения
+    float m_theta;          // Угол орбитального вращения вокруг мировой оси Y
+    float m_phi;            // Угол орбитального вращения вокруг мировой оси X
+    float m_chi;            // Угол орбитального вращения вокруг мировой оси Z
+
+    /*
+    1. Тангаж (Pitch) - m_pitch
+    Ось вращения: Поперечная ось (X) - проходит через крылья дрона
+    Действие: Наклон вперед/назад
+    Эффект: Дрон летит носом вверх или вниз
+    2. Рысканье (Yaw) - m_yaw
+    Ось вращения: Вертикальная ось (Y) - проходит сверху вниз через центр дрона
+    Действие: Поворот вокруг вертикальной оси
+    Эффект: Дрон поворачивает влево/вправо (меняет курс)
+    3. Крен (Roll) - m_roll
+    Ось вращения: Продольная ось (Z) - проходит от носа к хвосту
+    Действие: Наклон влево/вправо
+    Эффект: Дрон летит влево или вправо
+     */
+
+    // Скорости изменения позиции или вращения (радиан/секунду)
+    float m_droll;      // Скорость вращения вокруг собственной оси Z (крен)
+    float m_dpitch;     // Скорость вращения вокруг собственной оси X (тангаж)
+    float m_dyaw;       // Скорость вращения вокруг собственной оси Y (рысканье)
+    float m_dtheta;     // Скорость орбитального вращения вокруг мировой оси Y
+    float m_dphi;       // Скорость орбитального вращения вокруг мировой оси X
+    float m_dchi;       // Скорость орбитального вращения вокруг мировой оси Z
 
     DirectX::XMFLOAT3X3 m_mt; // model transform
 };

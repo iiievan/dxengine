@@ -16,7 +16,9 @@ set(SOURCE_FILES Graphics.cpp
         GDIPlusManager.cpp
         GDIPlusManager.h
         ImguiManager.cpp
-        ImguiManager.h)
+        ImguiManager.h
+        Camera.cpp
+        Camera.h)
 
 set(HEADER_FILES dxerr.h
                  DXGetErrorString.inl

@@ -3,6 +3,8 @@
 #include "Window.h"
 #include "ChiliTimer.h"
 #include "ImguiManager.h"
+#include "Camera.h"
+
 
 class App
 {
@@ -19,8 +21,11 @@ private:
     ImguiManager m_imgui;
     Window m_wnd;
     ChiliTimer m_timer;
+    Camera m_camera;
+
     std::vector<std::unique_ptr<class Box>> boxes;
     std::vector<std::unique_ptr<class Drawable>> m_drawables;
+
     float m_speed_factor {1.0f};
     static constexpr size_t m_nDrawables {180};
 };
