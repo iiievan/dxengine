@@ -5,15 +5,21 @@ TransformCbuf::TransformCbuf(Graphics &gfx, const Drawable &parent)
     : m_parent(parent)
 {
     if (!m_pVcbuf)
-        m_pVcbuf = std::make_unique<VertexConstantBuffer<DirectX::XMMATRIX>>(gfx);
+        m_pVcbuf = std::make_unique<VertexConstantBuffer<Transforms>>(gfx);
 }
 
 void TransformCbuf::Bind(Graphics &gfx) noexcept
 {
-    m_pVcbuf->Update(gfx,DirectX::XMMatrixTranspose(m_parent.GetTransformXM() *
-                                                                gfx.GetCamera() *
-                                                                gfx.GetProjection()));
+    const auto model = m_parent.GetTransformXM();
+
+    const Transforms tf =
+    {
+        DirectX::XMMatrixTranspose(model),
+        DirectX::XMMatrixTranspose(model * gfx.GetCamera() * gfx.GetProjection())
+    };
+
+    m_pVcbuf->Update(gfx,tf);
     m_pVcbuf->Bind(gfx);
 }
 
-std::unique_ptr<VertexConstantBuffer<DirectX::XMMATRIX>> TransformCbuf::m_pVcbuf;
+std::unique_ptr<VertexConstantBuffer<TransformCbuf::Transforms>> TransformCbuf::m_pVcbuf;

@@ -145,7 +145,7 @@ Graphics::Graphics(HWND hWnd)
 
     // create z-buffer(depth stencil) texture
     wrl::ComPtr<ID3D11Texture2D> pDepthStencil;
-    D3D11_TEXTURE2D_DESC descDepth = {};
+    D3D11_TEXTURE2D_DESC         descDepth = {};
     descDepth.Width = 800u;
     descDepth.Height = 600u;
     descDepth.MipLevels = 1u;
@@ -157,15 +157,15 @@ Graphics::Graphics(HWND hWnd)
     descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
     GFX_THROW_INFO(m_pDevice->CreateTexture2D(&descDepth, nullptr, &pDepthStencil));
 
-    //create view of depth stencil texture
+    // create view of depth stencil texture
     D3D11_DEPTH_STENCIL_VIEW_DESC dsvd = {};
     dsvd.Format = DXGI_FORMAT_D32_FLOAT;
     dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     dsvd.Texture2D.MipSlice = 0u;
-    GFX_THROW_INFO(m_pDevice->CreateDepthStencilView(pDepthStencil.Get(), &dsvd,&m_pDSView));
+    GFX_THROW_INFO(m_pDevice->CreateDepthStencilView(pDepthStencil.Get(), &dsvd, &m_pDSView));
 
     // bind depth stecil view to Output Merger
-    m_pContext->OMSetRenderTargets(1u,m_pTargetView.GetAddressOf(),m_pDSView.Get());
+    m_pContext->OMSetRenderTargets(1u, m_pTargetView.GetAddressOf(), m_pDSView.Get());
 
     // configure viewport
     D3D11_VIEWPORT vp;
@@ -175,12 +175,16 @@ Graphics::Graphics(HWND hWnd)
     vp.MaxDepth = 1.0f;
     vp.TopLeftX = 0.0f;
     vp.TopLeftY = 0.0f;
-    m_pContext->RSSetViewports( 1u,&vp );
+    m_pContext->RSSetViewports(1u, &vp);
 
     // init imgui d3d impl
-    ImGui_ImplDX11_Init(m_pDevice.Get(),m_pContext.Get());
+    ImGui_ImplDX11_Init(m_pDevice.Get(), m_pContext.Get());
 }
 
+Graphics::~Graphics()
+{
+    ImGui_ImplDX11_Shutdown();
+}
 
 void Graphics::BeginFrame(float red, float green, float blue) noexcept
 {

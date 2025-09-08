@@ -62,7 +62,7 @@ public:
     Graphics(HWND hWnd);
     Graphics(const Graphics &graphics) = delete;
     Graphics &operator=(const Graphics &graphics) = delete;
-    ~Graphics() = default;
+    ~Graphics();
 
     void BeginFrame(float red, float green, float blue) noexcept;
     void EndFrame();

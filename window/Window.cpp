@@ -198,7 +198,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
     if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
         return true;
 
-    const auto imio = ImGui::GetIO();
+    const auto& imio = ImGui::GetIO();
 
     switch (msg)
     {

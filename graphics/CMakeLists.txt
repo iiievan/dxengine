@@ -8,19 +8,21 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES Graphics.cpp
                  dxerr.cpp
-        DxgiInfoManager.cpp
-        DxgiInfoManager.h
-        GraphicsThrowMacroses.h
-        Surface.cpp
-        Surface.h
-        GDIPlusManager.cpp
-        GDIPlusManager.h
-        ImguiManager.cpp
-        ImguiManager.h
-        Camera.cpp
-        Camera.h)
+                 DxgiInfoManager.cpp
+                 Surface.cpp
+                 GDIPlusManager.cpp
+                 ImguiManager.cpp
+                 Camera.cpp
+                 PointLight.cpp)
 
-set(HEADER_FILES dxerr.h
+set(HEADER_FILES GDIPlusManager.h
+                 DxgiInfoManager.h
+                 Surface.h
+                 ImguiManager.h
+                 GraphicsThrowMacroses.h
+                 PointLight.h
+                 Camera.h
+                 dxerr.h
                  DXGetErrorString.inl
                  DXGetErrorDescription.inl
                  DXTrace.inl)

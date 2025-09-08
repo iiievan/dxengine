@@ -50,8 +50,6 @@ set(SOURCE_FILES
         geometry/Plane.h
         geometry/Prism.h
         geometry/Sphere.h
-        drawable/Melon.cpp
-        drawable/Melon.h
         drawable/Pyramid.cpp
         drawable/Pyramid.h
         bindable/Texture.cpp
@@ -62,6 +60,8 @@ set(SOURCE_FILES
         drawable/Sheet.h
         drawable/SkinnedBox.cpp
         drawable/SkinnedBox.h
+        drawable/SolidSphere.cpp
+        drawable/SolidSphere.h
 )
 
 set(HEADER_FILES

@@ -70,7 +70,7 @@ template<typename C>
 class PixelConstantBuffer : public ConstantBuffer<C>
 {
     using ConstantBuffer<C>::m_pConstantBuffer;
-    using Bindable::GetContext;
+    using ConstantBuffer<C>::GetContext;
 public:
     using ConstantBuffer<C>::ConstantBuffer;
 

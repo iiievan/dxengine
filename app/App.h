@@ -4,6 +4,7 @@
 #include "ChiliTimer.h"
 #include "ImguiManager.h"
 #include "Camera.h"
+#include "PointLight.h"
 
 
 class App
@@ -22,6 +23,7 @@ private:
     Window m_wnd;
     ChiliTimer m_timer;
     Camera m_camera;
+    PointLight m_pointlight;
 
     std::vector<std::unique_ptr<class Box>> boxes;
     std::vector<std::unique_ptr<class Drawable>> m_drawables;
