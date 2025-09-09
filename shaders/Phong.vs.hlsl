@@ -1,3 +1,6 @@
+#pragma enable_d3d11_debug_symbols
+#pragma debug
+
 cbuffer Cbuf
 {
     matrix model;            // world matrix for model only for lightning calculation normals and etc.

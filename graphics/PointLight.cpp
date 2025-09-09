@@ -35,4 +35,5 @@ void PointLight::Draw(Graphics &gfx) const noexcept(!true)
 void PointLight::Bind(Graphics &gfx) const noexcept
 {
     m_cbuf.Update(gfx, PointLightCbuf{m_pos});
+    m_cbuf.Bind(gfx);
 }

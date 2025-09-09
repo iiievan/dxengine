@@ -103,6 +103,8 @@ function(compile_hlsl_shaders)
                 /nologo
                 /T ${SHADER_MODEL}
                 /E ${ENTRY_POINT}
+                /Zi  # ←  генерация отладочной информации
+                /Od  # ←  отключение оптимизаций
                 /Fo "${OUTPUT_FILE}"
                 "${HLSL_FILE}"
                 DEPENDS ${HLSL_FILE}
