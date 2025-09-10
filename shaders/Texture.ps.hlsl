@@ -1,6 +1,3 @@
-#pragma enable_d3d11_debug_symbols
-#pragma debug
-
 Texture2D tex;        // Данные текстуры
 SamplerState smpl;    // Правила доступа
 
