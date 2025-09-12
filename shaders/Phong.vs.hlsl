@@ -1,6 +1,6 @@
 cbuffer Cbuf
 {
-    matrix model;            // world matrix for model only for lightning calculation normals and etc.
+    matrix modelView;            // world matrix for model only for lightning calculation normals and etc.
     matrix modelViewProj;
 };
 
@@ -14,8 +14,8 @@ struct VSOut
 VSOut VSMain(float3 pos : Position, float3 n : Normal)
 {
     VSOut vso;
-    vso.worldPos = (float3)mul(float4(pos, 1.0f), model);  // transform model only in world space from local for normals for light calculation
-    vso.normal = mul(n,(float3x3)model);
+    vso.worldPos = (float3)mul(float4(pos, 1.0f), modelView);  // transform model only in world space from local for normals for light calculation
+    vso.normal = mul(n,(float3x3)modelView);
     vso.pos = mul(float4(pos, 1.0f), modelViewProj);
     return vso;
 }

@@ -61,8 +61,10 @@ Box::Box(
 
     struct PSMaterialConstant
     {
-        dx::XMFLOAT3 color;
-        float padding;
+        alignas(16)DirectX::XMFLOAT3 color;
+        float specularIntencity = 0.6f;
+        float specularPower = 30.0f;
+        float padding[2];
     } colorConst;
     colorConst.color = material;
     AddBind(std::make_unique<PixelConstantBuffer<PSMaterialConstant>>(gfx,colorConst,1u));
