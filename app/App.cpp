@@ -55,7 +55,7 @@ App::App()
         std::uniform_real_distribution<float> rdist{ 6.0f,20.0f };
         std::uniform_real_distribution<float> bdist{ 0.4f,3.0f };
         std::uniform_real_distribution<float> cdist{ 0.0f,1.0f };
-        std::uniform_int_distribution<int> tdist{ 3,30 };
+        std::uniform_int_distribution<int> tdist{ 16,30 };
     };
 
     m_drawables.reserve(m_nDrawables);

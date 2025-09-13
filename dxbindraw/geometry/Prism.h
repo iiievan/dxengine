@@ -185,22 +185,22 @@ public:
         // Ближнее основание
         for (unsigned short iLong = 0; iLong < long_div; iLong++)
         {
-            const auto i = iLong * 2;
-            const auto mod = long_div * 2;
+            const auto i = iLong;
+            const auto mod = long_div;
             // near
             indices.push_back(i + iBaseNear);               // Текущая вершина основания
             indices.push_back(iCenterNear);                     // Центр
-            indices.push_back((i + 2) % mod + iBaseNear);   // Следующая вершина
+            indices.push_back((i + 1) % mod + iBaseNear);   // Следующая вершина
         }
         // Дальнее основание (обратный порядок для правильной ориентации)
         for (unsigned short iLong = 0; iLong < long_div; iLong++)
         {
-            const auto i = iLong * 2;
-            const auto mod = long_div * 2;
+            const auto i = iLong;
+            const auto mod = long_div;
             // far
             indices.push_back(iCenterFar);
-            indices.push_back(i + 1 + iBaseFar);
-            indices.push_back((i + 3) % mod + iBaseFar);
+            indices.push_back(i + iBaseFar);
+            indices.push_back((i + 1) % mod + iBaseFar);
         }
         // Боковая поверхность (квады из двух треугольников):
         for (unsigned short iLong = 0; iLong < long_div; iLong++)

@@ -52,7 +52,7 @@ Cylinder::Cylinder(
 
         struct PSMaterialConstant
         {
-            alignas(16) dx::XMFLOAT3A colors[6] = {
+            dx::XMFLOAT3A colors[6] = {
                 {1.0f,0.0f,0.0f},
                 {0.0f,1.0f,0.0f},
                 {0.0f,0.0f,1.0f},

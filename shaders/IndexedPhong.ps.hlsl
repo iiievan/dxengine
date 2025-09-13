@@ -11,9 +11,10 @@ cbuffer LightCBuf
 
 cbuffer ObjectCBuf
 {
-  float3 materialColors[6];
-  float specularIntensity;
-  float specularPower;
+  float4 materialColors[6]; // float4 is for aligned(16) float3  type in cylinder struct (dx::XMFLOAT3A)
+   //float padding;         // or  if you leave it to float3 use these padding for correct values of specularIntensity and specularPower
+   float specularIntensity;
+   float specularPower;
 };
 
 
@@ -33,5 +34,5 @@ float4 PSMain( float3 worldPos : Position,float3 n : Normal,uint tid : SV_Primit
   // calculate specular intensity based on angle between viewing vector and reflection vector, narrow with power function
   const float3 specular = att * (diffuseColor * diffuseIntensity) * specularIntensity * pow( max( 0.0f,dot( normalize( -r ),normalize( worldPos ) ) ),specularPower );
   // final color
-  return float4(saturate( (diffuse + ambient + specular) * materialColors[tid % 6] ),1.0f);
+  return float4(saturate( (diffuse + ambient + specular) * materialColors[(tid / 2) % 6] ),1.0f);
 }
