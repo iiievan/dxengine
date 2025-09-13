@@ -10,8 +10,8 @@ class TransformCbuf : public Bindable
 private:
     struct Transforms
     {
+        DirectX::XMMATRIX modelView;
         DirectX::XMMATRIX modelViewProj;
-        DirectX::XMMATRIX model;
     };
 public:
     TransformCbuf(Graphics &gfx, const Drawable &parent, UINT slot = 0u);

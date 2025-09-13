@@ -62,6 +62,9 @@ set(SOURCE_FILES
         drawable/SkinnedBox.h
         drawable/SolidSphere.cpp
         drawable/SolidSphere.h
+        drawable/TestObject.h
+        drawable/Cylinder.cpp
+        drawable/Cylinder.h
 )
 
 set(HEADER_FILES

@@ -1,26 +1,21 @@
-#ifndef __BOX_H
-#define __BOX_H
-
-#include <random>
-
+#ifndef __CYLINDER_H
+#define __CYLINDER_H
 #include "TestObject.h"
 
 
-class Box : public TestObject<Box>
+class Cylinder : public TestObject<Cylinder>
 {
 public:
-    Box(Graphics &gfx,
+    Cylinder(Graphics &gfx,
         std::mt19937 &rng,
         std::uniform_real_distribution<float> &adist,
         std::uniform_real_distribution<float> &ddist,
         std::uniform_real_distribution<float> &odist,
         std::uniform_real_distribution<float> &rdist,
         std::uniform_real_distribution<float> &bdist,
-        DirectX::XMFLOAT3 material);
-
-    DirectX::XMMATRIX GetTransformXM() const noexcept override;
-private:
-    DirectX::XMFLOAT3X3 m_mt; // model transform
+        std::uniform_int_distribution<int> &tdist);
 };
 
-#endif //__BOX_H
+
+
+#endif //__CYLINDER_H
