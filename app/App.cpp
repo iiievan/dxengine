@@ -1,6 +1,7 @@
 #include "App.h"
 #include "drawable/Box.h"
 #include "drawable/Cylinder.h"
+#include "drawable/Pyramid.h"
 #include <memory>
 #include <algorithm>
 #include "ChiliMath.h"
@@ -31,15 +32,11 @@ App::App()
             switch( sdist( rng ) )
             {
                 case 0:
-                    return std::make_unique<Box>(
-                        gfx,rng,adist,ddist,
-                        odist,rdist,bdist,mat
-                    );
+                    return std::make_unique<Box>(gfx, rng, adist, ddist, odist, rdist, bdist, mat);
                 case 1:
-                    return std::make_unique<Cylinder>(
-                        gfx,rng,adist,ddist,odist,
-                        rdist,bdist,tdist
-                    );
+                    return std::make_unique<Cylinder>(gfx, rng, adist, ddist, odist, rdist, bdist, tdist);
+                case 2:
+                    return std::make_unique<Pyramid>(gfx, rng, adist, ddist, odist, rdist, tdist);
                 default:
                     assert( false && "impossible drawable option in factory" );
                     return {};
@@ -48,14 +45,14 @@ App::App()
     private:
         Graphics& gfx;
         std::mt19937 rng{ std::random_device{}() };
-        std::uniform_int_distribution<int> sdist{ 0,1 };
+        std::uniform_int_distribution<int> sdist{ 0,2 };
         std::uniform_real_distribution<float> adist{ 0.0f,PI * 2.0f };
         std::uniform_real_distribution<float> ddist{ 0.0f,PI * 0.5f };
         std::uniform_real_distribution<float> odist{ 0.0f,PI * 0.08f };
         std::uniform_real_distribution<float> rdist{ 6.0f,20.0f };
         std::uniform_real_distribution<float> bdist{ 0.4f,3.0f };
         std::uniform_real_distribution<float> cdist{ 0.0f,1.0f };
-        std::uniform_int_distribution<int> tdist{ 16,30 };
+        std::uniform_int_distribution<int> tdist{ 4,30 };
     };
 
     m_drawables.reserve(m_nDrawables);

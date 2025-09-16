@@ -56,10 +56,76 @@ public:
     }
 
     template<class V>
+    static IndexedTriangleList<V> MakeTesselatedIndependentFaces( int long_div )
+    {
+        namespace dx = DirectX;
+        assert( long_div >= 3 );
+
+        const auto base = dx::XMVectorSet( 1.0f,0.0f,-1.0f,0.0f );
+        const float longitude_angle = 2.0f * PI / long_div;
+
+        std::vector<V> vertices;
+
+        // cone vertices
+        const auto iCone = (unsigned short)vertices.size();
+        for( int iLong = 0; iLong < long_div; iLong++ )
+        {
+            const float thetas[] = {
+                longitude_angle * iLong,
+                longitude_angle * (((iLong + 1) == long_div) ? 0 : (iLong + 1))
+            };
+            vertices.emplace_back();
+            vertices.back().pos = { 0.0f,0.0f,1.0f };
+            for( auto theta : thetas )
+            {
+                vertices.emplace_back();
+                const auto v = dx::XMVector3Transform(
+                    base,
+                    dx::XMMatrixRotationZ( theta )
+                );
+                dx::XMStoreFloat3( &vertices.back().pos,v );
+            }
+        }
+        // base vertices
+        const auto iBaseCenter = (unsigned short)vertices.size();
+        vertices.emplace_back();
+        vertices.back().pos = { 0.0f,0.0f,-1.0f };
+        const auto iBaseEdge = (unsigned short)vertices.size();
+        for( int iLong = 0; iLong < long_div; iLong++ )
+        {
+            vertices.emplace_back();
+            auto v = dx::XMVector3Transform(
+                base,
+                dx::XMMatrixRotationZ( longitude_angle * iLong )
+            );
+            dx::XMStoreFloat3( &vertices.back().pos,v );
+        }
+
+        std::vector<unsigned short> indices;
+
+        // cone indices
+        for( unsigned short i = 0; i < long_div * 3; i++ )
+        {
+            indices.push_back( i + iCone );
+        }
+        // base indices
+        for( unsigned short iLong = 0; iLong < long_div; iLong++ )
+        {
+            indices.push_back( iBaseCenter );
+            indices.push_back( (iLong + 1) % long_div + iBaseEdge );
+            indices.push_back( iLong + iBaseEdge );
+        }
+
+        return { std::move( vertices ),std::move( indices ) };
+    }
+
+    template<class V>
     static IndexedTriangleList<V> Make()
     {
         return MakeTesselated<V>( 24 );
     }
 };
+
+
 
 #endif //__CONE_H
