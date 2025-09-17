@@ -129,6 +129,39 @@ public:
             }
         };
     }
+
+    template<class V>
+    static IndexedTriangleList<V> MakeIndependentTextured()
+    {
+        auto itl = MakeIndependent<V>();
+
+        itl.vertices[0].uv = { 0.0f,0.0f };
+        itl.vertices[1].uv = { 1.0f,0.0f };
+        itl.vertices[2].uv = { 0.0f,1.0f };
+        itl.vertices[3].uv = { 1.0f,1.0f };
+        itl.vertices[4].uv = { 0.0f,0.0f };
+        itl.vertices[5].uv = { 1.0f,0.0f };
+        itl.vertices[6].uv = { 0.0f,1.0f };
+        itl.vertices[7].uv = { 1.0f,1.0f };
+        itl.vertices[8].uv =  { 0.0f,0.0f };
+        itl.vertices[9].uv =  { 1.0f,0.0f };
+        itl.vertices[10].uv = { 0.0f,1.0f };
+        itl.vertices[11].uv = { 1.0f,1.0f };
+        itl.vertices[12].uv = { 0.0f,0.0f };
+        itl.vertices[13].uv = { 1.0f,0.0f };
+        itl.vertices[14].uv = { 0.0f,1.0f };
+        itl.vertices[15].uv = { 1.0f,1.0f };
+        itl.vertices[16].uv = { 0.0f,0.0f };
+        itl.vertices[17].uv = { 1.0f,0.0f };
+        itl.vertices[18].uv = { 0.0f,1.0f };
+        itl.vertices[19].uv = { 1.0f,1.0f };
+        itl.vertices[20].uv = { 0.0f,0.0f };
+        itl.vertices[21].uv = { 1.0f,0.0f };
+        itl.vertices[22].uv = { 0.0f,1.0f };
+        itl.vertices[23].uv = { 1.0f,1.0f };
+
+        return itl;
+    }
 };
 
 #endif //__CUBE_H
