@@ -4,6 +4,7 @@
 #include <random>
 
 #include "TestObject.h"
+#include "bindable/ConstantBuffer.h"
 
 
 class Box : public TestObject<Box>
@@ -19,7 +20,21 @@ public:
         DirectX::XMFLOAT3 material);
 
     DirectX::XMMATRIX GetTransformXM() const noexcept override;
+    void SpawnControlWindow(int id, Graphics& gfx) noexcept;
+
 private:
+
+    void SyncMaterial(Graphics &gfx) noexcept(!IS_DEBUG);
+
+    struct PSMaterialConstant
+    {
+        DirectX::XMFLOAT3 color;
+        float specularIntencity = 0.6f;
+        float specularPower = 30.0f;
+        float padding[3];
+    } m_MaterialConstants;
+    using m_MaterialCbuf = PixelConstantBuffer<PSMaterialConstant>;
+
     DirectX::XMFLOAT3X3 m_mt; // model transform
 };
 

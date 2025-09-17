@@ -5,6 +5,7 @@
 #include "ImguiManager.h"
 #include "Camera.h"
 #include "PointLight.h"
+#include <set>
 
 
 class App
@@ -25,11 +26,13 @@ private:
     Camera m_camera;
     PointLight m_pointlight;
 
-    std::vector<std::unique_ptr<class Box>> boxes;
     std::vector<std::unique_ptr<class Drawable>> m_drawables;
+    std::vector<class Box *>                     m_boxes;
 
     float m_speed_factor {1.0f};
     static constexpr size_t m_nDrawables {180};
+    std::optional<int> m_comboIndex;
+    std::set<int> m_boxControlIds;
 };
 
 #endif // __APP_H
