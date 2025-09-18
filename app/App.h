@@ -19,6 +19,10 @@ public:
 
 private:
     void DoFrame();
+    void SpawnSimulationWindow() noexcept;
+    void SpawnBoxWindowManagerWindow() noexcept;
+    void SpawnBoxWindows() noexcept;
+
 private:
     ImguiManager m_imgui;
     Window m_wnd;
@@ -31,7 +35,7 @@ private:
 
     float m_speed_factor {1.0f};
     static constexpr size_t m_nDrawables {180};
-    std::optional<int> m_comboIndex;
+    std::optional<int> m_comboBoxIndex;
     std::set<int> m_boxControlIds;
 };
 

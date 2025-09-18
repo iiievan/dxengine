@@ -104,52 +104,58 @@ void App::DoFrame()
     }
     m_pointlight.Draw(m_wnd.Gfx());
 
-    // imgui window to control simulation speed
-    if (ImGui::Begin("Simulation Speed"))
-    {
-        ImGui::SliderFloat("Speed factor", &m_speed_factor, 0.0f, 6.0f,"%.4f",3.2f);
-        ImGui::Text(" %.3f ms/frame (%.1f FPS)",1000.0f/ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        ImGui::Text("Status: %s",m_wnd.m_kbd.KeyIsPressed(VK_SPACE) ? "PAUSED" : "RUNNING (hold spacebar to pause)");
-    }
-    ImGui::End();
-
-    // imgui window to control camera and light
+    // imgui windows
+    SpawnSimulationWindow();
     m_camera.SpawnControlWindow();
     m_pointlight.SpawnControlWindow();
-
-    // imgui window to adjust boxes instance parameters
-    if (ImGui::Begin("Boxes"))
-    {
-        using namespace std::string_literals;
-        const auto preview = m_comboIndex ? std::to_string(*m_comboIndex) : "Choose a box..."s;
-        if (ImGui::BeginCombo("Box Number", preview.c_str()))
-        {
-            for (int i = 0; i < m_boxes.size(); i++)
-            {
-                const bool selected = m_comboIndex && (*m_comboIndex == i);
-                if (ImGui::Selectable(std::to_string(i).c_str(), selected))
-                    m_comboIndex = i;
-
-                if (selected)
-                    ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
-
-        if (ImGui::Button("Spawn Control Window") && m_comboIndex)
-        {
-            m_boxControlIds.insert(*m_comboIndex);
-            m_comboIndex.reset();
-        }
-    }
-    ImGui::End();
-
-    //imgui box attribute control windows
-    for (auto id : m_boxControlIds)
-    {
-        m_boxes[id]->SpawnControlWindow(id,m_wnd.Gfx());
-    }
+    SpawnBoxWindowManagerWindow();
+    SpawnBoxWindows();
 
     // present
     m_wnd.Gfx().EndFrame();
+}
+void App::SpawnSimulationWindow() noexcept
+{
+    if( ImGui::Begin( "Simulation Speed" ) )
+    {
+        ImGui::SliderFloat( "Speed Factor",&m_speed_factor,0.0f,6.0f,"%.4f",3.2f );
+        ImGui::Text( "%.3f ms/frame (%.1f FPS)",1000.0f / ImGui::GetIO().Framerate,ImGui::GetIO().Framerate );
+        ImGui::Text( "Status: %s",m_wnd.m_kbd.KeyIsPressed( VK_SPACE ) ? "PAUSED" : "RUNNING (hold spacebar to pause)" );
+    }
+    ImGui::End();
+}
+
+void App::SpawnBoxWindowManagerWindow() noexcept
+{
+    if( ImGui::Begin( "Boxes" ) )
+    {
+        using namespace std::string_literals;
+        const auto preview = m_comboBoxIndex ? std::to_string( *m_comboBoxIndex ) : "Choose a box..."s;
+        if( ImGui::BeginCombo( "Box Number",preview.c_str() ) )
+        {
+            for( int i = 0; i < m_boxes.size(); i++ )
+            {
+                const bool selected = m_comboBoxIndex && (*m_comboBoxIndex == i);
+                if( ImGui::Selectable( std::to_string( i ).c_str(),selected ) )
+                    m_comboBoxIndex = i;
+
+                if( selected )
+                     ImGui::SetItemDefaultFocus();
+
+            }
+            ImGui::EndCombo();
+        }
+        if( ImGui::Button( "Spawn Control Window" ) && m_comboBoxIndex )
+        {
+            m_boxControlIds.insert( *m_comboBoxIndex );
+            m_comboBoxIndex.reset();
+        }
+    }
+    ImGui::End();
+}
+
+void App::SpawnBoxWindows() noexcept
+{
+    for( auto id : m_boxControlIds )
+        m_boxes[id]->SpawnControlWindow( id,m_wnd.Gfx() );
 }
