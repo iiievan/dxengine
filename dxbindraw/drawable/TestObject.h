@@ -2,6 +2,7 @@
 #define __TESTOBJECT_H
 
 #include "DrawableBase.h"
+#include "ChiliMath.h"
 
 template<class T>
 class TestObject : public DrawableBase<T>
@@ -28,12 +29,12 @@ public:
 
     void Update(float dt) noexcept
     {
-        m_roll += m_droll * dt;
-        m_pitch += m_dpitch * dt;
-        m_yaw += m_dyaw * dt;
-        m_theta += m_dtheta * dt;
-        m_phi += m_dphi * dt;
-        m_chi += m_dchi * dt;
+        m_roll = wrap_angle(m_roll + m_droll * dt);
+        m_pitch = wrap_angle(m_pitch + m_dpitch * dt);
+        m_yaw = wrap_angle(m_yaw + m_dyaw * dt);
+        m_theta = wrap_angle(m_theta + m_dtheta * dt);
+        m_phi = wrap_angle(m_phi + m_dphi * dt);
+        m_chi = wrap_angle(m_chi + m_dchi * dt);
     }
 
     DirectX::XMMATRIX GetTransformXM() const noexcept
@@ -68,7 +69,7 @@ public:
         }
     }
 
-private:
+protected:
     // Позиционные параметры
     float m_r;              // Радиус орбиты - расстояние от центра вращения
     float m_roll {0.0f};    // Угол крена вокруг собственной оси Z
