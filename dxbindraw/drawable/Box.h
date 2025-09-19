@@ -20,7 +20,7 @@ public:
         DirectX::XMFLOAT3 material);
 
     DirectX::XMMATRIX GetTransformXM() const noexcept override;
-    void SpawnControlWindow(int id, Graphics& gfx) noexcept;
+    bool SpawnControlWindow(int id, Graphics& gfx) noexcept;    // return false if findow is closed
 
 private:
 

@@ -156,6 +156,11 @@ void App::SpawnBoxWindowManagerWindow() noexcept
 
 void App::SpawnBoxWindows() noexcept
 {
-    for( auto id : m_boxControlIds )
-        m_boxes[id]->SpawnControlWindow( id,m_wnd.Gfx() );
+    for( auto i = m_boxControlIds.begin(); i != m_boxControlIds.end(); )
+    {
+        if( !m_boxes[*i]->SpawnControlWindow( *i,m_wnd.Gfx() ) )
+            i = m_boxControlIds.erase( i );
+        else
+            i++;
+    }
 }

@@ -69,7 +69,8 @@ void Box::SpawnControlWindow(int id, Graphics &gfx) noexcept
     using namespace std::string_literals;
 
     bool dirty = false;
-    if (ImGui::Begin(("Box"s + std::to_string(id)).c_str()))
+    bool open = true;
+    if (ImGui::Begin(("Box"s + std::to_string(id)).c_str(), &open))
     {
         const auto cd = ImGui::ColorEdit3("Material Color", &m_MaterialConstants.color.x);
         const auto sid = ImGui::SliderFloat("Specular Intensity", &m_MaterialConstants.specularIntencity, 0.05f, 4.0f, "%.2f", 2);
@@ -80,6 +81,8 @@ void Box::SpawnControlWindow(int id, Graphics &gfx) noexcept
 
     if (dirty)
         SyncMaterial(gfx);
+
+    return open;
 }
 
 void Box::SyncMaterial(Graphics &gfx) noexcept(!true)
