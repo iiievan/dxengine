@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 project(assimp
-        VERSION 4.1.0   # tag 4.1.0 commit 80799bdbf90ce626475635815ee18537718a05b1  (11.12.2017)
+        VERSION 5.2.5   # tag 5.2.5 commit 9519a62dd20799c5493c638d1ef5a6f484e5faf1  (8.09.2022)
         LANGUAGES CXX
         DESCRIPTION
         "Open Asset Import Library")
@@ -18,7 +18,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 if(WIN32)
     # Добавляем .lib файл для линковки
     target_link_libraries(${PROJECT_NAME} INTERFACE
-            ${CMAKE_CURRENT_SOURCE_DIR}/lib/assimp-vc140-mt.lib
+            ${CMAKE_CURRENT_SOURCE_DIR}/lib/assimp-vc143-mt.lib
     )
 
     target_compile_definitions(${PROJECT_NAME} INTERFACE

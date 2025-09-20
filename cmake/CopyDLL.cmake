@@ -16,9 +16,5 @@ endfunction()
 
 # Функция специально для assimp
 function(copy_assimp_dll target_name)
-    copy_dll(${target_name} "${CMAKE_CURRENT_SOURCE_DIR}/assimp/lib/assimp-vc140-mt.dll")
-
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/assimp/lib/zlib1.dll")
-        copy_dll(${target_name} "${CMAKE_CURRENT_SOURCE_DIR}/assimp/lib/zlib1.dll")
-    endif()
+    copy_dll(${target_name} "${CMAKE_CURRENT_SOURCE_DIR}/assimp/lib/assimp-vc143-mt.dll")
 endfunction()
