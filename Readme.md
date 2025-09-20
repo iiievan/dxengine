@@ -1,6 +1,8 @@
 
 
-# Training project of the game engine for DirectX11.
+# Training project of the game engine for DirectX11 and CMAKE. 
+# MSVC 19.36.32532.0
+# HLSL:Windows Kits/10/bin/10.0.26100.0/x64/fxc.exe
 
 1. Assembly via Cmake + MSVS. If you really want to assemble and debug under Visual Studio. You will need to install Windows 10 SDK and run follow:
 ```
@@ -49,5 +51,5 @@ In folders build/lib and build/bin you need assimp-vc143-mt.lib and assimp-vc143
 Copy all contents from /include/assimp folder of repository
 to you project assimp/include/assimp and assimp-vc143-mt.lib,assimp-vc143-mt.dll to assimp/lib  
 In folder build/include/assimp you need file config.h to replace original file "assimp/include/assimp/config.h.in"  
-in your repository. 
+in your project. 
 
