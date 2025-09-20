@@ -64,7 +64,7 @@ DirectX::XMMATRIX Box::GetTransformXM() const noexcept
     return dx::XMLoadFloat3x3(&m_mt) * TestObject::GetTransformXM();
 }
 
-void Box::SpawnControlWindow(int id, Graphics &gfx) noexcept
+bool Box::SpawnControlWindow(int id, Graphics &gfx) noexcept
 {
     using namespace std::string_literals;
 
