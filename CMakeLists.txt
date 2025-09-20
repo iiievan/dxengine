@@ -18,6 +18,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(ConfigureResources)
 configure_application_resources(${PROJECT_NAME})
 
+# Подключаем модуль для копирования DLL Assimp
+include(CopyDLL)
+add_subdirectory(assimp)  # ← ДОЛЖНО БЫТЬ ПЕРЕД add_executable!
+
 add_executable(${PROJECT_NAME} WIN32 ${RC_FILE} app/WinMain.cpp
                                                 app/App.cpp
                                                 app/ChiliTimer.cpp)
@@ -53,11 +57,15 @@ target_link_libraries(${PROJECT_NAME}
                       window
                       dxbindraw
                       imgui
+                      assimp
                       kernel32.lib  # OutputDebugString needs kernel32.lib
                       user32.lib
                       d3d11
                       d3dcompiler
                       gdiplus)
+
+# Копируем DLL assimp в выходную директорию
+copy_assimp_dll(${PROJECT_NAME})
 
 add_subdirectory(utils)
 add_subdirectory(window)

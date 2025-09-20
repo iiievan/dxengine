@@ -9,6 +9,9 @@
 #include "drawable/Pyramid.h"
 #include "drawable/SkinnedBox.h"
 #include "imgui.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 namespace dx = DirectX;
 GDIPlusManager gdipm;
@@ -19,6 +22,8 @@ App::App()
 :m_wnd(800, 600, "Donkey Fart Box"),
  m_pointlight(m_wnd.Gfx())
 {
+    Assimp::Importer imp;
+    auto model = imp.ReadFile("models\\suzanne.obj", aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
     class Factory
     {
     public:
