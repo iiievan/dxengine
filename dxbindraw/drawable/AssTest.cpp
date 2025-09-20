@@ -33,30 +33,12 @@ AssTest::AssTest(
 
         std::vector<Vertex> vertices;
         vertices.reserve(pMesh->mNumVertices);
-        for (unsigned int i = 0; i < pMesh->mNumVertices; i++)
+        for( unsigned int i = 0; i < pMesh->mNumVertices; i++ )
         {
-            Vertex v;
-            v.pos = {
-                (float)pMesh->mVertices[i].x * scale,
-                (float)pMesh->mVertices[i].y * scale,
-                (float)pMesh->mVertices[i].z * scale
-            };
-
-            // Проверка на наличие нормалей
-            if (pMesh->mNormals)
-            {
-                v.n = {
-                    (float)pMesh->mNormals[i].x,
-                    (float)pMesh->mNormals[i].y,
-                    (float)pMesh->mNormals[i].z
-                };
-            }
-            else
-            {
-                v.n = {0.0f, 0.0f, 0.0f}; // Нормали по умолчанию
-            }
-
-            vertices.push_back(v);
+            vertices.push_back( {
+                { pMesh->mVertices[i].x * scale,pMesh->mVertices[i].y * scale,pMesh->mVertices[i].z * scale },
+                *reinterpret_cast<dx::XMFLOAT3*>(&pMesh->mNormals[i])
+            } );
         }
 
         std::vector<unsigned short> indices;

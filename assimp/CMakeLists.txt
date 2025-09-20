@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 project(assimp
-        VERSION 6.0.2   # tag 6.0.2 commit fb375dd8c0a032106a2122815fb18dffe0283721 (8.06.2025)
+        VERSION 5.2.5   # tag 5.2.5 commit 9519a62dd20799c5493c638d1ef5a6f484e5faf1  (8.09.2022)
         LANGUAGES CXX
         DESCRIPTION
         "Open Asset Import Library")
