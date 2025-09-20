@@ -65,6 +65,8 @@ set(SOURCE_FILES
         drawable/TestObject.h
         drawable/Cylinder.cpp
         drawable/Cylinder.h
+        drawable/AssTest.cpp
+        drawable/AssTest.h
 )
 
 set(HEADER_FILES
@@ -79,6 +81,7 @@ target_link_libraries(${PROJECT_NAME}
                      imgui
                      utils
                      graphics
+                     assimp
                      window)
 
 # Добавляем заголовочные файлы в цель, чтобы они были доступны при сборке(видимы в IDE)

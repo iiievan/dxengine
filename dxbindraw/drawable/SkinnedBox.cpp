@@ -31,8 +31,7 @@ SkinnedBox::SkinnedBox(
 
         AddStaticBind(std::make_unique<VertexBuffer>(gfx, model.vertices));
 
-        std::string cubetex_path = findFullPath("kappa50.png");
-        AddStaticBind(std::make_unique<Texture>(gfx, Surface::FromFile(cubetex_path)));
+        AddStaticBind(std::make_unique<Texture>(gfx, Surface::FromFile("textures\\kappa50.png")));
 
         AddStaticBind(std::make_unique<Sampler>(gfx));
 

@@ -45,8 +45,7 @@ Sheet::Sheet(
         model.vertices[2].tex = {0.0f, 1.0f};
         model.vertices[3].tex = {1.0f, 1.0f};
 
-        std::string kappa50_path = findFullPath("kappa50.png");
-        AddStaticBind(std::make_unique<Texture>(gfx, Surface::FromFile(kappa50_path)));
+        AddStaticBind(std::make_unique<Texture>(gfx, Surface::FromFile("textures\\kappa50.png")));
 
         AddStaticBind(std::make_unique<VertexBuffer>(gfx, model.vertices));
 
