@@ -19,10 +19,22 @@ GDIPlusManager gdipm;
 
 #define ever (;;)
 
+#include <assimp/version.h> // Главный файл с информацией о версии
+
+void PrintAssimpVersion()
+{
+   int major, minor, rev;
+         major = aiGetVersionMajor(),
+         minor = aiGetVersionMinor(),
+         rev =   aiGetVersionRevision();
+    printf("Version: %d:%d:%d\n",(int)major,(int)minor,(int)rev);
+}
+
 App::App()
 :m_wnd(800, 600, "Donkey Fart Box"),
  m_pointlight(m_wnd.Gfx())
 {
+    PrintAssimpVersion();
     class Factory
     {
     public:
