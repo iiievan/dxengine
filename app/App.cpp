@@ -8,6 +8,7 @@
 #include "drawable/Cylinder.h"
 #include "drawable/Pyramid.h"
 #include "drawable/SkinnedBox.h"
+#include "drawable/AssTest.h"
 #include "imgui.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -22,8 +23,6 @@ App::App()
 :m_wnd(800, 600, "Donkey Fart Box"),
  m_pointlight(m_wnd.Gfx())
 {
-    Assimp::Importer imp;
-    auto model = imp.ReadFile("models\\suzanne.obj", aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
     class Factory
     {
     public:
@@ -45,6 +44,8 @@ App::App()
                     return std::make_unique<Pyramid>(gfx, rng, adist, ddist, odist, rdist, tdist);
                 case 3:
                     return std::make_unique<SkinnedBox>(gfx, rng, adist, ddist, odist, rdist);
+                case 4:
+                    return std::make_unique<AssTest>(gfx, rng, adist, ddist, odist, rdist, mat, 1.5f);
                 default:
                     assert( false && "impossible drawable option in factory" );
                     return {};
@@ -53,7 +54,7 @@ App::App()
     private:
         Graphics& gfx;
         std::mt19937 rng{ std::random_device{}() };
-        std::uniform_int_distribution<int> sdist{ 0,3 };
+        std::uniform_int_distribution<int> sdist{ 0,4 };
         std::uniform_real_distribution<float> adist{ 0.0f,PI * 2.0f };
         std::uniform_real_distribution<float> ddist{ 0.0f,PI * 0.5f };
         std::uniform_real_distribution<float> odist{ 0.0f,PI * 0.08f };
