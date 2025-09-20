@@ -28,7 +28,7 @@ AssTest::AssTest(
 
         Assimp::Importer imp;
         const auto       pModel =
-            imp.ReadFile("models\\suzanne.obj", aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+            imp.ReadFile("models\\suzanne.obj",  aiProcess_JoinIdenticalVertices);
         const auto pMesh = pModel->mMeshes[0];
 
         std::vector<Vertex> vertices;
