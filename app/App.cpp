@@ -1,19 +1,20 @@
 #include "App.h"
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 #include <algorithm>
+#include <assimp/Importer.hpp>
 #include <memory>
 #include "ChiliMath.h"
 #include "GDIPlusManager.h"
 #include "Surface.h"
+#include "VertexLayout.h"
+#include "bindable/VertexBuffer.h"
+#include "drawable/AssTest.h"
 #include "drawable/Box.h"
 #include "drawable/Cylinder.h"
 #include "drawable/Pyramid.h"
 #include "drawable/SkinnedBox.h"
-#include "drawable/AssTest.h"
 #include "imgui.h"
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include "VertexLayout.h"
 
 namespace dx = DirectX;
 GDIPlusManager gdipm;
@@ -33,13 +34,22 @@ void PrintAssimpVersion()
 
 void f()
 {
-    VertexLayout vl;
-    vl.Append<VertexLayout::Position3D>()
-      .Append<VertexLayout::Normal>();
+    VertexLayoutBuffer vlb(std::move(VertexLayout{}.Append<VertexLayout::Position3D>()
+                                                  .Append<VertexLayout::Normal>()
+                                                  .Append<VertexLayout::Texture2D>()));
+    vlb.EmplaceBack(dx::XMFLOAT3{1.0f,1.0f,5.0f},
+                    dx::XMFLOAT3{2.0f,1.0f,4.0f},
+                    dx::XMFLOAT2{6.0f,9.0f});
 
-    VertexLayoutBuffer vlb(std::move(vl));
-    vlb.EmplaceBack(dx::XMFLOAT3{1.0f, 1.0f, 5.0f}, dx::XMFLOAT3{2.0f, 1.0f, 4.0f});
+    vlb.EmplaceBack(dx::XMFLOAT3{6.0f,9.0f,6.0f},
+                    dx::XMFLOAT3{9.0f,6.0f,4.0f},
+                    dx::XMFLOAT2{4.2f,1.0f});
+
     auto pos = vlb[0].Attr<VertexLayout::Position3D>();
+    auto norm = vlb[0].Attr<VertexLayout::Normal>();
+    auto tex = vlb[1].Attr<VertexLayout::Texture2D>();
+    vlb.Back().Attr<VertexLayout::Position3D>().z = 420.0f;
+    pos = vlb.Back().Attr<VertexLayout::Position3D>();
 }
 
 App::App()

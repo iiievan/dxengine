@@ -194,7 +194,9 @@ private:
 class VertexLayoutBuffer
 {
 public:
+
     VertexLayoutBuffer(VertexLayout layout) noexcept(!IS_DEBUG) : m_layout(layout) {}
+
     const VertexLayout &GetLayout() const noexcept { return m_layout; }
 
     // return this size IS NOT of bytes, but returns size in vertices num.
