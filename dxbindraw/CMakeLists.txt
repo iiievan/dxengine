@@ -6,73 +6,63 @@ project(dxbindraw
         "DirecX bindable and drawable objects API")
 set(CMAKE_CXX_STANDARD 17)
 
-set(BINDABLE_SOURCES
-        bindable/Bindable.cpp
-        bindable/IndexBuffer.cpp
-        bindable/InputLayout.cpp
-        bindable/PixelShader.cpp
-        bindable/Topology.cpp
-        bindable/TransformCbuf.cpp
-        bindable/VertexBuffer.cpp
-        bindable/VertexShader.cpp
-)
+set(BINDABLE_SOURCES bindable/Bindable.cpp
+                     bindable/IndexBuffer.cpp
+                     bindable/InputLayout.cpp
+                     bindable/PixelShader.cpp
+                     bindable/Sampler.cpp
+                     bindable/Topology.cpp
+                     bindable/Texture.cpp
+                     bindable/TransformCbuf.cpp
+                     bindable/VertexBuffer.cpp
+                     bindable/VertexShader.cpp)
 
-set(BINDABLE_HEADERS
-        bindable/Bindable.h
-        bindable/BindableBase.h
-        bindable/ConstantBuffer.h
-        bindable/IndexBuffer.h
-        bindable/InputLayout.h
-        bindable/PixelShader.h
-        bindable/Topology.h
-        bindable/TransformCbuf.h
-        bindable/VertexBuffer.h
-        bindable/VertexShader.h
-)
+set(BINDABLE_HEADERS bindable/Bindable.h
+                     bindable/BindableBase.h
+                     bindable/ConstantBuffer.h
+                     bindable/IndexBuffer.h
+                     bindable/InputLayout.h
+                     bindable/PixelShader.h
+                     bindable/Sampler.h
+                     bindable/Topology.h
+                     bindable/Texture.h
+                     bindable/TransformCbuf.h
+                     bindable/VertexBuffer.h
+                     bindable/VertexShader.h)
 
-set(DRAWABLE_SOURCES
-        drawable/Drawable.cpp
-        drawable/Box.cpp
-)
+set(DRAWABLE_SOURCES drawable/Pyramid.cpp
+                     drawable/Drawable.cpp
+                     drawable/Box.cpp
+                     drawable/Sheet.cpp
+                     drawable/SkinnedBox.cpp
+                     drawable/SolidSphere.cpp
+                     drawable/Cylinder.cpp
+                     drawable/AssTest.cpp)
 
-set(DRAWABLE_HEADERS
-        drawable/Drawable.h
-        drawable/DrawableBase.h
-        drawable/Box.h
-)
+set(DRAWABLE_HEADERS drawable/Pyramid.h
+                     drawable/Drawable.h
+                     drawable/DrawableBase.h
+                     drawable/Box.h
+                     drawable/Sheet.h
+                     drawable/SkinnedBox.h
+                     drawable/SolidSphere.h
+                     drawable/TestObject.h
+                     drawable/Cylinder.h
+                     drawable/AssTest.h)
 
-set(SOURCE_FILES
-        ${BINDABLE_SOURCES}
-        ${DRAWABLE_SOURCES}
-        geometry/Cone.h
-        geometry/IndexedTriangleList.h
-        geometry/Cube.h
-        geometry/Plane.h
-        geometry/Prism.h
-        geometry/Sphere.h
-        drawable/Pyramid.cpp
-        drawable/Pyramid.h
-        bindable/Texture.cpp
-        bindable/Texture.h
-        bindable/Sampler.cpp
-        bindable/Sampler.h
-        drawable/Sheet.cpp
-        drawable/Sheet.h
-        drawable/SkinnedBox.cpp
-        drawable/SkinnedBox.h
-        drawable/SolidSphere.cpp
-        drawable/SolidSphere.h
-        drawable/TestObject.h
-        drawable/Cylinder.cpp
-        drawable/Cylinder.h
-        drawable/AssTest.cpp
-        drawable/AssTest.h
-)
+set(GEOMETRY_SOURCES  geometry/Cone.h
+                      geometry/IndexedTriangleList.h
+                      geometry/Cube.h
+                      geometry/Plane.h
+                      geometry/Prism.h
+                      geometry/Sphere.h)
 
-set(HEADER_FILES
-        ${BINDABLE_HEADERS}
-        ${DRAWABLE_HEADERS}
-)
+set(SOURCE_FILES  ${BINDABLE_SOURCES}
+                  ${DRAWABLE_SOURCES}
+                  ${GEOMETRY_SOURCES})
+
+set(HEADER_FILES  ${BINDABLE_HEADERS}
+                  ${DRAWABLE_HEADERS})
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 

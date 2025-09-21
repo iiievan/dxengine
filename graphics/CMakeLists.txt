@@ -25,7 +25,8 @@ set(HEADER_FILES GDIPlusManager.h
                  dxerr.h
                  DXGetErrorString.inl
                  DXGetErrorDescription.inl
-                 DXTrace.inl)
+                 DXTrace.inl
+                 VertexLayout.h)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 

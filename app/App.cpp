@@ -13,6 +13,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include "VertexLayout.h"
 
 namespace dx = DirectX;
 GDIPlusManager gdipm;
@@ -27,7 +28,18 @@ void PrintAssimpVersion()
          major = aiGetVersionMajor(),
          minor = aiGetVersionMinor(),
          rev =   aiGetVersionRevision();
-    printf("Version: %d:%d:%d\n",(int)major,(int)minor,(int)rev);
+    printf("Assimp Version: %d:%d:%d\n",major,minor,rev);
+}
+
+void f()
+{
+    VertexLayout vl;
+    vl.Append<VertexLayout::Position3D>()
+      .Append<VertexLayout::Normal>();
+
+    VertexLayoutBuffer vlb(std::move(vl));
+    vlb.EmplaceBack(dx::XMFLOAT3{1.0f, 1.0f, 5.0f}, dx::XMFLOAT3{2.0f, 1.0f, 4.0f});
+    auto pos = vlb[0].Attr<VertexLayout::Position3D>();
 }
 
 App::App()
@@ -35,6 +47,8 @@ App::App()
  m_pointlight(m_wnd.Gfx())
 {
     PrintAssimpVersion();
+
+    f();
     class Factory
     {
     public:
