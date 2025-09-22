@@ -7,7 +7,6 @@
 #include "ChiliMath.h"
 #include "GDIPlusManager.h"
 #include "Surface.h"
-#include "VertexLayout.h"
 #include "bindable/VertexBuffer.h"
 #include "drawable/AssTest.h"
 #include "drawable/Box.h"
@@ -15,6 +14,7 @@
 #include "drawable/Pyramid.h"
 #include "drawable/SkinnedBox.h"
 #include "imgui.h"
+#include "Vertex.h"
 
 namespace dx = DirectX;
 GDIPlusManager gdipm;
@@ -34,9 +34,9 @@ void PrintAssimpVersion()
 
 void f()
 {
-    VertexLayoutBuffer vlb(std::move(VertexLayout{}.Append<VertexLayout::Position3D>()
-                                                  .Append<VertexLayout::Normal>()
-                                                  .Append<VertexLayout::Texture2D>()));
+    VertexLayoutBuffer vlb(std::move(VertexLayout {}.Append<VertexLayout::Position3D>()
+                                                    .Append<VertexLayout::Normal>()
+                                                    .Append<VertexLayout::Texture2D>()));
     vlb.EmplaceBack(dx::XMFLOAT3{1.0f,1.0f,5.0f},
                     dx::XMFLOAT3{2.0f,1.0f,4.0f},
                     dx::XMFLOAT2{6.0f,9.0f});
@@ -50,6 +50,9 @@ void f()
     auto tex = vlb[1].Attr<VertexLayout::Texture2D>();
     vlb.Back().Attr<VertexLayout::Position3D>().z = 420.0f;
     pos = vlb.Back().Attr<VertexLayout::Position3D>();
+
+    const auto& cvlb = vlb;
+    pos = cvlb[1].Attr<VertexLayout::Position3D>();
 }
 
 App::App()

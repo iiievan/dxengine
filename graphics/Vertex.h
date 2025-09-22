@@ -1,5 +1,5 @@
-#ifndef __VERTEXLAYOUT_H
-#define __VERTEXLAYOUT_H
+#ifndef __VERTEX_H
+#define __VERTEX_H
 #include <vector>
 #include <DirectXMath.h>
 #include <type_traits>
@@ -49,7 +49,7 @@ public:
                 case Float4Color:
                     return sizeof(XMFLOAT3);
                 case BGRAColor:
-                    return sizeof(unsigned int);
+                    return sizeof(::BGRAColor);
             }
             assert("Invalid element type" && false);
             return 0u;
@@ -97,13 +97,6 @@ class Vertex
     friend class VertexLayoutBuffer;
 
 public:
-
-    Vertex(char *pData, const VertexLayout &layout) noexcept(!IS_DEBUG)
-    : m_pData(pData), m_layout(layout)
-    {
-        assert(pData != nullptr);
-    }
-
     template <VertexLayout::ElementType Type>
     auto &Attr() noexcept(!IS_DEBUG)
     {
@@ -168,6 +161,14 @@ public:
         }
     }
 
+protected:
+    Vertex(char *pData, const VertexLayout &layout) noexcept(!IS_DEBUG)
+    : m_pData(pData), m_layout(layout)
+    {
+        assert(pData != nullptr);
+    }
+
+private:
     // enables parameter pack setting of multiple parameters by element index( more than one!!!)
     template <typename First, typename... Rest>
     void SetAttributeByIndex(size_t i, First &&first, Rest &&...rest) noexcept(!IS_DEBUG)
@@ -189,6 +190,19 @@ public:
 private:
     char               *m_pData = nullptr;
     const VertexLayout &m_layout;
+};
+
+class ConstVertex
+{
+public:
+    ConstVertex(const Vertex& v) noexcept(IS_DEBUG)
+    : m_vertex(v)
+    { }
+
+    template<VertexLayout::ElementType Type>
+    const auto& Attr() const noexcept(IS_DEBUG) { return const_cast<Vertex&>(m_vertex).Attr<Type>(); }
+private:
+    Vertex m_vertex;
 };
 
 class VertexLayoutBuffer
@@ -229,9 +243,13 @@ public:
         return Vertex {m_buffer.data() + m_layout.Size() * i, m_layout};
     }
 
+    ConstVertex Back() const noexcept(!IS_DEBUG) { return const_cast<VertexLayoutBuffer*>(this)->Back(); }
+    ConstVertex Front() const noexcept(!IS_DEBUG) { return const_cast<VertexLayoutBuffer*>(this)->Front(); }
+    ConstVertex operator[](size_t i) const noexcept(!IS_DEBUG) { return const_cast<VertexLayoutBuffer&>(*this)[i]; }
+
 private:
     std::vector<char> m_buffer;
     VertexLayout      m_layout;
 };
 
-#endif //__VERTEXLAYOUT_H
+#endif //__VERTEX_H
