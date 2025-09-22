@@ -4,6 +4,7 @@
 #include <assimp/Importer.hpp>
 #include "GraphicsThrowMacroses.h"
 #include "bindable/BindableBase.h"
+#include "Vertex.h"
 
 AssTest::AssTest(
     Graphics                              &gfx,
@@ -20,25 +21,21 @@ AssTest::AssTest(
 
     if (!IsStaticInitialized())
     {
-        struct Vertex
-        {
-            dx::XMFLOAT3 pos;
-            dx::XMFLOAT3 n;
-        };
+        using hw3dexp::VertexLayout;
+
+        hw3dexp::VertexBuffer vbuf(std::move(VertexLayout{}.Append<VertexLayout::Position3D>()
+                                                                 .Append<VertexLayout::Normal>()));
 
         Assimp::Importer imp;
         const auto       pModel =
-            imp.ReadFile("models\\suzanne.obj",  aiProcess_JoinIdenticalVertices);
+            imp.ReadFile("models\\suzanne.obj",  aiProcess_Triangulate |
+                                                       aiProcess_JoinIdenticalVertices);
         const auto pMesh = pModel->mMeshes[0];
 
-        std::vector<Vertex> vertices;
-        vertices.reserve(pMesh->mNumVertices);
         for( unsigned int i = 0; i < pMesh->mNumVertices; i++ )
         {
-            vertices.push_back( {
-                { pMesh->mVertices[i].x * scale,pMesh->mVertices[i].y * scale,pMesh->mVertices[i].z * scale },
-                *reinterpret_cast<dx::XMFLOAT3*>(&pMesh->mNormals[i])
-            } );
+            vbuf.EmplaceBack(dx::XMFLOAT3{pMesh->mVertices[i].x * scale, pMesh->mVertices[i].y * scale, pMesh->mVertices[i].z * scale},
+                         *reinterpret_cast<dx::XMFLOAT3*>(&pMesh->mNormals[i]));
         }
 
         std::vector<unsigned short> indices;
@@ -52,7 +49,7 @@ AssTest::AssTest(
             indices.push_back(face.mIndices[2]);
         }
 
-        AddStaticBind(std::make_unique<VertexBuffer>(gfx, vertices));
+        AddStaticBind(std::make_unique<VertexBuffer>(gfx, vbuf));
         AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, indices));
 
         auto pvs = std::make_unique<VertexShader>(gfx, L"shaders/Phong.vs.cso");

@@ -14,7 +14,6 @@
 #include "drawable/Pyramid.h"
 #include "drawable/SkinnedBox.h"
 #include "imgui.h"
-#include "Vertex.h"
 
 namespace dx = DirectX;
 GDIPlusManager gdipm;
@@ -32,42 +31,17 @@ void PrintAssimpVersion()
     printf("Assimp Version: %d:%d:%d\n",major,minor,rev);
 }
 
-void f()
-{
-    VertexLayoutBuffer vlb(std::move(VertexLayout {}.Append<VertexLayout::Position3D>()
-                                                    .Append<VertexLayout::Normal>()
-                                                    .Append<VertexLayout::Texture2D>()));
-    vlb.EmplaceBack(dx::XMFLOAT3{1.0f,1.0f,5.0f},
-                    dx::XMFLOAT3{2.0f,1.0f,4.0f},
-                    dx::XMFLOAT2{6.0f,9.0f});
-
-    vlb.EmplaceBack(dx::XMFLOAT3{6.0f,9.0f,6.0f},
-                    dx::XMFLOAT3{9.0f,6.0f,4.0f},
-                    dx::XMFLOAT2{4.2f,1.0f});
-
-    auto pos = vlb[0].Attr<VertexLayout::Position3D>();
-    auto norm = vlb[0].Attr<VertexLayout::Normal>();
-    auto tex = vlb[1].Attr<VertexLayout::Texture2D>();
-    vlb.Back().Attr<VertexLayout::Position3D>().z = 420.0f;
-    pos = vlb.Back().Attr<VertexLayout::Position3D>();
-
-    const auto& cvlb = vlb;
-    pos = cvlb[1].Attr<VertexLayout::Position3D>();
-}
-
 App::App()
 :m_wnd(800, 600, "Donkey Fart Box"),
  m_pointlight(m_wnd.Gfx())
 {
     PrintAssimpVersion();
 
-    f();
     class Factory
     {
     public:
         Factory( Graphics& gfx )
-            :
-            gfx( gfx )
+        : gfx( gfx )
         {}
 
         std::unique_ptr<Drawable> operator()()
