@@ -34,50 +34,50 @@ namespace hw3dexp
         template<> struct Map<Position2D>
         {
             using SysType = DirectX::XMFLOAT2;
-            DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
-            const char* semantic = "Position";
+            static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
+            static constexpr const char* semantic = "Position";
         };
 
         template<> struct Map<Position3D>
         {
             using SysType = DirectX::XMFLOAT3;
-            DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-            const char* semantic = "Position";
+            static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+            static constexpr const char* semantic = "Position";
         };
 
         template<> struct Map<Texture2D>
         {
             using SysType = DirectX::XMFLOAT2;
-            DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
-            const char* semantic = "Texcoord";
+            static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
+            static constexpr const char* semantic = "Texcoord";
         };
 
         template<> struct Map<Normal>
         {
             using SysType = DirectX::XMFLOAT3;
-            DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-            const char* semantic = "Normal";
+            static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+            static constexpr const char* semantic = "Normal";
         };
 
         template<> struct Map<Float3Color>
         {
             using SysType = DirectX::XMFLOAT3;
-            DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-            const char* semantic = "Color";
+            static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+            static constexpr const char* semantic = "Color";
         };
 
         template<> struct Map<Float4Color>
         {
             using SysType = DirectX::XMFLOAT4;
-            DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
-            const char* semantic = "Color";
+            static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
+            static constexpr const char* semantic = "Color";
         };
 
         template<> struct Map<BGRAColor>
         {
             using SysType = hw3dexp::BGRAColor;
-            DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-            const char* semantic = "Color";
+            static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+            static constexpr const char* semantic = "Color";
         };
 
         class Element
@@ -87,7 +87,6 @@ namespace hw3dexp
 
             static constexpr size_t SizeOf(ElementType type) noexcept(!IS_DEBUG)
             {
-                using namespace DirectX;
                 switch (type)
                 {
                     case Position2D:
@@ -113,7 +112,36 @@ namespace hw3dexp
             size_t      GetOffset() const { return m_offset; }
             ElementType GetType() const noexcept { return m_type; }
 
+            D3D11_INPUT_ELEMENT_DESC GetDesc() const noexcept(!IS_DEBUG)
+            {
+                switch (m_type)
+                {
+                    case Position2D:
+                        return GenerateDesc<Position2D>(GetOffset());
+                    case Position3D:
+                        return GenerateDesc<Position3D>(GetOffset());
+                    case Texture2D:
+                        return GenerateDesc<Texture2D>(GetOffset());
+                    case Normal:
+                        return GenerateDesc<Normal>(GetOffset());
+                    case Float3Color:
+                        return GenerateDesc<Float3Color>(GetOffset());
+                    case Float4Color:
+                        return GenerateDesc<Float4Color>(GetOffset());
+                    case BGRAColor:
+                        return GenerateDesc<BGRAColor>(GetOffset());
+                }
+                assert("Invalid element type" && false);
+                return {"INVALID", 0, DXGI_FORMAT_UNKNOWN, 0, 0, D3D11_INPUT_PER_VERTEX_DATA,0};
+            }
+
         private:
+            template<ElementType type>
+            static constexpr D3D11_INPUT_ELEMENT_DESC GenerateDesc(size_t offset) noexcept(!IS_DEBUG)
+            {
+                return {Map<type>::semantic,0,Map<type>::dxgiFormat,0,(UINT)offset, D3D11_INPUT_PER_VERTEX_DATA, 0};
+            }
+
             ElementType m_type;
             size_t      m_offset;
         };
@@ -139,6 +167,16 @@ namespace hw3dexp
         {
             m_elements.emplace_back(type, Size());
             return *this;
+        }
+        std::vector<D3D11_INPUT_ELEMENT_DESC> Get3DLayout() const noexcept(!IS_DEBUG)
+        {
+            std::vector<D3D11_INPUT_ELEMENT_DESC> result;
+            result.reserve(GetElementCount());
+            for (const auto &e : m_elements)
+            {
+                result.push_back(e.GetDesc());
+            }
+            return result;
         }
 
     private:
