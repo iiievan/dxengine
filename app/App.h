@@ -20,6 +20,7 @@ public:
 
 private:
     void DoFrame();
+    void ShowModelWindow();
 
 private:
     ImguiManager m_imgui;
@@ -30,6 +31,15 @@ private:
 
     float m_speed_factor {1.0f};
     Model m_nanosuit{m_wnd.Gfx(),"models\\nanosuit.obj"};
+    struct
+    {
+        float roll = 0.0f;
+        float pitch = 0.0f;
+        float yaw = 0.0f;
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+    } m_pos;
 };
 
 #endif // __APP_H
