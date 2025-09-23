@@ -55,7 +55,8 @@ set(GEOMETRY_SOURCES  geometry/Cone.h
                       geometry/Cube.h
                       geometry/Plane.h
                       geometry/Prism.h
-                      geometry/Sphere.h)
+                      geometry/Sphere.h
+                      geometry/Model.h)
 
 set(SOURCE_FILES  ${BINDABLE_SOURCES}
                   ${DRAWABLE_SOURCES}

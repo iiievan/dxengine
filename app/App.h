@@ -5,6 +5,7 @@
 #include "ImguiManager.h"
 #include "Camera.h"
 #include "PointLight.h"
+#include "geometry/Model.h"
 #include <set>
 
 
@@ -19,9 +20,6 @@ public:
 
 private:
     void DoFrame();
-    void SpawnSimulationWindow() noexcept;
-    void SpawnBoxWindowManagerWindow() noexcept;
-    void SpawnBoxWindows() noexcept;
 
 private:
     ImguiManager m_imgui;
@@ -30,13 +28,8 @@ private:
     Camera m_camera;
     PointLight m_pointlight;
 
-    std::vector<std::unique_ptr<class Drawable>> m_drawables;
-    std::vector<class Box *>                     m_boxes;
-
     float m_speed_factor {1.0f};
-    static constexpr size_t m_nDrawables {180};
-    std::optional<int> m_comboBoxIndex;
-    std::set<int> m_boxControlIds;
+    Model m_nanosuit{m_wnd.Gfx(),"models\\nanosuit.obj"};
 };
 
 #endif // __APP_H
