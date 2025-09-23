@@ -23,8 +23,8 @@ AssTest::AssTest(
     {
         using hw3dexp::VertexLayout;
 
-        hw3dexp::VertexBuffer vbuf(std::move(VertexLayout{}.Append<VertexLayout::Position3D>()
-                                                                 .Append<VertexLayout::Normal>()));
+        hw3dexp::VertexBuffer vbuf(std::move(VertexLayout{}.Append(VertexLayout::Position3D)
+                                                                 .Append(VertexLayout::Normal)));
 
         Assimp::Importer imp;
         const auto       pModel =
