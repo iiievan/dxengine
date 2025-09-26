@@ -5,6 +5,7 @@
 
 #include "TestObject.h"
 #include "bindable/ConstantBuffer.h"
+#include "ConditionalNoexcept.h"
 
 
 class Box : public TestObject<Box>
@@ -24,7 +25,7 @@ public:
 
 private:
 
-    void SyncMaterial(Graphics &gfx) noexcept(!IS_DEBUG);
+    void SyncMaterial(Graphics &gfx) noxnd;
 
     struct PSMaterialConstant
     {
@@ -33,7 +34,7 @@ private:
         float specularPower = 30.0f;
         float padding[3];
     } m_MaterialConstants;
-    using m_MaterialCbuf = PixelConstantBuffer<PSMaterialConstant>;
+    using m_MaterialCbuf = Bind::PixelConstantBuffer<PSMaterialConstant>;
 
     DirectX::XMFLOAT3X3 m_mt; // model transform
 };

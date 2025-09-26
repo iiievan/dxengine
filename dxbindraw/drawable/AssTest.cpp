@@ -3,7 +3,7 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include "GraphicsThrowMacroses.h"
-#include "bindable/BindableBase.h"
+#include "bindable/BindableCommon.h"
 #include "Vertex.h"
 
 AssTest::AssTest(
@@ -17,14 +17,15 @@ AssTest::AssTest(
     float                                  scale)
     : TestObject(gfx, rng, adist, ddist, odist, rdist)
 {
+    using namespace Bind;
     namespace dx = DirectX;
 
     if (!IsStaticInitialized())
     {
-        using hw3dexp::VertexLayout;
+        using Dvtx::VertexLayout;
 
-        hw3dexp::VertexBuffer vbuf(std::move(VertexLayout{}.Append(VertexLayout::Position3D)
-                                                                 .Append(VertexLayout::Normal)));
+        Dvtx::VertexBuffer vbuf(std::move(VertexLayout{}.Append(VertexLayout::Position3D)
+                                                              .Append(VertexLayout::Normal)));
 
         Assimp::Importer imp;
         const auto       pModel =

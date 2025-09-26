@@ -13,7 +13,8 @@ set(SOURCE_FILES Graphics.cpp
                  GDIPlusManager.cpp
                  ImguiManager.cpp
                  Camera.cpp
-                 PointLight.cpp)
+                 PointLight.cpp
+                 Vertex.cpp)
 
 set(HEADER_FILES GDIPlusManager.h
                  DxgiInfoManager.h
@@ -26,7 +27,9 @@ set(HEADER_FILES GDIPlusManager.h
                  DXGetErrorString.inl
                  DXGetErrorDescription.inl
                  DXTrace.inl
-                 Vertex.h)
+                 Vertex.h
+                 Color.h
+                 ConditionalNoexcept.h)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 

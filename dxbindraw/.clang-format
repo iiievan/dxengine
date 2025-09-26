@@ -1,7 +1,7 @@
 BasedOnStyle: Microsoft
 PointerAlignment: Right   # * и & прижимаются к имени переменной
 DerivePointerAlignment: false
-AccessModifierOffset: -4
+AccessModifierOffset: 0
 AlignAfterOpenBracket: AlwaysBreak    # Переносит аргументы на новую строку и выравнивает
 AlignConsecutiveAssignments: false
 AlignEscapedNewlines: Left
@@ -44,7 +44,7 @@ ColumnLimit: 120
 CommentPragmas: '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
-ConstructorInitializerIndentWidth: 4
+ConstructorInitializerIndentWidth: 0
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 DisableFormat: false
@@ -70,7 +70,7 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 MacroBlockBegin: ''
 MacroBlockEnd: ''
 MaxEmptyLinesToKeep: 1
-NamespaceIndentation: None
+NamespaceIndentation: All
 ReflowComments: true
 SortIncludes: true
 SortUsingDeclarations: true

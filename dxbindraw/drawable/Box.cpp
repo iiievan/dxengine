@@ -1,5 +1,5 @@
 #include "Box.h"
-#include "bindable/BindableBase.h"
+#include "bindable/BindableCommon.h"
 #include "GraphicsThrowMacroses.h"
 #include "geometry/Cube.h"
 #include "imgui.h"
@@ -15,6 +15,7 @@ Box::Box(
     DirectX::XMFLOAT3                      material)
     : TestObject(gfx, rng, adist, ddist, odist, rdist)
 {
+    using namespace Bind;
     namespace dx = DirectX;
 
     if (!IsStaticInitialized())

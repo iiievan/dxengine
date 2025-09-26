@@ -2,10 +2,15 @@
 #define __DRAWABLE_H
 
 #include <DirectXMath.h>
-#include "Graphics.h"
 #include <memory>
+#include "ConditionalNoexcept.h"
+#include "Graphics.h"
 
-class Bindable;
+namespace Bind
+{
+    class Bindable;
+    class IndexBuffer;
+}
 
 class Drawable
 {
@@ -22,7 +27,7 @@ public:
 
     }
 
-    void Draw(Graphics &gfx) const noexcept(!IS_DEBUG);
+    void Draw(Graphics &gfx) const noxnd;
 
 protected:
 
@@ -37,14 +42,14 @@ protected:
         return nullptr;
     }
 
-    void AddBind(std::unique_ptr<Bindable> bind) noexcept(!IS_DEBUG);
-    void AddIndexBuffer(std::unique_ptr<class IndexBuffer> ibuf) noexcept(!IS_DEBUG);
+    void AddBind(std::unique_ptr<Bind::Bindable> bind) noxnd;
+    void AddIndexBuffer(std::unique_ptr<class Bind::IndexBuffer> ibuf) noxnd;
 
 private:
-    virtual const std::vector<std::unique_ptr<Bindable>>& GetStaticBinds() const noexcept = 0;
+    virtual const std::vector<std::unique_ptr<Bind::Bindable>>& GetStaticBinds() const noexcept = 0;
 private:
-    const IndexBuffer                     *m_pIndexBuffer = nullptr;
-    std::vector<std::unique_ptr<Bindable>> m_binds;
+    const Bind::IndexBuffer                     *m_pIndexBuffer = nullptr;
+    std::vector<std::unique_ptr<Bind::Bindable>> m_binds;
 };
 
 #endif //__DRAWABLE_H

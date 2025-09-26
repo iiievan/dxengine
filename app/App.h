@@ -5,7 +5,7 @@
 #include "ImguiManager.h"
 #include "Camera.h"
 #include "PointLight.h"
-#include "geometry/Model.h"
+#include "geometry/Mesh.h"
 #include <set>
 
 

@@ -20,6 +20,7 @@ Cylinder::Cylinder(
     std::uniform_int_distribution<int>    &tdist)
     : TestObject(gfx, rng, adist, ddist, odist, rdist)
 {
+    using namespace Bind;
     namespace dx = DirectX;
 
     if (!IsStaticInitialized())

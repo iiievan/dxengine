@@ -18,7 +18,7 @@ set(BINDABLE_SOURCES bindable/Bindable.cpp
                      bindable/VertexShader.cpp)
 
 set(BINDABLE_HEADERS bindable/Bindable.h
-                     bindable/BindableBase.h
+                     bindable/BindableCommon.h
                      bindable/ConstantBuffer.h
                      bindable/IndexBuffer.h
                      bindable/InputLayout.h
@@ -56,14 +56,17 @@ set(GEOMETRY_SOURCES  geometry/Cone.h
                       geometry/Plane.h
                       geometry/Prism.h
                       geometry/Sphere.h
-                      geometry/Model.h)
+                      geometry/Mesh.cpp)
+
+set(GEOMETRY_HEADERS geometry/Mesh.h)
 
 set(SOURCE_FILES  ${BINDABLE_SOURCES}
                   ${DRAWABLE_SOURCES}
                   ${GEOMETRY_SOURCES})
 
 set(HEADER_FILES  ${BINDABLE_HEADERS}
-                  ${DRAWABLE_HEADERS})
+                  ${DRAWABLE_HEADERS}
+                  ${GEOMETRY_HEADERS})
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 

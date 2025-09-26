@@ -2,7 +2,7 @@
 #include "GraphicsThrowMacroses.h"
 #include "Surface.h"
 #include "Utils.hpp"
-#include "bindable/BindableBase.h"
+#include "bindable/BindableCommon.h"
 #include "bindable/Sampler.h"
 #include "bindable/Texture.h"
 #include "geometry/Plane.h"
@@ -25,6 +25,7 @@ Sheet::Sheet(
       m_theta(adist(rng)),
       m_phi(adist(rng))
 {
+    using namespace Bind;
     namespace dx = DirectX;
 
     if (!IsStaticInitialized())

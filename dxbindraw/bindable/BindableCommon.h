@@ -1,5 +1,5 @@
-#ifndef __BINDABLEBASE_H
-#define __BINDABLEBASE_H
+#ifndef __BINDABLECOMMON_H
+#define __BINDABLECOMMON_H
 
 #include "ConstantBuffer.h"
 #include "IndexBuffer.h"
@@ -10,4 +10,4 @@
 #include "VertexBuffer.h"
 #include "VertexShader.h"
 
-#endif //__BINDABLEBASE_H
+#endif //__BINDABLECOMMON_H

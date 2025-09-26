@@ -2,7 +2,7 @@
 #include "GraphicsThrowMacroses.h"
 #include "Surface.h"
 #include "Utils.hpp"
-#include "bindable/BindableBase.h"
+#include "bindable/BindableCommon.h"
 #include "bindable/Texture.h"
 #include "geometry/Cube.h"
 #include "bindable/Sampler.h"
@@ -16,6 +16,7 @@ SkinnedBox::SkinnedBox(
     std::uniform_real_distribution<float> &rdist)
     : TestObject(gfx, rng, adist, ddist, odist,rdist)
 {
+    using namespace Bind;
     namespace dx = DirectX;
 
     if (!IsStaticInitialized())

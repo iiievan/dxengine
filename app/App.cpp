@@ -5,10 +5,6 @@
 #include "GDIPlusManager.h"
 #include "Surface.h"
 #include "drawable/AssTest.h"
-#include "drawable/Box.h"
-#include "drawable/Cylinder.h"
-#include "drawable/Pyramid.h"
-#include "drawable/SkinnedBox.h"
 #include "imgui.h"
 
 namespace dx = DirectX;

@@ -3,6 +3,8 @@
 #include "GraphicsThrowMacroses.h"
 #include "bindable/IndexBuffer.h"
 
+using namespace Bind;
+
 void Drawable::Draw(Graphics &gfx) const noexcept(!true)
 {
     for (auto& b : m_binds)
@@ -23,7 +25,7 @@ void Drawable::AddBind(std::unique_ptr<Bindable> bind) noexcept(!true)
     m_binds.push_back( std::move( bind ) );
 }
 
-void Drawable::AddIndexBuffer(std::unique_ptr<class IndexBuffer> ibuf) noexcept(!IS_DEBUG)
+void Drawable::AddIndexBuffer(std::unique_ptr<class IndexBuffer> ibuf) noxnd
 {
     assert( "Attempting to add index buffer a second time" && m_pIndexBuffer == nullptr );
     m_pIndexBuffer = ibuf.get();

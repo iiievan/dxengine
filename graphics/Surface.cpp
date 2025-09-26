@@ -188,7 +188,7 @@ void Surface::Save(const std::string &filename) const
     }
 }
 
-void Surface::Copy(const Surface &s) noexcept(!IS_DEBUG)
+void Surface::Copy(const Surface &s) noxnd
 {
     assert(m_width == s.m_width);
     assert(m_height == s.m_height);

@@ -4,15 +4,18 @@
 #include "Bindable.h"
 #include "PixelShader.h"
 
-class PixelShader : public Bindable
+namespace Bind
 {
-public:
-    PixelShader(Graphics &gfx, const std::wstring &path);
+    class PixelShader : public Bindable
+    {
+    public:
+        PixelShader(Graphics &gfx, const std::wstring &path);
 
-    void Bind(Graphics &gfx) noexcept override;
+        void Bind(Graphics &gfx) noexcept override;
 
-protected:
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader;
-};
+    protected:
+        Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader;
+    };
+}
 
 #endif //__PIXELSHADER_H
