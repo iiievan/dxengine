@@ -6,7 +6,7 @@ namespace Dvtx
     : m_type(type), m_offset(offset)
     {}
 
-    D3D11_INPUT_ELEMENT_DESC VertexLayout::Element::GetDesc() const noxnd
+    D3D11_INPUT_ELEMENT_DESC VertexLayout::Element::GetDesc() const NOXND
     {
         switch (m_type)
         {
@@ -29,13 +29,13 @@ namespace Dvtx
         return {"INVALID", 0, DXGI_FORMAT_UNKNOWN, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0};
     }
 
-    VertexLayout &VertexLayout::Append(ElementType type) noxnd
+    VertexLayout &VertexLayout::Append(ElementType type) NOXND
     {
         m_elements.emplace_back(type, Size());
         return *this;
     }
 
-    std::vector<D3D11_INPUT_ELEMENT_DESC> VertexLayout::Get3DLayout() const noxnd
+    std::vector<D3D11_INPUT_ELEMENT_DESC> VertexLayout::Get3DLayout() const NOXND
     {
         std::vector<D3D11_INPUT_ELEMENT_DESC> result;
         result.reserve(GetElementCount());
@@ -46,32 +46,32 @@ namespace Dvtx
         return result;
     }
 
-    Vertex::Vertex(char *pData, const VertexLayout &layout) noxnd : m_pData(pData), m_layout(layout)
+    Vertex::Vertex(char *pData, const VertexLayout &layout) NOXND : m_pData(pData), m_layout(layout)
     {
         assert(pData != nullptr);
     }
 
-    ConstVertex::ConstVertex(const Vertex &v) noxnd
+    ConstVertex::ConstVertex(const Vertex &v) NOXND
     : m_vertex(v)
     {}
 
-    VertexBuffer::VertexBuffer(VertexLayout layout) noxnd
+    VertexBuffer::VertexBuffer(VertexLayout layout) NOXND
     : m_layout(std::move(layout))
     {}
 
-    Vertex VertexBuffer::Back() noxnd
+    Vertex VertexBuffer::Back() NOXND
     {
         assert(m_buffer.size() != 0u);
         return Vertex {m_buffer.data() + m_buffer.size() - m_layout.Size(), m_layout};
     }
 
-    Vertex VertexBuffer::Front() noxnd
+    Vertex VertexBuffer::Front() NOXND
     {
         assert(m_buffer.size() != 0u);
         return Vertex {m_buffer.data(), m_layout};
     }
 
-    Vertex VertexBuffer::operator[](size_t i) noxnd
+    Vertex VertexBuffer::operator[](size_t i) NOXND
     {
         assert(i < Size());
         return Vertex {m_buffer.data() + m_layout.Size() * i, m_layout};

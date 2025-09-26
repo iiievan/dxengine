@@ -19,7 +19,7 @@ Mesh::Mesh(Graphics &gfx, std::vector<std::unique_ptr<Bind::Bindable>> bindPtrs)
     AddBind(std::make_unique<Bind::TransformCbuf>(gfx, *this));
 }
 
-void Mesh::Draw(Graphics &gfx, DirectX::FXMMATRIX accumulatedTransform) const noxnd
+void Mesh::Draw(Graphics &gfx, DirectX::FXMMATRIX accumulatedTransform) const NOXND
 {
     DirectX::XMStoreFloat4x4(&m_transform, accumulatedTransform);
     Drawable::Draw(gfx);
@@ -30,13 +30,13 @@ DirectX::XMMATRIX Mesh::GetTransformXM() const noexcept
     return DirectX::XMLoadFloat4x4(&m_transform);
 }
 
-Node::Node(std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform) noxnd
+Node::Node(std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform) NOXND
     : m_meshPtrs(std::move(meshPtrs))
 {
     DirectX::XMStoreFloat4x4(&m_transform, transform);
 }
 
-void Node::Draw(Graphics &gfx, DirectX::FXMMATRIX accumulateTransform) const noxnd
+void Node::Draw(Graphics &gfx, DirectX::FXMMATRIX accumulateTransform) const NOXND
 {
     const auto built = DirectX::XMLoadFloat4x4(&m_transform) * accumulateTransform;
 
@@ -48,7 +48,7 @@ void Node::Draw(Graphics &gfx, DirectX::FXMMATRIX accumulateTransform) const nox
         pc->Draw(gfx, built);
 }
 
-void Node::AddChild(std::unique_ptr<Node> pChild) noxnd
+void Node::AddChild(std::unique_ptr<Node> pChild) NOXND
 {
     assert(pChild != nullptr);
     m_childPtrs.push_back(std::move(pChild));

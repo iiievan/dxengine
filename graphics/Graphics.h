@@ -72,7 +72,7 @@ public:
 
     void BeginFrame(float red, float green, float blue) noexcept;
     void EndFrame();
-    void DrawIndexed( UINT count ) noxnd;
+    void DrawIndexed( UINT count ) NOXND;
     void SetProjection( DirectX::FXMMATRIX proj ) noexcept;
     DirectX::XMMATRIX GetProjection() const noexcept;
     void SetCamera(DirectX::FXMMATRIX camera) noexcept { m_camera = camera;}

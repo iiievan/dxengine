@@ -13,7 +13,7 @@ class Mesh : public DrawableBase<Mesh>
 {
 public:
     Mesh(Graphics &gfx, std::vector<std::unique_ptr<Bind::Bindable>> bindPtrs);
-    void              Draw(Graphics &gfx, DirectX::FXMMATRIX accumulatedTransform) const noxnd;
+    void              Draw(Graphics &gfx, DirectX::FXMMATRIX accumulatedTransform) const NOXND;
     DirectX::XMMATRIX GetTransformXM() const noexcept override;
 
 private:
@@ -25,11 +25,11 @@ class Node
     friend class Model;
 
 public:
-    Node(std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform) noxnd;
-    void Draw(Graphics &gfx, DirectX::FXMMATRIX accumulateTransform) const noxnd;
+    Node(std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform) NOXND;
+    void Draw(Graphics &gfx, DirectX::FXMMATRIX accumulateTransform) const NOXND;
 
 private:
-    void AddChild(std::unique_ptr<Node> pChild) noxnd;
+    void AddChild(std::unique_ptr<Node> pChild) NOXND;
 
     std::vector<std::unique_ptr<Node>> m_childPtrs;
     std::vector<Mesh*> m_meshPtrs;

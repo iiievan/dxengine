@@ -25,7 +25,7 @@ public:
 
 private:
 
-    void SyncMaterial(Graphics &gfx) noxnd;
+    void SyncMaterial(Graphics &gfx) NOXND;
 
     struct PSMaterialConstant
     {

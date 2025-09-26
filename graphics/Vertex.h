@@ -79,7 +79,7 @@ namespace Dvtx
         public:
             Element(ElementType type, size_t offset);
 
-            static constexpr size_t SizeOf(ElementType type) noxnd
+            static constexpr size_t SizeOf(ElementType type) NOXND
             {
                 switch (type)
                 {
@@ -102,15 +102,15 @@ namespace Dvtx
                 return 0u;
             }
 
-            D3D11_INPUT_ELEMENT_DESC GetDesc() const noxnd;
-            size_t      Size() const noxnd { return SizeOf(m_type); }
-            size_t      GetOffsetAfter() const noxnd { return m_offset + Size(); }
+            D3D11_INPUT_ELEMENT_DESC GetDesc() const NOXND;
+            size_t      Size() const NOXND { return SizeOf(m_type); }
+            size_t      GetOffsetAfter() const NOXND { return m_offset + Size(); }
             size_t      GetOffset() const { return m_offset; }
             ElementType GetType() const noexcept { return m_type; }
 
         private:
             template<ElementType type>
-            static constexpr D3D11_INPUT_ELEMENT_DESC GenerateDesc(size_t offset) noxnd
+            static constexpr D3D11_INPUT_ELEMENT_DESC GenerateDesc(size_t offset) NOXND
             {
                 return {Map<type>::semantic,0,Map<type>::dxgiFormat,0,(UINT)offset, D3D11_INPUT_PER_VERTEX_DATA, 0};
             }
@@ -121,7 +121,7 @@ namespace Dvtx
 
     public:
         template <ElementType Type>
-        const Element &Resolve() const noxnd
+        const Element &Resolve() const NOXND
         {
             for (auto &e : m_elements)
             {
@@ -132,11 +132,11 @@ namespace Dvtx
             return m_elements.front();
         }
 
-        const Element &ResolveByIndex(size_t i) const noxnd { return m_elements[i]; }
-        size_t Size() const noxnd { return m_elements.empty() ? 0u : m_elements.back().GetOffsetAfter(); }
+        const Element &ResolveByIndex(size_t i) const NOXND { return m_elements[i]; }
+        size_t Size() const NOXND { return m_elements.empty() ? 0u : m_elements.back().GetOffsetAfter(); }
         size_t GetElementCount() const noexcept { return m_elements.size(); }
-        VertexLayout &Append(ElementType type) noxnd;
-        std::vector<D3D11_INPUT_ELEMENT_DESC> Get3DLayout() const noxnd;
+        VertexLayout &Append(ElementType type) NOXND;
+        std::vector<D3D11_INPUT_ELEMENT_DESC> Get3DLayout() const NOXND;
 
     private:
         std::vector<Element> m_elements;
@@ -148,14 +148,14 @@ namespace Dvtx
 
     public:
         template <VertexLayout::ElementType Type>
-        auto &Attr() noxnd
+        auto &Attr() NOXND
         {
             auto        pAttribute = m_pData + m_layout.Resolve<Type>().GetOffset();
             return *reinterpret_cast<typename VertexLayout::Map<Type>::SysType *>(pAttribute);
         }
 
         template <typename T>
-        void SetAttributeByIndex(size_t i, T &&val) noxnd
+        void SetAttributeByIndex(size_t i, T &&val) NOXND
         {
             const auto &element = m_layout.ResolveByIndex(i);
             auto        pAttribute = m_pData + element.GetOffset();
@@ -188,12 +188,12 @@ namespace Dvtx
         }
 
     protected:
-        Vertex(char *pData, const VertexLayout &layout) noxnd;
+        Vertex(char *pData, const VertexLayout &layout) NOXND;
 
     private:
         // enables parameter pack setting of multiple parameters by element index( more than one!!!)
         template <typename First, typename... Rest>
-        void SetAttributeByIndex(size_t i, First &&first, Rest &&...rest) noxnd
+        void SetAttributeByIndex(size_t i, First &&first, Rest &&...rest) NOXND
         {
             SetAttributeByIndex(i, std::forward<First>(first));
             SetAttributeByIndex(i + 1, std::forward<Rest>(rest)...);
@@ -201,7 +201,7 @@ namespace Dvtx
 
         // helper to reduce code duplication in SetAttributeByIndex
         template <VertexLayout::ElementType DestLayoutType, typename SrcType>
-        void SetAttribute(char *pAttribute, SrcType &&val) noxnd
+        void SetAttribute(char *pAttribute, SrcType &&val) NOXND
         {
             using Dest = typename VertexLayout::Map<DestLayoutType>::SysType;
             if constexpr (std::is_assignable<Dest, SrcType>::value)
@@ -218,10 +218,10 @@ namespace Dvtx
     class ConstVertex
     {
     public:
-        ConstVertex(const Vertex &v) noxnd;
+        ConstVertex(const Vertex &v) NOXND;
 
         template <VertexLayout::ElementType Type>
-        const auto &Attr() const noxnd
+        const auto &Attr() const NOXND
         {
             return const_cast<Vertex &>(m_vertex).Attr<Type>();
         }
@@ -233,15 +233,15 @@ namespace Dvtx
     class VertexBuffer
     {
     public:
-        VertexBuffer(VertexLayout layout) noxnd;
+        VertexBuffer(VertexLayout layout) NOXND;
 
         const VertexLayout &GetLayout() const noexcept { return m_layout; }
-        const char* GetGata() const noxnd { return m_buffer.data(); }
-        size_t Size() const noxnd { return m_buffer.size() / m_layout.Size(); } // return this size IS NOT of bytes, but returns size in vertices num.
-        size_t SizeBytes() const noxnd { return m_buffer.size(); }
+        const char* GetGata() const NOXND { return m_buffer.data(); }
+        size_t Size() const NOXND { return m_buffer.size() / m_layout.Size(); } // return this size IS NOT of bytes, but returns size in vertices num.
+        size_t SizeBytes() const NOXND { return m_buffer.size(); }
 
         template <typename... Params>
-        void EmplaceBack(Params &&...params) noxnd
+        void EmplaceBack(Params &&...params) NOXND
         {
             assert(
                 sizeof...(params) == m_layout.GetElementCount() && "Param count doesn't match number of vertex elements");
@@ -249,12 +249,12 @@ namespace Dvtx
             Back().SetAttributeByIndex(0u, std::forward<Params>(params)...);
         }
 
-        Vertex Back() noxnd;
-        Vertex Front() noxnd;
-        Vertex operator[](size_t i) noxnd;
-        ConstVertex Back() const noxnd { return const_cast<VertexBuffer *>(this)->Back(); }
-        ConstVertex Front() const noxnd { return const_cast<VertexBuffer *>(this)->Front(); }
-        ConstVertex operator[](size_t i) const noxnd { return const_cast<VertexBuffer &>(*this)[i]; }
+        Vertex Back() NOXND;
+        Vertex Front() NOXND;
+        Vertex operator[](size_t i) NOXND;
+        ConstVertex Back() const NOXND { return const_cast<VertexBuffer *>(this)->Back(); }
+        ConstVertex Front() const NOXND { return const_cast<VertexBuffer *>(this)->Front(); }
+        ConstVertex operator[](size_t i) const NOXND { return const_cast<VertexBuffer &>(*this)[i]; }
 
     private:
         std::vector<char> m_buffer;

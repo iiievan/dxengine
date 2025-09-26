@@ -25,7 +25,7 @@ void Drawable::AddBind(std::unique_ptr<Bindable> bind) noexcept(!true)
     m_binds.push_back( std::move( bind ) );
 }
 
-void Drawable::AddIndexBuffer(std::unique_ptr<class IndexBuffer> ibuf) noxnd
+void Drawable::AddIndexBuffer(std::unique_ptr<class IndexBuffer> ibuf) NOXND
 {
     assert( "Attempting to add index buffer a second time" && m_pIndexBuffer == nullptr );
     m_pIndexBuffer = ibuf.get();

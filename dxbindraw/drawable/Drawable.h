@@ -27,7 +27,7 @@ public:
 
     }
 
-    void Draw(Graphics &gfx) const noxnd;
+    void Draw(Graphics &gfx) const NOXND;
 
 protected:
 
@@ -42,8 +42,8 @@ protected:
         return nullptr;
     }
 
-    void AddBind(std::unique_ptr<Bind::Bindable> bind) noxnd;
-    void AddIndexBuffer(std::unique_ptr<class Bind::IndexBuffer> ibuf) noxnd;
+    void AddBind(std::unique_ptr<Bind::Bindable> bind) NOXND;
+    void AddIndexBuffer(std::unique_ptr<class Bind::IndexBuffer> ibuf) NOXND;
 
 private:
     virtual const std::vector<std::unique_ptr<Bind::Bindable>>& GetStaticBinds() const noexcept = 0;

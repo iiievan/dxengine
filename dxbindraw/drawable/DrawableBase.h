@@ -10,20 +10,20 @@ class DrawableBase : public Drawable
 protected:
     bool IsStaticInitialized() const noexcept { return !m_staticBinds.empty(); }
 
-    void AddStaticBind(std::unique_ptr<Bind::Bindable> bind) noxnd
+    void AddStaticBind(std::unique_ptr<Bind::Bindable> bind) NOXND
     {
         assert("*Must* use AddStaticIndexBuffer to bind index buffer" && typeid(*bind) != typeid(Bind::IndexBuffer));
         m_staticBinds.push_back(std::move(bind));
     }
 
-    void AddStaticIndexBuffer(std::unique_ptr<Bind::IndexBuffer> ibuf) noxnd
+    void AddStaticIndexBuffer(std::unique_ptr<Bind::IndexBuffer> ibuf) NOXND
     {
         assert(m_pIndexBuffer == nullptr);
         m_pIndexBuffer = ibuf.get();
         m_staticBinds.push_back(std::move(ibuf));
     }
 
-    void SetIndexFromStatic() noxnd
+    void SetIndexFromStatic() NOXND
     {
         assert( "Attempting to add index buffer a second time" && m_pIndexBuffer == nullptr );
         for( const auto& b : m_staticBinds )

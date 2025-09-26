@@ -26,7 +26,7 @@ class IndexedTriangleList
     }
 
     // asserts face-independent vertices w/ normals cleared to zero
-    void SetNormalsIndependentFlat() noxnd
+    void SetNormalsIndependentFlat() NOXND
     {
         using namespace DirectX;
         assert(indices.size() % 3 == 0 &&
