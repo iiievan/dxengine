@@ -24,19 +24,23 @@ private:
 class Node
 {
     friend class Model;
+    friend class ModelWindow;
 
 public:
     Node(const std::string &name, std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform) NOXND;
     void Draw(Graphics &gfx, DirectX::FXMMATRIX accumulateTransform) const NOXND;
-    void ShowTree(int& nodeIndexTracked, std::optional<int> &selectIndex) const noexcept;
+
 
 private:
     void AddChild(std::unique_ptr<Node> pChild) NOXND;
+    void ShowTree(int& nodeIndexTracked, std::optional<int> &selectedIndex, Node*& pSelectedNode) const noexcept;
+    void SetAppliedTransform(DirectX::FXMMATRIX transform) noexcept;
 
     std::string m_Name;
     std::vector<std::unique_ptr<Node>> m_childPtrs;
     std::vector<Mesh*> m_meshPtrs;
-    DirectX::XMFLOAT4X4 m_transform;
+    DirectX::XMFLOAT4X4 m_baseTransform;
+    DirectX::XMFLOAT4X4 m_appliedTransform;
 };
 
 class Model
