@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "imgui.h"
 
 Mesh::Mesh(Graphics &gfx, std::vector<std::unique_ptr<Bind::Bindable>> bindPtrs)
 {
@@ -30,8 +31,9 @@ DirectX::XMMATRIX Mesh::GetTransformXM() const noexcept
     return DirectX::XMLoadFloat4x4(&m_transform);
 }
 
-Node::Node(std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform) NOXND
-    : m_meshPtrs(std::move(meshPtrs))
+Node::Node(const std::string &name, std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform) NOXND
+    : m_meshPtrs(std::move(meshPtrs)),
+      m_Name(name)
 {
     DirectX::XMStoreFloat4x4(&m_transform, transform);
 }
@@ -46,6 +48,16 @@ void Node::Draw(Graphics &gfx, DirectX::FXMMATRIX accumulateTransform) const NOX
 
     for (const auto &pc : m_childPtrs)
         pc->Draw(gfx, built);
+}
+
+void Node::RenderTree() const noexcept
+{
+    if (ImGui::TreeNode(m_Name.c_str()))
+    {
+        for (const auto &pChild : m_childPtrs)
+            pChild->RenderTree();
+        ImGui::TreePop();
+    }
 }
 
 void Node::AddChild(std::unique_ptr<Node> pChild) NOXND
@@ -65,9 +77,32 @@ Model::Model(Graphics &gfx, const std::string filename)
     m_pRoot = ParseNode(*pScene->mRootNode);
 }
 
-void Model::Draw(Graphics &gfx, DirectX::FXMMATRIX transform) const
+void Model::Draw(Graphics &gfx) const
 {
+    const auto transform = DirectX::XMMatrixRotationRollPitchYaw(m_pos.roll, m_pos.pitch, m_pos.yaw) *
+                                     DirectX::XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z);
     m_pRoot->Draw(gfx, transform);
+}
+
+void Model::ShowWindow(const char *windowName) noexcept
+{
+    windowName = windowName ? windowName : "Model";
+    if (ImGui::Begin(windowName))
+    {
+        ImGui::Columns(2,nullptr,true);
+        m_pRoot->RenderTree();
+
+        ImGui::NextColumn();
+        ImGui::Text("Orientation");
+        ImGui::SliderAngle("Roll",&m_pos.roll, -180.0f, 180.0f);
+        ImGui::SliderAngle("Pitch",&m_pos.pitch, -180.0f, 180.0f);
+        ImGui::SliderAngle("Yaw",&m_pos.yaw, -180.0f, 180.0f);
+        ImGui::Text("Position");
+        ImGui::SliderFloat("X",&m_pos.x, -20.0f, 20.0f);
+        ImGui::SliderFloat("Y",&m_pos.y, -20.0f, 20.0f);
+        ImGui::SliderFloat("Z",&m_pos.z, -20.0f, 20.0f);
+    }
+    ImGui::End();
 }
 
 std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh)
@@ -136,7 +171,7 @@ std::unique_ptr<Node> Model::ParseNode(const aiNode &node)
         currMeshPtrs.push_back(m_meshPtrs.at(meshIdx).get());
     }
 
-    auto pNode = std::make_unique<Node>(std::move(currMeshPtrs), transform);
+    auto pNode = std::make_unique<Node>(node.mName.C_Str(), std::move(currMeshPtrs), transform);
     for (size_t i = 0; i < node.mNumChildren; i++)
         pNode->AddChild(ParseNode(*node.mChildren[i]));
 
