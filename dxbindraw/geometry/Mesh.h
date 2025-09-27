@@ -6,6 +6,7 @@
 #include <assimp/Importer.hpp>
 #include "ConditionalNoexcept.h"
 #include "Vertex.h"
+#include <optional>
 #include "bindable/BindableCommon.h"
 #include "drawable/DrawableBase.h"
 
@@ -27,7 +28,7 @@ class Node
 public:
     Node(const std::string &name, std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform) NOXND;
     void Draw(Graphics &gfx, DirectX::FXMMATRIX accumulateTransform) const NOXND;
-    void ShowTree() const noexcept;
+    void ShowTree(int& nodeIndexTracked, std::optional<int> &selectIndex) const noexcept;
 
 private:
     void AddChild(std::unique_ptr<Node> pChild) NOXND;
