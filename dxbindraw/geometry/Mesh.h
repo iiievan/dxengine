@@ -5,7 +5,6 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include "ConditionalNoexcept.h"
-#include "Vertex.h"
 #include <optional>
 #include "bindable/BindableCommon.h"
 #include "drawable/DrawableBase.h"
