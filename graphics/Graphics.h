@@ -65,7 +65,7 @@ public:
     };
 
 public:
-    Graphics(HWND hWnd);
+    Graphics(HWND hWnd, int width, int height);
     Graphics(const Graphics &graphics) = delete;
     Graphics &operator=(const Graphics &graphics) = delete;
     ~Graphics();

@@ -6,8 +6,10 @@
 #include "Camera.h"
 #include "PointLight.h"
 #include "geometry/Mesh.h"
-#include <set>
 
+
+#define MAIN_SCREEN_WIDTH (1280)
+#define MAIN_SCREEN_HEIGHT (720)
 
 class App
 {

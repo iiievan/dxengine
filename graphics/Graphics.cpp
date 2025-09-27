@@ -89,11 +89,11 @@ const char *Graphics::DeviceRemovedException::GetType() const noexcept
     return "Chili Graphics Exception [Device Removed] (DXGI_ERROR_DEVICE_REMOVED)";
 }
 
-Graphics::Graphics(HWND hWnd)
+Graphics::Graphics(HWND hWnd, int width, int height)
 {
     DXGI_SWAP_CHAIN_DESC swchd = {};
-    swchd.BufferDesc.Width = 0;                               // if Width and Height not set
-    swchd.BufferDesc.Height = 0;                              // it will use hWnd to set window proportions
+    swchd.BufferDesc.Width = width;                               // if Width and Height not set
+    swchd.BufferDesc.Height = height;                              // it will use hWnd to set window proportions
     swchd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;     //
     swchd.BufferDesc.RefreshRate.Numerator = 0;               //
     swchd.BufferDesc.RefreshRate.Denominator = 0;             //
@@ -146,8 +146,8 @@ Graphics::Graphics(HWND hWnd)
     // create z-buffer(depth stencil) texture
     wrl::ComPtr<ID3D11Texture2D> pDepthStencil;
     D3D11_TEXTURE2D_DESC         descDepth = {};
-    descDepth.Width = 800u;
-    descDepth.Height = 600u;
+    descDepth.Width = width;
+    descDepth.Height = height;
     descDepth.MipLevels = 1u;
     descDepth.ArraySize = 1u;
     descDepth.Format = DXGI_FORMAT_D32_FLOAT;
@@ -169,8 +169,8 @@ Graphics::Graphics(HWND hWnd)
 
     // configure viewport
     D3D11_VIEWPORT vp;
-    vp.Width = 800.0f;
-    vp.Height = 600.0f;
+    vp.Width = (float)width;
+    vp.Height = (float)height;
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
     vp.TopLeftX = 0.0f;

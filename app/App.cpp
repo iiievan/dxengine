@@ -1,10 +1,5 @@
 #include "App.h"
-#include <algorithm>
-#include <memory>
-#include "ChiliMath.h"
 #include "GDIPlusManager.h"
-#include "Surface.h"
-#include "drawable/AssTest.h"
 #include "imgui.h"
 
 namespace dx = DirectX;
@@ -24,12 +19,12 @@ void PrintAssimpVersion()
 }
 
 App::App()
-:m_wnd(800, 600, "Donkey Fart Box"),
+:m_wnd(MAIN_SCREEN_WIDTH, MAIN_SCREEN_HEIGHT, "Donkey Fart Box"),
  m_pointlight(m_wnd.Gfx())
 {
     PrintAssimpVersion();
 
-    m_wnd.Gfx().SetProjection(dx::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
+    m_wnd.Gfx().SetProjection(dx::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 50.0f));
 }
 
 App::~App()
