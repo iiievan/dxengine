@@ -27,7 +27,7 @@ class Node
 public:
     Node(const std::string &name, std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform) NOXND;
     void Draw(Graphics &gfx, DirectX::FXMMATRIX accumulateTransform) const NOXND;
-    void RenderTree() const noexcept;
+    void ShowTree() const noexcept;
 
 private:
     void AddChild(std::unique_ptr<Node> pChild) NOXND;
@@ -42,6 +42,8 @@ class Model
 {
 public:
     Model(Graphics& gfx, const std::string filename);
+    ~Model() noexcept;
+
     void Draw(Graphics &gfx) const NOXND;
     void ShowWindow(const char* windowName = nullptr) noexcept;
 
@@ -51,16 +53,7 @@ private:
 
     std::unique_ptr<Node> m_pRoot;
     std::vector<std::unique_ptr<Mesh>> m_meshPtrs;
-
-    struct
-    {
-        float roll = 0.0f;
-        float pitch = 0.0f;
-        float yaw = 0.0f;
-        float x = 0.0f;
-        float y = 0.0f;
-        float z = 0.0f;
-    } m_pos;
+    std::unique_ptr<class ModelWindow> m_pWindow;
 };
 
 #endif //__MESH_H
