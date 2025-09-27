@@ -12,7 +12,7 @@ namespace Bind
         return gfx.m_pDevice.Get();
     }
 
-    DxgiInfoManager &Bindable::GetInfoManager(Graphics &gfx) NOXND
+    DxgiInfoManager &Bindable::GetInfoManager(Graphics &gfx)
     {
 #ifndef NDEBUG
         return gfx.m_infoManager;

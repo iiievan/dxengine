@@ -30,7 +30,7 @@ private:
     PointLight m_pointlight;
 
     float m_speed_factor {1.0f};
-    Model m_nanosuit{m_wnd.Gfx(),"models\\nanosuit.obj"};
+    Model m_nanosuit{m_wnd.Gfx(),"models\\boxy.gltf"};
 };
 
 #endif // __APP_H

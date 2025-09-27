@@ -1,8 +1,35 @@
 #include "Mesh.h"
 #include "imgui.h"
 #include <unordered_map>
+#include <sstream>
 
 namespace dx = DirectX;
+
+
+ModelException::ModelException(int line, const char *file, std::string note) noexcept
+: ChiliException(line, file),
+  m_note(std::move(note))
+{
+}
+
+const char * ModelException::what() const noexcept
+{
+    std::ostringstream oss;
+    oss << ChiliException::what() << std::endl
+        << "[Note]" << GetNote();
+    m_whatBuffer = oss.str();
+    return m_whatBuffer.c_str();
+}
+
+const char * ModelException::GetType() const noexcept
+{
+    return "Chili Model Exception";
+}
+
+const std::string & ModelException::GetNote() const noexcept
+{
+    return m_note;
+}
 
 Mesh::Mesh(Graphics &gfx, std::vector<std::unique_ptr<Bind::Bindable>> bindPtrs)
 {
@@ -137,6 +164,8 @@ public:
             ImGui::NextColumn();
             if (m_selectedNode != nullptr)
             {
+                // если структура трансформации не существует для этого узла
+                // то она будет создана именно в этот момент благодаря unordered_map<>
                 auto& transform = m_transforms[*m_selectIndex];
                 ImGui::Text("Orientation");
                 ImGui::SliderAngle("Roll",&transform.roll, -180.0f, 180.0f);
@@ -183,7 +212,13 @@ Model::Model(Graphics &gfx, const std::string filename)
     : m_pWindow(std::make_unique<ModelWindow>())
 {
     Assimp::Importer imp;
-    const auto       pScene = imp.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+    const auto       pScene = imp.ReadFile(filename.c_str(), aiProcess_Triangulate |
+                                                                   aiProcess_JoinIdenticalVertices |
+                                                                   aiProcess_ConvertToLeftHanded |
+                                                                   aiProcess_GenNormals);
+
+    if (pScene == nullptr)
+        throw ModelException(__LINE__, __FILE__, imp.GetErrorString());
 
     for (size_t i = 0; i < pScene->mNumMeshes; i++)
         m_meshPtrs.push_back(ParseMesh(gfx, *pScene->mMeshes[i]));
