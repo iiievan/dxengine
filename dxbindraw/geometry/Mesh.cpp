@@ -61,18 +61,18 @@ dx::XMMATRIX Mesh::GetTransformXM() const noexcept
     return dx::XMLoadFloat4x4(&m_transform);
 }
 
-Node::Node(const std::string &name, std::vector<Mesh *> meshPtrs, const dx::XMMATRIX &transform) NOXND
+Node::Node(const std::string &name, std::vector<Mesh *> meshPtrs, const dx::XMMATRIX &transform_in) NOXND
     : m_meshPtrs(std::move(meshPtrs)),
       m_Name(name)
 {
-    dx::XMStoreFloat4x4(&m_baseTransform, transform);
+    dx::XMStoreFloat4x4(&m_transform, transform_in);
     dx::XMStoreFloat4x4(&m_appliedTransform, dx::XMMatrixIdentity());
 }
 
 void Node::Draw(Graphics &gfx, dx::FXMMATRIX accumulateTransform) const NOXND
 {
-    const auto built = dx::XMLoadFloat4x4(&m_baseTransform) *
-                                 dx::XMLoadFloat4x4(&m_appliedTransform) *
+    const auto built = dx::XMLoadFloat4x4(&m_appliedTransform) *
+                                 dx::XMLoadFloat4x4(&m_transform) *
                                  accumulateTransform;
 
     // apply that transform to all the meshes of the node and all childrens of that node
@@ -96,36 +96,40 @@ void Node::ShowTree(int& nodeIndexTracked, std::optional<int> &selectedIndex,  N
     //            Если optional пустой(не содержит значения) → возвращает default_value
     const auto node_flags = ImGuiTreeNodeFlags_OpenOnArrow | //  узел раскрывается только по клику на стрелку
                             ((currentNodeIndex == selectedIndex.value_or(-1)) ? ImGuiTreeNodeFlags_Selected : 0) | // узел визуально выделен, если его индекс совпадает с выбранным
-                            ((m_childPtrs.size() == 0) ? ImGuiTreeNodeFlags_Leaf : 0); // узел помечается как лист, если у него нет детей
+                           ((m_childPtrs.size() == 0) ? ImGuiTreeNodeFlags_Leaf : 0); // узел помечается как лист, если у него нет детей
+    /*
+     Примеры для std::optional .value_or()
+    1-й пример:
+    Ни один узел еще не выбран
+    selectedIndex - пустой (std::nullopt)
+    value_or(-1) вернет -1
+    Сравнение: currentNodeIndex == -1 → всегда false (индексы начинаются с 0)
+    Результат: Ни один узел не будет выделен
+    -1 выбран как "невозможный" индекс, поскольку индексы узлов начинаются с 0 и увеличиваются
+
+    2-й пример:
+    Выбран узел с индексом 3
+    selectedIndex содержит значение 3
+    value_or(-1) вернет 3
+    Сравнение: currentNodeIndex == 3 → true только для узла с индексом 3
+    Результат: Только узел с индексом 3 получит флаг Selected
+    */
 
     // Создание элемента дерева в ImGui
     // TreeNodeEx возвращает true, если узел раскрыт
     // (void *)(intptr_t)currentNodeIndex - уникальный ID для ImGui
+    const auto expanded = ImGui::TreeNodeEx((void *)(intptr_t)currentNodeIndex, node_flags,m_Name.c_str());
 
-    // 1-й пример:
-    // Ни один узел еще не выбран
-    // selectedIndex - пустой (std::nullopt)
-    // value_or(-1) вернет -1
-    // Сравнение: currentNodeIndex == -1 → всегда false (индексы начинаются с 0)
-    // Результат: Ни один узел не будет выделен
-    // -1 выбран как "невозможный" индекс, поскольку индексы узлов начинаются с 0 и увеличиваются
-
-    // 2-й пример:
-    // Выбран узел с индексом 3
-    // selectedIndex содержит значение 3
-    // value_or(-1) вернет 3
-    // Сравнение: currentNodeIndex == 3 → true только для узла с индексом 3
-    // Результат: Только узел с индексом 3 получит флаг Selected
-    if (ImGui::TreeNodeEx((void *)(intptr_t)currentNodeIndex, node_flags,m_Name.c_str()))
+    // Обработка клика на узле
+    if (ImGui::IsItemClicked())
     {
-        // Обработка клика на узле
-        if (ImGui::IsItemClicked())
-        {
-            selectedIndex = currentNodeIndex;       // Запоминаем индекс
-            pSelectedNode = const_cast<Node *>(this);   // И указатель на узел
-                                                        // const_cast нужен потому что метод const, но выбор требует модификации
-        }
+        selectedIndex = currentNodeIndex;       // Запоминаем индекс
+        pSelectedNode = const_cast<Node *>(this);   // И указатель на узел
+                                                    // const_cast нужен потому что метод const, но выбор требует модификации
+    }
 
+    if (expanded)
+    {
         // Рекурсивный обход дочерних узлов
         // Два идентификатора выбора (индекс и указатель) дают гибкость
         for (const auto &pChild : m_childPtrs)

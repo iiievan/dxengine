@@ -39,7 +39,7 @@ class Node
     friend class ModelWindow;
 
 public:
-    Node(const std::string &name, std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform) NOXND;
+    Node(const std::string &name, std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform_in) NOXND;
     void Draw(Graphics &gfx, DirectX::FXMMATRIX accumulateTransform) const NOXND;
 
 
@@ -51,7 +51,7 @@ private:
     std::string m_Name;
     std::vector<std::unique_ptr<Node>> m_childPtrs;
     std::vector<Mesh*> m_meshPtrs;
-    DirectX::XMFLOAT4X4 m_baseTransform;
+    DirectX::XMFLOAT4X4 m_transform;
     DirectX::XMFLOAT4X4 m_appliedTransform;
 };
 
