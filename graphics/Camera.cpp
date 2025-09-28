@@ -37,7 +37,7 @@ void Camera::SpawnControlWindow() noexcept
         ImGui::SliderFloat("Z", &m_pos.z, -80.0f, 80.0f, "%.1f");
 
         ImGui::Text("Orientation");
-        ImGui::SliderAngle("Pitch", &m_pitch, m_pitchFactor * -90.0f, m_pitchFactor * 90.0f);
+        ImGui::SliderAngle("Pitch", &m_pitch, m_pitchConstrain * -90.0f, m_pitchConstrain * 90.0f);
         ImGui::SliderAngle("Yaw", &m_yaw, -180.0f, 180.0f);
         if (ImGui::Button("Reset"))
             Reset();
@@ -55,7 +55,7 @@ void Camera::Reset() noexcept
 void Camera::Rotate(float dx, float dy) noexcept
 {
     m_yaw = wrap_angle(m_yaw + dx*m_rotationSpeed);
-    m_pitch = std::clamp(m_pitch + dy * m_rotationSpeed, m_pitchFactor * -PI/2.0f, m_pitchFactor * PI/2.0f);
+    m_pitch = std::clamp(m_pitch + dy * m_rotationSpeed, m_pitchConstrain * -PI/2.0f, m_pitchConstrain * PI/2.0f);
 }
 
 void Camera::Translate(DirectX::XMFLOAT3 translation) noexcept

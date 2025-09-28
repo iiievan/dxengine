@@ -99,7 +99,7 @@ void App::DoFrame()
     while (const auto delta = m_wnd.mouse.ReadRawDelta())
     {
         if (!m_wnd.IsCursorEnabled())
-            m_camera.Rotate(delta->x, delta->y);
+            m_camera.Rotate((float)delta->x, (float)delta->y);
     }
 
     // imgui windows

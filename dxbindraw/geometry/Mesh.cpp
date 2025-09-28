@@ -61,9 +61,10 @@ dx::XMMATRIX Mesh::GetTransformXM() const noexcept
     return dx::XMLoadFloat4x4(&m_transform);
 }
 
-Node::Node(const std::string &name, std::vector<Mesh *> meshPtrs, const dx::XMMATRIX &transform_in) NOXND
+Node::Node(int id, const std::string &name, std::vector<Mesh *> meshPtrs, const dx::XMMATRIX &transform_in) NOXND
     : m_meshPtrs(std::move(meshPtrs)),
-      m_Name(name)
+      m_Name(name),
+      m_ID(id)
 {
     dx::XMStoreFloat4x4(&m_transform, transform_in);
     dx::XMStoreFloat4x4(&m_appliedTransform, dx::XMMatrixIdentity());
@@ -83,20 +84,16 @@ void Node::Draw(Graphics &gfx, dx::FXMMATRIX accumulateTransform) const NOXND
         pc->Draw(gfx, built);
 }
 
-void Node::ShowTree(int& nodeIndexTracked, std::optional<int> &selectedIndex,  Node*& pSelectedNode) const noexcept
+void Node::ShowTree( Node*& pSelectedNode) const noexcept
 {
-    // nodeIndex serves as the uid for gui tree nodes, incremented through recursion
-    const int currentNodeIndex = nodeIndexTracked;
-    // Каждый узел получает уникальный индекс. Поскольку обход рекурсивный,
-    // этот индекс последовательно увеличивается для всех узлов дерева.
-    nodeIndexTracked++;
-
+    // if there is no selected node, set selected ID to an impossible value
+    const int selectedID = (pSelectedNode == nullptr) ? -1 : pSelectedNode->GetId();
     // build up flags for current node
     // value_or : Если optional содержит значение → возвращает это значение
     //            Если optional пустой(не содержит значения) → возвращает default_value
     const auto node_flags = ImGuiTreeNodeFlags_OpenOnArrow | //  узел раскрывается только по клику на стрелку
-                            ((currentNodeIndex == selectedIndex.value_or(-1)) ? ImGuiTreeNodeFlags_Selected : 0) | // узел визуально выделен, если его индекс совпадает с выбранным
-                           ((m_childPtrs.size() == 0) ? ImGuiTreeNodeFlags_Leaf : 0); // узел помечается как лист, если у него нет детей
+                               ((GetId() == selectedID) ? ImGuiTreeNodeFlags_Selected : 0) | // узел визуально выделен, если его индекс совпадает с выбранным
+                                ((m_childPtrs.size() == 0) ? ImGuiTreeNodeFlags_Leaf : 0); // узел помечается как лист, если у него нет детей
     /*
      Примеры для std::optional .value_or()
     1-й пример:
@@ -118,12 +115,11 @@ void Node::ShowTree(int& nodeIndexTracked, std::optional<int> &selectedIndex,  N
     // Создание элемента дерева в ImGui
     // TreeNodeEx возвращает true, если узел раскрыт
     // (void *)(intptr_t)currentNodeIndex - уникальный ID для ImGui
-    const auto expanded = ImGui::TreeNodeEx((void *)(intptr_t)currentNodeIndex, node_flags,m_Name.c_str());
+    const auto expanded = ImGui::TreeNodeEx((void *)(intptr_t)GetId(), node_flags,m_Name.c_str());
 
     // Обработка клика на узле
     if (ImGui::IsItemClicked())
     {
-        selectedIndex = currentNodeIndex;       // Запоминаем индекс
         pSelectedNode = const_cast<Node *>(this);   // И указатель на узел
                                                     // const_cast нужен потому что метод const, но выбор требует модификации
     }
@@ -133,7 +129,7 @@ void Node::ShowTree(int& nodeIndexTracked, std::optional<int> &selectedIndex,  N
         // Рекурсивный обход дочерних узлов
         // Два идентификатора выбора (индекс и указатель) дают гибкость
         for (const auto &pChild : m_childPtrs)
-            pChild->ShowTree(nodeIndexTracked, selectedIndex, pSelectedNode);
+            pChild->ShowTree(pSelectedNode);
         ImGui::TreePop();
     }
 }
@@ -163,14 +159,14 @@ public:
         {
             int nodeIndexTracker = 0;
             ImGui::Columns(2,nullptr,true);
-            root.ShowTree(nodeIndexTracker, m_selectIndex, m_selectedNode);
+            root.ShowTree(m_selectedNode);
 
             ImGui::NextColumn();
             if (m_selectedNode != nullptr)
             {
                 // если структура трансформации не существует для этого узла
                 // то она будет создана именно в этот момент благодаря unordered_map<>
-                auto& transform = m_transforms[*m_selectIndex];
+                auto& transform = m_transforms[m_selectedNode->GetId()];
                 ImGui::Text("Orientation");
                 ImGui::SliderAngle("Roll",&transform.roll, -180.0f, 180.0f);
                 ImGui::SliderAngle("Pitch",&transform.pitch, -180.0f, 180.0f);
@@ -186,7 +182,8 @@ public:
 
     dx::XMMATRIX GetTransform() const noexcept
     {
-        const auto& transform = m_transforms.at(*m_selectIndex);
+        assert(m_selectedNode != nullptr);
+        const auto& transform = m_transforms.at(m_selectedNode->GetId());
         return dx::XMMatrixRotationRollPitchYaw(transform.roll, transform.pitch, transform.yaw) *
                 dx::XMMatrixTranslation(transform.x, transform.y, transform.z);
     }
@@ -208,7 +205,6 @@ private:
     //                        Динамическое добавление - новые трансформации создаются по мере выбора узлов
     //                        Экономия памяти - хранятся только трансформации для узлов, которые когда-либо выбирались
     std::unordered_map<int, m_TransformParameters> m_transforms;
-    std::optional<int>                             m_selectIndex;
     Node *                                         m_selectedNode;
 };
 
@@ -227,7 +223,8 @@ Model::Model(Graphics &gfx, const std::string filename)
     for (size_t i = 0; i < pScene->mNumMeshes; i++)
         m_meshPtrs.push_back(ParseMesh(gfx, *pScene->mMeshes[i]));
 
-    m_pRoot = ParseNode(*pScene->mRootNode);
+    int nextID = 0;
+    m_pRoot = ParseNode(nextID,*pScene->mRootNode);
 }
 
 Model::~Model() noexcept
@@ -250,7 +247,6 @@ void Model::ShowWindow(const char *windowName) noexcept
 
 std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh)
 {
-    namespace dx = DirectX;
     using Dvtx::VertexLayout;
 
     Dvtx::VertexBuffer vbuf(
@@ -300,9 +296,8 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh)
     return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));
 }
 
-std::unique_ptr<Node> Model::ParseNode(const aiNode &node)
+std::unique_ptr<Node> Model::ParseNode(int &nextID, const aiNode &node)
 {
-    namespace dx = DirectX;
     const auto transform = dx::XMMatrixTranspose(
         dx::XMLoadFloat4x4(reinterpret_cast<const dx::XMFLOAT4X4 *>(&node.mTransformation)));
 
@@ -314,9 +309,9 @@ std::unique_ptr<Node> Model::ParseNode(const aiNode &node)
         currMeshPtrs.push_back(m_meshPtrs.at(meshIdx).get());
     }
 
-    auto pNode = std::make_unique<Node>(node.mName.C_Str(), std::move(currMeshPtrs), transform);
+    auto pNode = std::make_unique<Node>(nextID++, node.mName.C_Str(), std::move(currMeshPtrs), transform);
     for (size_t i = 0; i < node.mNumChildren; i++)
-        pNode->AddChild(ParseNode(*node.mChildren[i]));
+        pNode->AddChild(ParseNode(nextID, *node.mChildren[i]));
 
     return pNode;
 }

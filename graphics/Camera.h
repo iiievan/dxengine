@@ -20,7 +20,7 @@ private:
 
     static constexpr float m_travelSpeed = 12.0f;
     static constexpr float m_rotationSpeed = 0.004f;
-    static constexpr float m_pitchFactor = 0.995f;
+    static constexpr float m_pitchConstrain = 0.995f;
 };
 
 
