@@ -68,21 +68,31 @@ public:
     static std::optional<WPARAM> ProcessMessages() noexcept;
     Graphics& Gfx();
 
+    void EnableCursor() noexcept;
+    void DisableCursor() noexcept;
+
 private:
     static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
     static LRESULT CALLBACK HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
     LRESULT                 HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
+    void ConfineCursor() noexcept;
+    void FreeCursor() noexcept;
+    void HideCursor() noexcept;
+    void ShowCursor() noexcept;
+    void EnableImguiMouse() noexcept;
+    void DisableImguiMouse() noexcept;
 
 public:
-    Keyboard m_kbd;
-    Mouse m_mouse;
+    Keyboard kbd;
+    Mouse mouse;
+
 private:
     int  m_width;
     int  m_height;
     HWND m_hWnd;
-    static inline int s_windowCount = 0;
-
     std::unique_ptr<Graphics> m_pGfx;
+    static inline int s_windowCount = 0;
+    bool m_CursorEnabled;
 };
 
 #endif // __WINDOW_H

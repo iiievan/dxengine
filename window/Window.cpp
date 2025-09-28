@@ -166,6 +166,22 @@ Graphics &Window::Gfx()
     return *m_pGfx;
 }
 
+void Window::EnableCursor() noexcept
+{
+    m_CursorEnabled = true;
+    ShowCursor();
+    EnableImguiMouse();
+    FreeCursor();
+}
+
+void Window::DisableCursor() noexcept
+{
+    m_CursorEnabled = false;
+    HideCursor();
+    DisableImguiMouse();
+    ConfineCursor();
+}
+
 LRESULT CALLBACK Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
     // use create parameter passed in from CreateWindow() to store window class pointer at WinAPI side
@@ -209,7 +225,23 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
                 PostQuitMessage(0); // Закрыть приложение, если это было последнее окно
             return 0;               // destroy window once by Destructor: Window::~Window()
         case WM_KILLFOCUS:
-            m_kbd.ClearState();
+            kbd.ClearState();
+            break;
+        case WM_ACTIVATE:
+            // confine/free cursor on window to foreground/background if cursor disabled
+            if (!m_CursorEnabled)
+            {
+                if (wParam & WA_ACTIVE)
+                {
+                    ConfineCursor();
+                    HideCursor();
+                }
+                else
+                {
+                    FreeCursor();
+                    ShowCursor();
+                }
+            }
             break;
         /********* Keyboard handle *********/
         case WM_KEYDOWN:
@@ -218,48 +250,61 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
             if (imio.WantCaptureKeyboard)
                 break;
 
-            if (!(lParam & 0x40000000) || m_kbd.AutorepeatIsEnabled())
-                m_kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
+            if (!(lParam & 0x40000000) || kbd.AutorepeatIsEnabled())
+                kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
             break;
         case WM_KEYUP:
         case WM_SYSKEYUP:
             if (imio.WantCaptureKeyboard)
                 break;
 
-            m_kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
+            kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
         case WM_CHAR:
             if (imio.WantCaptureKeyboard)
                 break;
 
-            m_kbd.OnChar(static_cast<unsigned char>(wParam));
+            kbd.OnChar(static_cast<unsigned char>(wParam));
             break;
         /********* Keyboard handle *********/
         /*********** Mouse handle **********/
         case WM_MOUSEMOVE:
         {
+            const POINTS pt = MAKEPOINTS( lParam );
+
+            // cursorless exclusive gets first dibs
+            if (!m_CursorEnabled)
+            {
+                if (!mouse.IsInWindow())
+                {
+                    SetCapture(hWnd);
+                    mouse.OnMouseEnter();
+                    HideCursor();
+                }
+                break;
+            }
+
             if (imio.WantCaptureKeyboard)
                 break;
 
-            const POINTS pt = MAKEPOINTS( lParam );
             // if cursor in client region -> log move, and log enter + capture mouse (if not previously in window)
             if (pt.x > 0 && pt.x < m_width && pt.y > 0 && pt.y < m_height )
             {
-                m_mouse.OnMouseMove(pt.x, pt.y);
-                if (!m_mouse.IsInWindow())
+                mouse.OnMouseMove(pt.x, pt.y);
+                if (!mouse.IsInWindow())
                 {
                     SetCapture(hWnd);
-                    m_mouse.OnMouseEnter();
+                    mouse.OnMouseEnter();
                 }
             }
             //if cursor not in client -> log move / maintain capture if button down
             else
             {
                 if (wParam & (MK_LBUTTON | MK_RBUTTON))
-                    m_mouse.OnMouseMove(pt.x, pt.y);
+                    mouse.OnMouseMove(pt.x, pt.y);
                 else
                 {
                     ReleaseCapture();   // buttons L and R released -> we are not draggind by mouse!
-                    m_mouse.OnMouseLeave();
+                    mouse.OnMouseLeave();
                 }
             }
             break;
@@ -267,11 +312,17 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
         case WM_LBUTTONDOWN:
         {
             SetForegroundWindow(hWnd);
+            if (!m_CursorEnabled)
+            {
+                ConfineCursor();
+                HideCursor();
+            }
+
             if (imio.WantCaptureKeyboard)
                 break;
 
             const POINTS pt = MAKEPOINTS( lParam );
-            m_mouse.OnLeftPressed(pt.x,pt.y);
+            mouse.OnLeftPressed(pt.x,pt.y);
 
             break;
         }
@@ -281,7 +332,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
                 break;
 
             const POINTS pt = MAKEPOINTS( lParam );
-            m_mouse.OnRightPressed(pt.x,pt.y);
+            mouse.OnRightPressed(pt.x,pt.y);
             break;
         }
         case WM_LBUTTONUP:
@@ -290,12 +341,12 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
                 break;
 
             const POINTS pt = MAKEPOINTS( lParam );
-            m_mouse.OnLeftReleased(pt.x,pt.y);
+            mouse.OnLeftReleased(pt.x,pt.y);
 
             if (pt.x < 0 || pt.x >= m_width || pt.y < 0 || pt.y >= m_height )
             {
                 ReleaseCapture();   // button L released -> we are not draggind by mouse!
-                m_mouse.OnMouseLeave();
+                mouse.OnMouseLeave();
             }
             break;
         }
@@ -305,11 +356,11 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
                 break;
 
             const POINTS pt = MAKEPOINTS( lParam );
-            m_mouse.OnRightReleased(pt.x,pt.y);
+            mouse.OnRightReleased(pt.x,pt.y);
             if (pt.x < 0 || pt.x >= m_width || pt.y < 0 || pt.y >= m_height )
             {
                 ReleaseCapture();   // button R released -> we are not draggind by mouse!
-                m_mouse.OnMouseLeave();
+                mouse.OnMouseLeave();
             }
             break;
         }
@@ -320,11 +371,44 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 
             const POINTS pt = MAKEPOINTS( lParam );
             const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
-            m_mouse.OnWheelDelta(pt.x,pt.y,delta);
+            mouse.OnWheelDelta(pt.x,pt.y,delta);
             break;
         }
         /*********** Mouse handle **********/
     }
 
     return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+void Window::ConfineCursor() noexcept
+{
+    RECT rect;
+    GetClientRect(m_hWnd, &rect);
+    MapWindowPoints(m_hWnd,nullptr,reinterpret_cast<POINT*>(&rect),2);
+    ClipCursor(&rect);
+}
+
+void Window::FreeCursor() noexcept
+{
+    ClipCursor(nullptr);
+}
+
+void Window::HideCursor() noexcept
+{
+    while (::ShowCursor(FALSE) >= 0);
+}
+
+void Window::ShowCursor() noexcept
+{
+    while (::ShowCursor(TRUE) < 0);
+}
+
+void Window::EnableImguiMouse() noexcept
+{
+    ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+}
+
+void Window::DisableImguiMouse() noexcept
+{
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
 }
