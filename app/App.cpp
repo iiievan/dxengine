@@ -25,7 +25,6 @@ App::App()
     PrintAssimpVersion();
 
     m_wnd.Gfx().SetProjection(dx::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 50.0f));
-    m_wnd.DisableCursor();
 }
 
 App::~App()
@@ -55,6 +54,23 @@ void App::DoFrame()
 
     m_nanosuit.Draw(m_wnd.Gfx());
     m_pointlight.Draw(m_wnd.Gfx());
+
+    while (const auto e = m_wnd.kbd.ReadKey())
+    {
+        if (e->isPress() && e->getCode() == VK_INSERT)
+        {
+            if (m_CursorEnabled)
+            {
+                m_wnd.DisableCursor();
+                m_CursorEnabled = false;
+            }
+            else
+            {
+                m_wnd.EnableCursor();
+                m_CursorEnabled = true;
+            }
+        }
+    }
 
     // imgui windows
     m_camera.SpawnControlWindow();
