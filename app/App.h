@@ -23,19 +23,17 @@ public:
 private:
     void DoFrame();
     void ShowImguiDemoWindow();
-    void ShowRawInputWindow();
 
 private:
-    int m_x = 0;
-    int m_y = 0;
     ImguiManager m_imgui;
-    Window m_wnd;
-    ChiliTimer m_timer;
-    Camera m_camera;
-    PointLight m_pointlight;
+    Window       m_wnd;
+    ChiliTimer   m_timer;
+    Camera       m_camera;
+    PointLight   m_pointlight;
 
-    float m_speed_factor {1.0f};
-    Model m_nanosuit{m_wnd.Gfx(),"models\\nanosuit.gltf"};
+    float m_speed_factor{1.0f};
+    Model m_nanosuit{m_wnd.Gfx(), "models\\nanosuit.gltf"};
+    bool  m_showDemoWindow{false};
 };
 
 #endif // __APP_H

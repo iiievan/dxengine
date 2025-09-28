@@ -57,19 +57,49 @@ void App::DoFrame()
 
     while (const auto e = m_wnd.kbd.ReadKey())
     {
-        if (e->isPress() && e->getCode() == VK_INSERT)
+        if (!e->isPress())
+            continue;
+
+        switch (e->getCode())
         {
-            if (m_wnd.IsCursorEnabled())
-            {
-                m_wnd.DisableCursor();
-                m_wnd.mouse.EnableRaw();
-            }
-            else
-            {
-                m_wnd.EnableCursor();
-                m_wnd.mouse.DisableRaw();
-            }
+            case VK_ESCAPE:
+                if (m_wnd.IsCursorEnabled())
+                {
+                    m_wnd.DisableCursor();
+                    m_wnd.mouse.EnableRaw();
+                }
+                else
+                {
+                    m_wnd.EnableCursor();
+                    m_wnd.mouse.DisableRaw();
+                }
+                break;
+            case VK_F1:
+                m_showDemoWindow = true;
+                break;
         }
+    }
+
+    if (!m_wnd.IsCursorEnabled())
+    {
+        if (m_wnd.kbd.KeyIsPressed('W'))
+            m_camera.Translate({0.0f, 0.0f, dt});
+        if (m_wnd.kbd.KeyIsPressed('A'))
+            m_camera.Translate({-dt, 0.0f, 0.0f});
+        if (m_wnd.kbd.KeyIsPressed('S'))
+            m_camera.Translate({0.0f, 0.0f, -dt});
+        if (m_wnd.kbd.KeyIsPressed('D'))
+            m_camera.Translate({dt, 0.0f, 0.0f});
+        if (m_wnd.kbd.KeyIsPressed('R'))
+            m_camera.Translate({0.0f, dt, 0.0f});
+        if (m_wnd.kbd.KeyIsPressed('F'))
+            m_camera.Translate({0.0f, -dt, 0.0f});
+    }
+
+    while (const auto delta = m_wnd.mouse.ReadRawDelta())
+    {
+        if (!m_wnd.IsCursorEnabled())
+            m_camera.Rotate(delta->x, delta->y);
     }
 
     // imgui windows
@@ -77,7 +107,6 @@ void App::DoFrame()
     m_pointlight.SpawnControlWindow();
     ShowImguiDemoWindow();
     m_nanosuit.ShowWindow();
-    ShowRawInputWindow();
 
     // present
     m_wnd.Gfx().EndFrame();
@@ -85,26 +114,9 @@ void App::DoFrame()
 
 void App::ShowImguiDemoWindow()
 {
-    static bool showDemoWindow = true;
-    if (showDemoWindow)
+    if (m_showDemoWindow)
     {
-        ImGui::ShowDemoWindow(&showDemoWindow);
+        ImGui::ShowDemoWindow(&m_showDemoWindow);
     }
-}
-
-void App::ShowRawInputWindow()
-{
-    while (const auto d = m_wnd.mouse.ReadRawDelta())
-    {
-        m_x += d->x;
-        m_y += d->y;
-    }
-
-    if (ImGui::Begin("Raw Input"))
-    {
-        ImGui::Text("Tally: (%d,%d)", m_x, m_y);
-        ImGui::Text("Cursor: %s",m_wnd.IsCursorEnabled() ? "enabled" : "disabled");
-    }
-    ImGui::End();
 }
 
