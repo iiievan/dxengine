@@ -17,8 +17,10 @@ private:
     DirectX::XMFLOAT3 m_pos;
     float m_pitch;
     float m_yaw;
+
     static constexpr float m_travelSpeed = 12.0f;
     static constexpr float m_rotationSpeed = 0.004f;
+    static constexpr float m_pitchFactor = 0.995f;
 };
 
 
