@@ -120,6 +120,16 @@ Window::Window(int width, int height, const char *name)
 
     // create graphics object
     m_pGfx = std::make_unique<Graphics>(m_hWnd, width, height);
+
+    // register mouse raw input device
+    RAWINPUTDEVICE rid;
+    rid.usUsagePage = 0x01; // mouse page
+    rid.usUsage = 0x02;     // mouse usage
+    rid.dwFlags = 0;
+    rid.hwndTarget = nullptr;
+
+    if (RegisterRawInputDevices(&rid, 1, sizeof(rid)) == false)
+        throw CHWND_LAST_EXCEPT();
 }
 
 Window::~Window()
@@ -379,6 +389,43 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
             break;
         }
         /*********** Mouse handle **********/
+        /*********** Raw mouse handle **********/
+        case WM_INPUT:
+        {
+            UINT size;
+            // first get the size of the input data
+            if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam),
+                                RID_INPUT,
+                                nullptr,
+                                &size,
+                                sizeof(RAWINPUTHEADER)) == -1)
+            {
+                // bail msg processing if error
+                break;
+            }
+            m_rawBuffer.resize(size);
+
+            //read in the input data
+            if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam),
+                    RID_INPUT,
+                    m_rawBuffer.data(),
+                    &size,
+                    sizeof(RAWINPUTHEADER)) != size)
+            {
+                // bail msg processing if error
+                break;
+            }
+
+            // process the raw input data
+            auto &ri = reinterpret_cast<const RAWINPUT&>(*m_rawBuffer.data());
+            if (ri.header.dwType == RIM_TYPEMOUSE &&
+                (ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0))
+            {
+                mouse.OnRawDelta(ri.data.mouse.lLastX, ri.data.mouse.lLastY);
+            }
+            break;
+        }
+        /*********** Raw mouse handle **********/
     }
 
     return DefWindowProc(hWnd, msg, wParam, lParam);

@@ -2,6 +2,8 @@
 #include "Utils.hpp"
 #include "WinDefs.h"
 
+
+
 std::optional<Mouse::Event> Mouse::Read() noexcept
 {
     if( m_buffer.size() > 0u )
@@ -12,6 +14,16 @@ std::optional<Mouse::Event> Mouse::Read() noexcept
     }
 
     return { };
+}
+
+std::optional<Mouse::RawDelta> Mouse::ReadRawDelta() noexcept
+{
+    if (m_rawDeltaBuffer.empty())
+        return std::nullopt;
+
+    const RawDelta d = m_rawDeltaBuffer.front();
+    m_rawDeltaBuffer.pop();
+    return d;
 }
 
 void Mouse::Flush() noexcept
@@ -39,6 +51,12 @@ void Mouse::OnMouseEnter() noexcept
 {
     m_is_in_window = true;
     m_buffer.push(Event(Event::Type::ENTER,*this));
+    TrimBuffer();
+}
+
+void Mouse::OnRawDelta(int dx, int dy) noexcept
+{
+    m_rawDeltaBuffer.push({dx,dy });
     TrimBuffer();
 }
 
@@ -84,6 +102,14 @@ void Mouse::OnWheelDown(int x, int y) noexcept
 {
     m_buffer.push(Event(Event::Type::WHEEL_DOWN, *this));
     TrimBuffer();
+}
+
+void Mouse::TrimRawInputBuffer() noexcept
+{
+    while (m_rawDeltaBuffer.size() > m_BuffSize)
+    {
+        m_rawDeltaBuffer.pop();
+    }
 }
 
 void Mouse::OnWheelDelta(int x, int y, int delta) noexcept

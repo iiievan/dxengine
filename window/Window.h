@@ -92,7 +92,8 @@ private:
     HWND m_hWnd;
     std::unique_ptr<Graphics> m_pGfx;
     static inline int s_windowCount = 0;
-    bool m_CursorEnabled;
+    bool m_CursorEnabled = true;
+    std::vector<BYTE> m_rawBuffer;
 };
 
 #endif // __WINDOW_H

@@ -23,8 +23,11 @@ public:
 private:
     void DoFrame();
     void ShowImguiDemoWindow();
+    void ShowRawInputWindow();
 
 private:
+    int m_x = 0;
+    int m_y = 0;
     ImguiManager m_imgui;
     Window m_wnd;
     ChiliTimer m_timer;

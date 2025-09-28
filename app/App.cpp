@@ -61,6 +61,7 @@ void App::DoFrame()
     m_pointlight.SpawnControlWindow();
     ShowImguiDemoWindow();
     m_nanosuit.ShowWindow();
+    ShowRawInputWindow();
 
     // present
     m_wnd.Gfx().EndFrame();
@@ -73,5 +74,18 @@ void App::ShowImguiDemoWindow()
     {
         ImGui::ShowDemoWindow(&showDemoWindow);
     }
+}
+
+void App::ShowRawInputWindow()
+{
+    while (const auto d = m_wnd.mouse.ReadRawDelta())
+    {
+        m_x += d->x;
+        m_y += d->y;
+    }
+
+    if (ImGui::Begin("Raw Input"))
+        ImGui::Text("Tally: (%d,%d)", m_x, m_y);
+    ImGui::End();
 }
 
