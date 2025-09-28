@@ -192,6 +192,11 @@ void Window::DisableCursor() noexcept
     ConfineCursor();
 }
 
+bool Window::IsCursorEnabled() const noexcept
+{
+    return m_CursorEnabled;
+}
+
 LRESULT CALLBACK Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
     // use create parameter passed in from CreateWindow() to store window class pointer at WinAPI side
@@ -392,6 +397,9 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
         /*********** Raw mouse handle **********/
         case WM_INPUT:
         {
+            if (!mouse.RawEnabled())
+                break;
+
             UINT size;
             // first get the size of the input data
             if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam),

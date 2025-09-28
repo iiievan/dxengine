@@ -70,6 +70,7 @@ public:
 
     void EnableCursor() noexcept;
     void DisableCursor() noexcept;
+    bool IsCursorEnabled() const noexcept;
 
 private:
     static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;

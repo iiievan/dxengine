@@ -59,15 +59,15 @@ void App::DoFrame()
     {
         if (e->isPress() && e->getCode() == VK_INSERT)
         {
-            if (m_CursorEnabled)
+            if (m_wnd.IsCursorEnabled())
             {
                 m_wnd.DisableCursor();
-                m_CursorEnabled = false;
+                m_wnd.mouse.EnableRaw();
             }
             else
             {
                 m_wnd.EnableCursor();
-                m_CursorEnabled = true;
+                m_wnd.mouse.DisableRaw();
             }
         }
     }
@@ -101,7 +101,10 @@ void App::ShowRawInputWindow()
     }
 
     if (ImGui::Begin("Raw Input"))
+    {
         ImGui::Text("Tally: (%d,%d)", m_x, m_y);
+        ImGui::Text("Cursor: %s",m_wnd.IsCursorEnabled() ? "enabled" : "disabled");
+    }
     ImGui::End();
 }
 
