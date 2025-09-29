@@ -3,4 +3,6 @@ cmake-build-debug
 .vs
 out
 build
-!models/*.obj
+!models/**/*.obj
+!assimp/lib/*
+*.pch
