@@ -8,43 +8,36 @@ SolidSphere::SolidSphere(Graphics &gfx, float radius)
     using namespace Bind;
     namespace dx = DirectX;
 
-    if (!IsStaticInitialized())
+    struct Vertex
     {
-        struct Vertex
-        {
-            dx::XMFLOAT3 pos;
-        };
+        dx::XMFLOAT3 pos;
+    };
 
-        auto model = Sphere::Make<Vertex>();
-        model.Transform(dx::XMMatrixScaling(radius, radius, radius));
-        AddBind(std::make_unique<VertexBuffer>(gfx, model.vertices));
-        AddIndexBuffer(std::make_unique<IndexBuffer>(gfx, model.indices));
+    auto model = Sphere::Make<Vertex>();
+    model.Transform(dx::XMMatrixScaling(radius, radius, radius));
+    AddBind(std::make_shared<VertexBuffer>(gfx, model.vertices));
+    AddBind(std::make_shared<IndexBuffer>(gfx, model.indices));
 
-        auto pvs = std::make_unique<VertexShader>(gfx, L"shaders/Solid.vs.cso");
-        auto pvscb = pvs->GetBytecode(); //  this is ID3DBlob
-        AddStaticBind(std::move(pvs));
+    auto pvs = std::make_shared<VertexShader>(gfx, L"shaders/Solid.vs.cso");
+    auto pvscb = pvs->GetBytecode(); //  this is ID3DBlob
+    AddBind(std::move(pvs));
 
-        AddStaticBind(std::make_unique<PixelShader>(gfx, L"shaders/Solid.ps.cso"));
+    AddBind(std::make_shared<PixelShader>(gfx, L"shaders/Solid.ps.cso"));
 
-        struct PSColorConstant
-        {
-            dx::XMFLOAT3 color = {1.0f, 1.0f, 1.0f};
-            float        padding; // for struct alighning in GRAphics memory
-        } color_constant;
-        AddStaticBind(std::make_unique<PixelConstantBuffer<PSColorConstant>>(gfx, color_constant));
+    struct PSColorConstant
+    {
+        dx::XMFLOAT3 color = {1.0f, 1.0f, 1.0f};
+        float        padding; // for struct alighning in GRAphics memory
+    } color_constant;
+    AddBind(std::make_shared<PixelConstantBuffer<PSColorConstant>>(gfx, color_constant));
 
-        const std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
-            {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}};
+    const std::vector<D3D11_INPUT_ELEMENT_DESC> ied = {
+        {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}};
 
-        AddStaticBind(std::make_unique<InputLayout>(gfx, ied, pvscb));
-    }
-    else
-        SetIndexFromStatic();
-
-    AddBind(std::make_unique<TransformCbuf>(gfx, *this));
+    AddBind(std::make_shared<InputLayout>(gfx, ied, pvscb));
+    AddBind(std::make_shared<Topology>(gfx, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+    AddBind(std::make_shared<TransformCbuf>(gfx, *this));
 }
-
-void SolidSphere::Update(float dt) noexcept {}
 
 void SolidSphere::SetPos(DirectX::XMFLOAT3 pos) noexcept
 {

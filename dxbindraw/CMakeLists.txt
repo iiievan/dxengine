@@ -30,25 +30,11 @@ set(BINDABLE_HEADERS bindable/Bindable.h
                      bindable/VertexBuffer.h
                      bindable/VertexShader.h)
 
-set(DRAWABLE_SOURCES drawable/Pyramid.cpp
-                     drawable/Drawable.cpp
-                     drawable/Box.cpp
-                     drawable/Sheet.cpp
-                     drawable/SkinnedBox.cpp
-                     drawable/SolidSphere.cpp
-                     drawable/Cylinder.cpp
-                     drawable/AssTest.cpp)
+set(DRAWABLE_SOURCES drawable/Drawable.cpp
+                     drawable/SolidSphere.cpp)
 
-set(DRAWABLE_HEADERS drawable/Pyramid.h
-                     drawable/Drawable.h
-                     drawable/DrawableBase.h
-                     drawable/Box.h
-                     drawable/Sheet.h
-                     drawable/SkinnedBox.h
-                     drawable/SolidSphere.h
-                     drawable/TestObject.h
-                     drawable/Cylinder.h
-                     drawable/AssTest.h)
+set(DRAWABLE_HEADERS drawable/Drawable.h
+                     drawable/SolidSphere.h)
 
 set(GEOMETRY_SOURCES  geometry/Cone.h
                       geometry/IndexedTriangleList.h

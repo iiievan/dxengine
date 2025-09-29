@@ -6,7 +6,7 @@
 #include <assimp/Importer.hpp>
 #include "ConditionalNoexcept.h"
 #include "bindable/BindableCommon.h"
-#include "drawable/DrawableBase.h"
+#include "drawable/Drawable.h"
 
 class ModelException : public ChiliException
 {
@@ -20,10 +20,10 @@ private:
     std::string m_note;
 };
 
-class Mesh : public DrawableBase<Mesh>
+class Mesh : public Drawable
 {
 public:
-    Mesh(Graphics &gfx, std::vector<std::unique_ptr<Bind::Bindable>> bindPtrs);
+    Mesh(Graphics &gfx, std::vector<std::shared_ptr<Bind::Bindable>> bindPtrs);
     void              Draw(Graphics &gfx, DirectX::FXMMATRIX accumulatedTransform) const NOXND;
     DirectX::XMMATRIX GetTransformXM() const noexcept override;
 
