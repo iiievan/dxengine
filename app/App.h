@@ -32,7 +32,7 @@ private:
     PointLight   m_pointlight;
 
     float m_speed_factor{1.0f};
-    Model m_nanosuit{m_wnd.Gfx(), "models\\nano_textured\\nanosuit.obj"};
+    Model m_keltec{m_wnd.Gfx(), "models\\keltec\\keltec.obj"};
     bool  m_showDemoWindow{false};
 };
 

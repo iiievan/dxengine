@@ -52,7 +52,7 @@ void App::DoFrame()
     m_wnd.Gfx().SetCamera(m_camera.GetMatrix());
     m_pointlight.Bind(m_wnd.Gfx(), m_camera.GetMatrix());
 
-    m_nanosuit.Draw(m_wnd.Gfx());
+    m_keltec.Draw(m_wnd.Gfx());
     m_pointlight.Draw(m_wnd.Gfx());
 
     while (const auto e = m_wnd.kbd.ReadKey())
@@ -106,7 +106,7 @@ void App::DoFrame()
     m_camera.SpawnControlWindow();
     m_pointlight.SpawnControlWindow();
     ShowImguiDemoWindow();
-    m_nanosuit.ShowWindow();
+    m_keltec.ShowWindow();
 
     // present
     m_wnd.Gfx().EndFrame();

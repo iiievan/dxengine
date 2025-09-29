@@ -285,7 +285,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
         auto &material = *pMaterials[mesh.mMaterialIndex];
 
         using namespace std::string_literals;
-        const auto base = "models\\nano_textured\\"s;
+        const auto base = "models\\keltec\\"s;
         aiString textFilename;
 
         material.GetTexture(aiTextureType_DIFFUSE, 0, &textFilename);
