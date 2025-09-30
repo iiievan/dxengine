@@ -4,12 +4,12 @@
 #include <DirectXMath.h>
 #include "ChiliMath.h"
 #include "IndexedTriangleList.h"
+#include <optional>
 
 class Sphere
 {
 public:
-    template <class V>
-    static IndexedTriangleList<V> MakeTesselated(int lat_div, int long_div)
+    static IndexedTriangleList MakeTesselated(Dvtx::VertexLayout layout, int lat_div, int long_div)
     {
         /*
            Северный полюс
@@ -35,27 +35,34 @@ public:
         const float     longitude_angle = 2.0f * PI / long_div;   // Угол между меридианами
 
         // Генерация вершин "поясов" сферы
-        std::vector<V> vertices;
+        Dvtx::VertexBuffer vb{std::move(layout)};
         for (int iLat = 1; iLat < lat_div; iLat++)
         {
             const auto latBase = dx::XMVector3Transform(base, dx::XMMatrixRotationX(lattitude_angle * iLat));
             for (int iLong = 0; iLong < long_div; iLong++)
             {
-                vertices.emplace_back();
+                dx::XMFLOAT3 calculatedPos;
                 auto v = dx::XMVector3Transform(latBase, dx::XMMatrixRotationZ(longitude_angle * iLong));
-                dx::XMStoreFloat3(&vertices.back().pos, v);
+                dx::XMStoreFloat3(&calculatedPos, v);
+                vb.EmplaceBack(calculatedPos);
             }
         }
 
         // Северный полюс
-        const auto iNorthPole = (unsigned short)vertices.size();
-        vertices.emplace_back();
-        dx::XMStoreFloat3(&vertices.back().pos, base);
+        const auto iNorthPole = (unsigned short)vb.Size();
+        {
+            dx::XMFLOAT3 northPos;
+            dx::XMStoreFloat3(&northPos, base);
+            vb.EmplaceBack(northPos);
+        }
 
         // Южный полюс
-        const auto iSouthPole = (unsigned short)vertices.size();
-        vertices.emplace_back();
-        dx::XMStoreFloat3(&vertices.back().pos, dx::XMVectorNegate(base));
+        const auto iSouthPole = (unsigned short)vb.Size();
+        {
+            dx::XMFLOAT3 southPos;
+            dx::XMStoreFloat3(&southPos, dx::XMVectorNegate(base));
+            vb.EmplaceBack(southPos);
+        }
 
         const auto calcIdx = [lat_div, long_div](unsigned short iLat, unsigned short iLong)
         {
@@ -109,13 +116,16 @@ public:
         indices.push_back(calcIdx(long_div - 2, long_div - 1));
         indices.push_back(iSouthPole);
 
-        return {std::move(vertices), std::move(indices)};
+        return {std::move(vb), std::move(indices)};
     }
 
-    template <class V>
-    static IndexedTriangleList<V> Make()
+
+    static IndexedTriangleList Make(std::optional<Dvtx::VertexLayout> layout = std::nullopt)
     {
-        return MakeTesselated<V>(12, 24);
+        using Element = Dvtx::VertexLayout::ElementType;
+        if (!layout)
+            layout = Dvtx::VertexLayout{}.Append(Element::Position3D);
+        return MakeTesselated(std::move(*layout),12, 24);
     }
 };
 

@@ -1,12 +1,6 @@
 #include "VertexBuffer.h"
 namespace Bind
 {
-    void VertexBuffer::Bind(Graphics &gfx) noexcept
-    {
-        const UINT offset = 0u;
-        GetContext(gfx)->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
-    }
-
     VertexBuffer::VertexBuffer(Graphics &gfx, const Dvtx::VertexBuffer &vbuf)
     : stride((UINT)vbuf.GetLayout().Size())
     {
@@ -22,5 +16,11 @@ namespace Bind
         sd.pSysMem = vbuf.GetGata();
 
         GFX_THROW_INFO(GetDevice(gfx)->CreateBuffer(&bd, &sd, &pVertexBuffer));
+    }
+
+    void VertexBuffer::Bind(Graphics &gfx) noexcept
+    {
+        const UINT offset = 0u;
+        GetContext(gfx)->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
     }
 }
