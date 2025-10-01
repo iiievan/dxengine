@@ -10,22 +10,31 @@ namespace Bind
     class Codex
     {
     public:
-        static std::shared_ptr<Bindable> Resolve(const std::string &key) NOXND  {  return Get().Resolve_(key);  }
-        static void Store(std::shared_ptr<Bindable> bind) { Get().Store_(std::move(bind)); }
-
-    private:
-        std::shared_ptr<Bindable> Resolve_(const std::string &key) const NOXND
+        template<class T, typename... Params>
+        static std::shared_ptr<Bindable> Resolve(Graphics& gfx, Params&&... p) NOXND
         {
-            auto i = m_binds.find(key);
-            if (i == m_binds.end())
-                return {};
-
-            return i->second;
+            // Params&&... не обычные ссылки, а универсальные - могут принимать как lvalue, так и rvalue
+            return Get().m_Resolve<T>(gfx,std::forward<Params>(p)...);
         }
 
-        void Store_(std::shared_ptr<Bindable> bind)
+    private:
+        template<class T, typename... Params>
+        std::shared_ptr<Bindable> m_Resolve(Graphics& gfx, Params&&... p)  NOXND
         {
-            m_binds[bind->GetUID()] = std::move(bind);
+            // std::forward - сохраняет категорию значения.
+            // Если параметр был передан как lvalue - останется lvalue (Codex::Resolve<VertexBuffer>(gfx, std::move(vertexData));)
+            // Если параметр был передан как rvalue - останется rvalue (Codex::Resolve<PixelShader>(gfx, "shader.hlsl");)
+            const auto key = T::GenerateUID(std::forward<Params>(p)...);
+            auto i = m_binds.find(key);
+            if (i == m_binds.end())
+            {
+                auto bind = std::make_shared<T>(gfx, std::forward<Params>(p)...);
+                m_binds[key] = bind;
+                return bind;
+            }
+
+
+            return i->second;
         }
 
         static Codex& Get()
