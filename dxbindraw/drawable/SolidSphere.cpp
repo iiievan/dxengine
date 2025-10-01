@@ -14,7 +14,7 @@ SolidSphere::SolidSphere(Graphics &gfx, float radius)
     AddBind(std::make_shared<VertexBuffer>(gfx, model.vertices));
     AddBind(std::make_shared<IndexBuffer>(gfx, model.indices));
 
-    auto pvs = std::make_shared<VertexShader>(gfx, L"shaders/Solid.vs.cso");
+    auto pvs = std::make_shared<VertexShader>(gfx, "shaders/Solid.vs.cso");
     auto pvsbc = pvs->GetBytecode(); //  this is ID3DBlob
     AddBind(std::move(pvs));
 

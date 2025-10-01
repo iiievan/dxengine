@@ -18,6 +18,7 @@ set(BINDABLE_SOURCES bindable/Bindable.cpp
                      bindable/VertexShader.cpp)
 
 set(BINDABLE_HEADERS bindable/Bindable.h
+                     bindable/BindableCodex.h
                      bindable/BindableCommon.h
                      bindable/ConstantBuffer.h
                      bindable/IndexBuffer.h

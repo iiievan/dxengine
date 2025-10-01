@@ -1,6 +1,7 @@
 #include "App.h"
 #include "GDIPlusManager.h"
 #include "imgui.h"
+#include "bindable/VertexBuffer.h"
 
 namespace dx = DirectX;
 GDIPlusManager gdipm;
@@ -25,6 +26,8 @@ App::App()
     PrintAssimpVersion();
 
     m_wnd.Gfx().SetProjection(dx::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 50.0f));
+    auto a = Bind::VertexShader::Resolve(m_wnd.Gfx(), "shaders/Phong.vs.cso");
+    auto b = Bind::VertexShader::Resolve(m_wnd.Gfx(), "shaders/Phong.vs.cso");
 }
 
 App::~App()

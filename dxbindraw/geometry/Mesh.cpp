@@ -298,7 +298,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
     bindablePtrs.push_back(std::make_shared<Bind::VertexBuffer>(gfx, vbuf));
     bindablePtrs.push_back(std::make_shared<Bind::IndexBuffer>(gfx, indices));
 
-    auto pvs = std::make_shared<Bind::VertexShader>(gfx, L"shaders/Phong.vs.cso");
+    auto pvs = std::make_shared<Bind::VertexShader>(gfx, "shaders/Phong.vs.cso");
     auto pvsbc = pvs->GetBytecode();
     bindablePtrs.push_back(std::move(pvs));
 
