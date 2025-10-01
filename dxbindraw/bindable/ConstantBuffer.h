@@ -2,6 +2,7 @@
 #define __CONSTANTBUFFER_H
 
 #include "Bindable.h"
+#include "BindableCodex.h"
 #include "GraphicsThrowMacroses.h"
 
 namespace Bind
@@ -70,6 +71,10 @@ namespace Bind
         {
             GetContext(gfx)->VSSetConstantBuffers(slot,1u,m_pConstantBuffer.GetAddressOf());
         }
+
+        static std::shared_ptr<Bindable> Resolve(Graphics &gfx) { return Codex::Resolve<VertexConstantBuffer>(gfx); }
+        static std::string GenerateUID() { return typeid(VertexConstantBuffer).name(); }
+        std::string GetUID() const noexcept override { return GenerateUID(); }
     };
 
     template<typename C>
@@ -85,6 +90,10 @@ namespace Bind
         {
             GetContext(gfx)->PSSetConstantBuffers(slot,1u,m_pConstantBuffer.GetAddressOf());
         }
+
+        static std::shared_ptr<Bindable> Resolve(Graphics &gfx) { return Codex::Resolve<PixelConstantBuffer>(gfx); }
+        static std::string GenerateUID() { return typeid(PixelConstantBuffer).name(); }
+        std::string GetUID() const noexcept override { return GenerateUID(); }
     };
 }
 

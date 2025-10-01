@@ -282,11 +282,11 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
         aiString textFilename;
 
         material.GetTexture(aiTextureType_DIFFUSE, 0, &textFilename);
-        bindablePtrs.push_back(std::make_shared<Bind::Texture>(gfx,Surface::FromFile(base + textFilename.C_Str())));
+        bindablePtrs.push_back(std::make_shared<Bind::Texture>(gfx,base + textFilename.C_Str()));
 
         if (material.GetTexture(aiTextureType_SPECULAR, 0, &textFilename) == aiReturn_SUCCESS)
         {
-            bindablePtrs.push_back(std::make_shared<Bind::Texture>(gfx,Surface::FromFile(base + textFilename.C_Str()), 1));
+            bindablePtrs.push_back(std::make_shared<Bind::Texture>(gfx,base + textFilename.C_Str(), 1));
             hasSpecularMap = true;
         }
         else
@@ -302,15 +302,15 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
     auto pvsbc = pvs->GetBytecode();
     bindablePtrs.push_back(std::move(pvs));
 
-    bindablePtrs.push_back(std::make_shared<Bind::InputLayout>(gfx, vbuf.GetLayout().Get3DLayout(), pvsbc));
+    bindablePtrs.push_back(std::make_shared<Bind::InputLayout>(gfx, vbuf.GetLayout(), pvsbc));
 
     if (hasSpecularMap)
     {
-        bindablePtrs.push_back(std::make_shared<Bind::PixelShader>(gfx, L"shaders/PhongSpecMap.ps.cso"));
+        bindablePtrs.push_back(std::make_shared<Bind::PixelShader>(gfx, "shaders/PhongSpecMap.ps.cso"));
     }
     else
     {
-        bindablePtrs.push_back(std::make_shared<Bind::PixelShader>(gfx, L"shaders/Phong.ps.cso"));
+        bindablePtrs.push_back(std::make_shared<Bind::PixelShader>(gfx, "shaders/Phong.ps.cso"));
         struct PSMaterialConstant
         {
             float        specularIntensity = 0.8f;

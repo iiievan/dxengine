@@ -2,6 +2,7 @@
 #define __BINDABLECODEX_H
 
 #include "Bindable.h"
+#include <type_traits>
 #include <memory>
 #include <unordered_map>
 
@@ -14,6 +15,7 @@ namespace Bind
         static std::shared_ptr<Bindable> Resolve(Graphics& gfx, Params&&... p) NOXND
         {
             // Params&&... не обычные ссылки, а универсальные - могут принимать как lvalue, так и rvalue
+            static_assert(std::is_base_of<Bindable, T>::value, "Can only resolve classes derived from Bindable");
             return Get().m_Resolve<T>(gfx,std::forward<Params>(p)...);
         }
 
@@ -32,7 +34,6 @@ namespace Bind
                 m_binds[key] = bind;
                 return bind;
             }
-
 
             return i->second;
         }

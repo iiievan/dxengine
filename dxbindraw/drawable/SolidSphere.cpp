@@ -18,7 +18,7 @@ SolidSphere::SolidSphere(Graphics &gfx, float radius)
     auto pvsbc = pvs->GetBytecode(); //  this is ID3DBlob
     AddBind(std::move(pvs));
 
-    AddBind(std::make_shared<PixelShader>(gfx, L"shaders/Solid.ps.cso"));
+    AddBind(std::make_shared<PixelShader>(gfx, "shaders/Solid.ps.cso"));
 
     struct PSColorConstant
     {
@@ -26,7 +26,7 @@ SolidSphere::SolidSphere(Graphics &gfx, float radius)
         float        padding; // for struct alighning in GRAphics memory
     } color_constant;
     AddBind(std::make_shared<PixelConstantBuffer<PSColorConstant>>(gfx, color_constant));
-    AddBind(std::make_shared<InputLayout>(gfx, model.vertices.GetLayout().Get3DLayout(), pvsbc));
+    AddBind(std::make_shared<InputLayout>(gfx, model.vertices.GetLayout(), pvsbc));
     AddBind(std::make_shared<Topology>(gfx, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
     AddBind(std::make_shared<TransformCbuf>(gfx, *this));
 }
