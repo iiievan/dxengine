@@ -26,7 +26,7 @@ namespace Bind
         GetContext(gfx)->IASetInputLayout(pInputLayout.Get());
     }
 
-    std::shared_ptr<Bindable> InputLayout::Resolve(
+    std::shared_ptr<InputLayout> InputLayout::Resolve(
         Graphics &gfx,
         const Dvtx::VertexLayout &layout,
         ID3DBlob *pVSBytecode)

@@ -14,7 +14,7 @@ namespace Bind
         VertexBuffer(Graphics &gfx, const std::string& tag, const Dvtx::VertexBuffer &vbuf);
 
         void Bind( Graphics& gfx ) noexcept override;
-        static std::shared_ptr<Bindable> Resolve(Graphics &gfx,const std::string &tag, const Dvtx::VertexBuffer &vbuf);
+        static std::shared_ptr<VertexBuffer> Resolve(Graphics &gfx,const std::string &tag, const Dvtx::VertexBuffer &vbuf);
         template<typename... Ignore>
         static std::string GenerateUID(const std::string &tag, Ignore&&... ignore) {  return m_GenerateUID(tag); }
         std::string GetUID() const noexcept override { return GenerateUID(tag); }

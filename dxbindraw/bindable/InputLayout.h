@@ -14,7 +14,7 @@ namespace Bind
                     ID3DBlob *pVSBytecode);
 
         void Bind(Graphics &gfx) noexcept override;
-        static std::shared_ptr<Bindable> Resolve(Graphics &gfx, const Dvtx::VertexLayout &layout, ID3DBlob* pVSBytecode);
+        static std::shared_ptr<InputLayout> Resolve(Graphics &gfx, const Dvtx::VertexLayout &layout, ID3DBlob* pVSBytecode);
         static std::string GenerateUID(const Dvtx::VertexLayout &layout, ID3DBlob* pVSBytecode = nullptr);
         std::string GetUID() const noexcept override;
 

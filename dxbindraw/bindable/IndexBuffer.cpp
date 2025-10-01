@@ -5,11 +5,13 @@
 namespace Bind
 {
     IndexBuffer::IndexBuffer(Graphics &gfx, const std::vector<unsigned short> &indices)
-    : IndexBuffer(gfx, "?", indices)
-    { }
+        : IndexBuffer(gfx, "?", indices)
+    {
+    }
 
     IndexBuffer::IndexBuffer(Graphics &gfx, std::string tag, const std::vector<unsigned short> &indices)
-        : tag(tag), count((UINT)indices.size())
+        : tag(tag),
+          count((UINT)indices.size())
     {
         INFOMAN(gfx);
 
@@ -30,10 +32,12 @@ namespace Bind
         GetContext(gfx)->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
     }
 
-    std::shared_ptr<Bindable> IndexBuffer::Resolve(Graphics &                         gfx,
-                                                   const std::string &                tag,
-                                                   const std::vector<unsigned short> &indices)
+    std::shared_ptr<IndexBuffer> IndexBuffer::Resolve(
+        Graphics &                         gfx,
+        const std::string &                tag,
+        const std::vector<unsigned short> &indices)
     {
+        assert(tag != "?");
         return Codex::Resolve<IndexBuffer>(gfx, tag, indices);
     }
 

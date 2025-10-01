@@ -12,7 +12,7 @@ namespace Bind
     {
     public:
         template<class T, typename... Params>
-        static std::shared_ptr<Bindable> Resolve(Graphics& gfx, Params&&... p) NOXND
+        static std::shared_ptr<T> Resolve(Graphics& gfx, Params&&... p) NOXND
         {
             // Params&&... не обычные ссылки, а универсальные - могут принимать как lvalue, так и rvalue
             static_assert(std::is_base_of<Bindable, T>::value, "Can only resolve classes derived from Bindable");
@@ -21,7 +21,7 @@ namespace Bind
 
     private:
         template<class T, typename... Params>
-        std::shared_ptr<Bindable> m_Resolve(Graphics& gfx, Params&&... p)  NOXND
+        std::shared_ptr<T> m_Resolve(Graphics& gfx, Params&&... p)  NOXND
         {
             // std::forward - сохраняет категорию значения.
             // Если параметр был передан как lvalue - останется lvalue (Codex::Resolve<VertexBuffer>(gfx, std::move(vertexData));)
@@ -35,7 +35,7 @@ namespace Bind
                 return bind;
             }
 
-            return i->second;
+            return std::static_pointer_cast<T>(i->second);
         }
 
         static Codex& Get()
