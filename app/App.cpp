@@ -26,10 +26,6 @@ App::App()
     PrintAssimpVersion();
 
     m_wnd.Gfx().SetProjection(dx::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 50.0f));
-
-    auto a = Bind::VertexShader::Resolve(m_wnd.Gfx(), "shaders/Phong.vs.cso");
-    auto b = Bind::Sampler::Resolve(m_wnd.Gfx());
-    auto c = Bind::Sampler::Resolve(m_wnd.Gfx());
 }
 
 App::~App()

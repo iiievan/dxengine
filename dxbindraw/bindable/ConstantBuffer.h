@@ -72,9 +72,15 @@ namespace Bind
             GetContext(gfx)->VSSetConstantBuffers(slot,1u,m_pConstantBuffer.GetAddressOf());
         }
 
-        static std::shared_ptr<Bindable> Resolve(Graphics &gfx) { return Codex::Resolve<VertexConstantBuffer>(gfx); }
-        static std::string GenerateUID() { return typeid(VertexConstantBuffer).name(); }
-        std::string GetUID() const noexcept override { return GenerateUID(); }
+        static std::shared_ptr<Bindable> Resolve(Graphics &gfx, const C &consts, UINT slot = 0) { return Codex::Resolve<VertexConstantBuffer>(gfx, consts, slot); }
+        static std::shared_ptr<Bindable> Resolve(Graphics &gfx, UINT slot = 0) { return Codex::Resolve<VertexConstantBuffer>(gfx, slot); }
+        static std::string GenerateUID(const C &, UINT slot) { return  GenerateUID(slot); }
+        static std::string GenerateUID(UINT slot = 0)
+        {
+            using namespace std::string_literals;
+            return typeid(VertexConstantBuffer).name() + "#"s + std::to_string(slot);
+        }
+        std::string GetUID() const noexcept override { return GenerateUID(slot); }
     };
 
     template<typename C>
@@ -91,9 +97,15 @@ namespace Bind
             GetContext(gfx)->PSSetConstantBuffers(slot,1u,m_pConstantBuffer.GetAddressOf());
         }
 
-        static std::shared_ptr<Bindable> Resolve(Graphics &gfx) { return Codex::Resolve<PixelConstantBuffer>(gfx); }
-        static std::string GenerateUID() { return typeid(PixelConstantBuffer).name(); }
-        std::string GetUID() const noexcept override { return GenerateUID(); }
+        static std::shared_ptr<Bindable> Resolve(Graphics &gfx, const C &consts, UINT slot = 0) { return Codex::Resolve<PixelConstantBuffer>(gfx, consts, slot); }
+        static std::shared_ptr<Bindable> Resolve(Graphics &gfx, UINT slot = 0) { return Codex::Resolve<PixelConstantBuffer>(gfx, slot); }
+        static std::string GenerateUID(const C &, UINT slot) { return  GenerateUID(slot); }
+        static std::string GenerateUID(UINT slot = 0)
+        {
+            using namespace std::string_literals;
+            return typeid(PixelConstantBuffer).name() + "#"s + std::to_string(slot);
+        }
+        std::string GetUID() const noexcept override { return GenerateUID(slot); }
     };
 }
 
