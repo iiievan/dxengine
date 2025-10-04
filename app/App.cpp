@@ -21,10 +21,11 @@ void PrintAssimpVersion()
 
 App::App()
 :m_wnd(MAIN_SCREEN_WIDTH, MAIN_SCREEN_HEIGHT, "Donkey Fart Box"),
- m_pointlight(m_wnd.Gfx())
+ m_pointlight(m_wnd.Gfx()),
+ m_testplane(m_wnd.Gfx(),3.0f)
 {
     PrintAssimpVersion();
-
+    m_testplane.SetPos({1.0f,17.0f,-1.0f});
     m_wnd.Gfx().SetProjection(dx::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 50.0f));
 }
 
@@ -56,6 +57,7 @@ void App::DoFrame()
     m_nanosuit.Draw(m_wnd.Gfx());
     m_nanosuit2.Draw(m_wnd.Gfx());
     m_pointlight.Draw(m_wnd.Gfx());
+    m_testplane.Draw(m_wnd.Gfx());
 
     while (const auto e = m_wnd.kbd.ReadKey())
     {

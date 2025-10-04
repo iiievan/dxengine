@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "PointLight.h"
 #include "geometry/Mesh.h"
+#include "drawable/TestPlane.h"
 
 
 #define MAIN_SCREEN_WIDTH (1280)
@@ -34,6 +35,8 @@ private:
     float m_speed_factor{1.0f};
     Model m_nanosuit{m_wnd.Gfx(), "models\\nano_textured\\nanosuit.obj"};
     Model m_nanosuit2{m_wnd.Gfx(), "models\\nano_textured\\nanosuit.obj"};
+    TestPlane m_testplane;
+
     bool  m_showDemoWindow{false};
 };
 

@@ -27,7 +27,7 @@ SolidSphere::SolidSphere(Graphics &gfx, float radius)
         dx::XMFLOAT3 color = {1.0f, 1.0f, 1.0f};
         float        padding; // for struct alighning in GRAphics memory
     } color_constant;
-    AddBind(PixelConstantBuffer<PSColorConstant>::Resolve(gfx, color_constant));
+    AddBind(PixelConstantBuffer<PSColorConstant>::Resolve(gfx, color_constant,1u));
     AddBind(InputLayout::Resolve(gfx, model.vertices.GetLayout(), pvsbc));
     AddBind(Topology::Resolve(gfx, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
     AddBind(std::make_shared<TransformCbuf>(gfx, *this));

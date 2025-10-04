@@ -1,16 +1,17 @@
 #ifndef __PLANE_H
 #define __PLANE_H
 
-#include <vector>
+#include <optional>
 #include <array>
+#include "Vertex.h"
+#include "DirectXMath.h"
 #include "IndexedTriangleList.h"
 #include "ChiliMath.h"
 
 class Plane
 {
 public:
-	template<class V>
-	static IndexedTriangleList<V> MakeTesselated(int divisions_x, int divisions_y)
+	static IndexedTriangleList MakeTesselatedTextured(Dvtx::VertexLayout layout, int divisions_x, int divisions_y)
 	{
         namespace dx = DirectX;
 
@@ -21,23 +22,26 @@ public:
         constexpr float height = 2.0f;
         const int       nVertices_x = divisions_x + 1;
         const int       nVertices_y = divisions_y + 1;
-        std::vector<V>  vertices(nVertices_x * nVertices_y);
+        Dvtx::VertexBuffer vb{std::move(layout)};
 
         {
-            const float side_x = width / 2.0f;
-            const float side_y = height / 2.0f;
             const float divisionSize_x = width / float(divisions_x);
             const float divisionSize_y = height / float(divisions_y);
-            const auto  bottomLeft = dx::XMVectorSet(-side_x, -side_y, 0.0f, 0.0f);
+            const float divisionSize_x_uv = 1.0f/float(divisions_x);
+            const float divisionSize_y_uv = 1.0f/float(divisions_y);
 
             for (int y = 0, i = 0; y < nVertices_y; y++)
             {
-                const float y_pos = float(y) * divisionSize_y;
+                const float y_pos = float(y) * divisionSize_y - 1.0f;
+                const float y_pos_uv = 1.0f - float(y) * divisionSize_y_uv;
                 for (int x = 0; x < nVertices_x; x++, i++)
                 {
-                    const auto v =
-                        dx::XMVectorAdd(bottomLeft, dx::XMVectorSet(float(x) * divisionSize_x, y_pos, 0.0f, 0.0f));
-                    dx::XMStoreFloat3(&vertices[i].pos, v);
+                    const float x_pos = float(x) * divisionSize_x - 1.0f;
+                    const float x_pos_uv = float(x) * divisionSize_x_uv;
+
+                    vb.EmplaceBack(dx::XMFLOAT3{x_pos, y_pos,0.0f},
+                                   dx::XMFLOAT3{0.0f, 0.0f, -1.0f},
+                                   dx::XMFLOAT2{x_pos_uv, y_pos_uv});
                 }
             }
         }
@@ -90,13 +94,18 @@ public:
 			}
 		}
 
-		return{ std::move( vertices ),std::move( indices ) };
+		return{ std::move( vb ),std::move( indices ) };
 	}
 
-	template<class V>
-	static IndexedTriangleList<V> Make()
+	static IndexedTriangleList Make()
 	{
-		return MakeTesselated<V>( 1,1 );
+	    using Dvtx:: VertexLayout;
+	    VertexLayout vl;
+	    vl.Append(VertexLayout::Position3D);
+	    vl.Append(VertexLayout::Normal);
+	    vl.Append(VertexLayout::Texture2D);
+
+		return MakeTesselatedTextured(std::move(vl), 1,1 );
 	}
 };
 

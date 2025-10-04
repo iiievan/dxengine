@@ -32,10 +32,12 @@ set(BINDABLE_HEADERS bindable/Bindable.h
                      bindable/VertexShader.h)
 
 set(DRAWABLE_SOURCES drawable/Drawable.cpp
-                     drawable/SolidSphere.cpp)
+                     drawable/SolidSphere.cpp
+                     drawable/TestPlane.cpp)
 
 set(DRAWABLE_HEADERS drawable/Drawable.h
-                     drawable/SolidSphere.h)
+                     drawable/SolidSphere.h
+                     drawable/TestPlane.h)
 
 set(GEOMETRY_SOURCES  geometry/Cone.h
                       geometry/IndexedTriangleList.h
