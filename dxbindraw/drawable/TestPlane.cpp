@@ -1,6 +1,7 @@
 #include "TestPlane.h"
 #include "geometry/Plane.h"
 #include "bindable/BindableCommon.h"
+#include "bindable/TransformCbufDouble.h"
 #include "imgui.h"
 
 TestPlane::TestPlane(Graphics &gfx, float size)
@@ -26,7 +27,7 @@ TestPlane::TestPlane(Graphics &gfx, float size)
     AddBind(PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx,m_pmc,1u));
     AddBind(InputLayout::Resolve(gfx,model.vertices.GetLayout(),pvsbc ));
     AddBind(Topology::Resolve(gfx, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-    AddBind(std::make_shared<TransformCbuf>(gfx, *this));
+    AddBind(std::make_shared<TransformCbufDouble>(gfx, *this, 0u,2u));
 }
 
 void TestPlane::SetPos(DirectX::XMFLOAT3 pos) noexcept

@@ -15,7 +15,8 @@ set(BINDABLE_SOURCES bindable/Bindable.cpp
                      bindable/Texture.cpp
                      bindable/TransformCbuf.cpp
                      bindable/VertexBuffer.cpp
-                     bindable/VertexShader.cpp)
+                     bindable/VertexShader.cpp
+                     bindable/TransformCbufDouble.cpp)
 
 set(BINDABLE_HEADERS bindable/Bindable.h
                      bindable/BindableCodex.h
@@ -29,7 +30,8 @@ set(BINDABLE_HEADERS bindable/Bindable.h
                      bindable/Texture.h
                      bindable/TransformCbuf.h
                      bindable/VertexBuffer.h
-                     bindable/VertexShader.h)
+                     bindable/VertexShader.h
+                     bindable/TransformCbufDouble.h)
 
 set(DRAWABLE_SOURCES drawable/Drawable.cpp
                      drawable/SolidSphere.cpp
