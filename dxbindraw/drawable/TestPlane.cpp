@@ -1,6 +1,7 @@
 #include "TestPlane.h"
 #include "geometry/Plane.h"
 #include "bindable/BindableCommon.h"
+#include "imgui.h"
 
 TestPlane::TestPlane(Graphics &gfx, float size)
 {
@@ -19,16 +20,9 @@ TestPlane::TestPlane(Graphics &gfx, float size)
     auto pvs = VertexShader::Resolve(gfx, "shaders\\Phong.vs.cso");
     auto pvsbc = pvs->GetBytecode();
     AddBind(std::move(pvs));
-    AddBind(PixelShader::Resolve(gfx, "shaders\\Phong.ps.cso"));
+    AddBind(PixelShader::Resolve(gfx, "shaders\\PhongNormalMap.ps.cso"));
 
-    struct PSMaterialConstant
-    {
-        float specularIntencity = 0.1f;
-        float specularPower = 20.0f;
-        float padding[2];
-    }pmc;
-
-    AddBind(PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx,pmc,1u));
+    AddBind(PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx,m_pmc,1u));
     AddBind(InputLayout::Resolve(gfx,model.vertices.GetLayout(),pvsbc ));
     AddBind(Topology::Resolve(gfx, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
     AddBind(std::make_shared<TransformCbuf>(gfx, *this));
@@ -50,4 +44,30 @@ DirectX::XMMATRIX TestPlane::GetTransformXM() const noexcept
 {
     return DirectX::XMMatrixRotationRollPitchYaw(m_roll, m_pitch, m_yaw) *
            DirectX::XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z);
+}
+
+void TestPlane::SpawnControlWindow(Graphics &gfx) noexcept
+{
+    if( ImGui::Begin( "Plane" ) )
+    {
+        ImGui::Text( "Position" );
+        ImGui::SliderFloat( "X",&m_pos.x,-80.0f,80.0f,"%.1f" );
+        ImGui::SliderFloat( "Y",&m_pos.y,-80.0f,80.0f,"%.1f" );
+        ImGui::SliderFloat( "Z",&m_pos.z,-80.0f,80.0f,"%.1f" );
+        ImGui::Text( "Orientation" );
+        ImGui::SliderAngle( "Roll",&m_roll,-180.0f,180.0f );
+        ImGui::SliderAngle( "Pitch",&m_pitch,-180.0f,180.0f );
+        ImGui::SliderAngle( "Yaw",&m_yaw,-180.0f,180.0f );
+        ImGui::Text( "Shading" );
+        bool changed0 = ImGui::SliderFloat( "Spec. Int.",&m_pmc.specularIntencity,0.0f,1.0f );
+        bool changed1 = ImGui::SliderFloat( "Spec. Power",&m_pmc.specularPower,0.0f,100.0f );
+        bool checkState = m_pmc.normalMapEnabled == TRUE;
+        bool changed2 = ImGui::Checkbox( "Enable Normal Map",&checkState );
+        m_pmc.normalMapEnabled = checkState ? TRUE : FALSE;
+        if( changed0 || changed1 || changed2 )
+        {
+            QueryBindable<Bind::PixelConstantBuffer<PSMaterialConstant>>()->Update( gfx,m_pmc );
+        }
+    }
+    ImGui::End();
 }

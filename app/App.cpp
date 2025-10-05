@@ -112,6 +112,7 @@ void App::DoFrame()
     ShowImguiDemoWindow();
     m_nanosuit.ShowWindow("Suit #1");
     m_nanosuit2.ShowWindow("Suit #2");
+    m_testplane.SpawnControlWindow(m_wnd.Gfx());
 
     // present
     m_wnd.Gfx().EndFrame();
