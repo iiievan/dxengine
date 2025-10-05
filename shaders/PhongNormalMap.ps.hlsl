@@ -26,7 +26,12 @@ float4 PSMain(float3 worldPos : Position, float3 n : Normal, float2 uv : Texcoor
     // sample normal from map if normal mapping enabled
     if(normalMapEnabled)
     {
-        n = -nmap.Sample(smplr, uv).xyz;
+
+        const float3 normalSample = nmap.Sample(smplr, uv).xyz;
+		n.x = normalSample.x * 2.0f - 1.0f;
+		n.y = -normalSample.y * 2.0f + 1.0f;  // flip y_component because briks normal map is for opengl
+        									  // for opengl this is same as for x_component: normalSample.y * 2.0f - 1.0f;
+		n.z = -normalSample.z;
     }
 
     // fragment to light vector data
