@@ -33,11 +33,11 @@ private:
     PointLight   m_pointlight;
 
     float m_speed_factor{1.0f};
-    Model m_nanosuit{m_wnd.Gfx(), "models\\nano_textured\\nanosuit.obj"};
-    Model m_nanosuit2{m_wnd.Gfx(), "models\\nano_textured\\nanosuit.obj"};
-    TestPlane m_testplane;
+    Model     m_wall{m_wnd.Gfx(), "models\\brick_wall\\brick_wall.obj"};
+    //Model m_nanosuit{m_wnd.Gfx(), "models\\nano_textured\\nanosuit.obj"};
 
-    bool  m_showDemoWindow{false};
+
+bool  m_showDemoWindow{false};
 };
 
 #endif // __APP_H

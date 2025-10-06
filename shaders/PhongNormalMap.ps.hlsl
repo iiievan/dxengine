@@ -11,27 +11,35 @@ cbuffer LightCBuf
 
 cbuffer ObjectCBuf
 {
-     float specularIntencity;
+     float specularIntensity;
      float specularPower;
      bool normalMapEnabled;
 	 float padding[1];
 };
 
 Texture2D tex;
-Texture2D nmap;
+Texture2D nmap : register(t2);
 SamplerState smplr;
 
-float4 PSMain(float3 worldPos : Position, float3 n : Normal, float2 uv : Texcoord) : SV_Target
+float4 PSMain(float3 worldPos : Position, float3 n : Normal, float3 tan : Tangent, float3 bitan : Bitangent, float2 uv : Texcoord) : SV_Target
 {
     // sample normal from map if normal mapping enabled
     if(normalMapEnabled)
     {
+        // build the tranform (rotation) into tangent space
+        const float3x3 tanToView = float3x3(normalize(tan),		//X(U)
+                                            normalize(bitan),	//Y(V)
+                                            normalize(n));		//Z(W)
 
+        // unpack the normal from map into tangent space
         const float3 normalSample = nmap.Sample(smplr, uv).xyz;
 		n.x = normalSample.x * 2.0f - 1.0f;
 		n.y = -normalSample.y * 2.0f + 1.0f;  // flip y_component because briks normal map is for opengl
         									  // for opengl this is same as for x_component: normalSample.y * 2.0f - 1.0f;
-		n.z = -normalSample.z;
+		n.z = normalSample.z;
+
+        // bring normal from tanspace into view space
+        n = mul(n, tanToView);
     }
 
     // fragment to light vector data
@@ -42,7 +50,7 @@ float4 PSMain(float3 worldPos : Position, float3 n : Normal, float2 uv : Texcoor
     // attenuation
     const float att = 1.0f/ (attConst + attLin * distToL + attQuad * (distToL * distToL));
 
-    // diffuse intencity
+    // diffuse intensity
     const float3 diffuse = diffuseColor * diffuseIntensity * att * max(0.0f, dot(dirToL, n));
 
 	// reflected light vector
@@ -51,7 +59,7 @@ float4 PSMain(float3 worldPos : Position, float3 n : Normal, float2 uv : Texcoor
 
 	// calculate specular intensity based on angle between viewing vector and reflection vector, narrow with power function
 	// dot(normalize(r), normalize(worldPos)) - give us cos of angle between reflected vector and vector to camera
-	const float3 specular = att * (diffuseColor * diffuseIntensity ) * specularIntencity * pow(max(0.0f, dot(normalize(-r), normalize(worldPos))), specularPower);
+	const float3 specular = att * (diffuseColor * diffuseIntensity ) * specularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(worldPos))), specularPower);
 
     // final color
     return float4(saturate((diffuse + ambient) * tex.Sample(smplr,uv).rgb + specular), 1.0f);

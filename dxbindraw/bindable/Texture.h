@@ -7,6 +7,20 @@ class Surface;
 
 namespace Bind
 {
+    /* for DirectX UV(TB) coordinates directions like Windows Window coordinates:
+    (0,0) U+→ (1,0)     |   (0,0) T+→ (1,0)
+      ↓                 |     ↓
+      V+                |     B+
+      ↓                 |     ↓
+    (0,1)     (1,1)     |   (0,1)     (1,1)
+    */
+    /* for OpenGL UV(TB) coordinates directions like Math Graphics:
+    (0,1)     (1,1)     |  (0,1)     (1,1)
+      ↑                 |   ↑
+      V+                |   B+
+      ↑                 |   ↑
+    (0,0) U+→ (1,0)     |   (0,0) T+→ (1,0)
+    */
     class Texture : public Bindable
     {
     public:

@@ -12,7 +12,7 @@ GDIPlusManager gdipm;
 
 void PrintAssimpVersion()
 {
-   int major, minor, rev;
+   unsigned int major, minor, rev;
          major = aiGetVersionMajor(),
          minor = aiGetVersionMinor(),
          rev =   aiGetVersionRevision();
@@ -21,11 +21,10 @@ void PrintAssimpVersion()
 
 App::App()
 :m_wnd(MAIN_SCREEN_WIDTH, MAIN_SCREEN_HEIGHT, "Donkey Fart Box"),
- m_pointlight(m_wnd.Gfx()),
- m_testplane(m_wnd.Gfx(),3.0f)
+ m_pointlight(m_wnd.Gfx())
 {
     PrintAssimpVersion();
-    m_testplane.SetPos({-5.0f,17.0f,-1.0f});
+
     m_wnd.Gfx().SetProjection(dx::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 50.0f));
 }
 
@@ -54,10 +53,10 @@ void App::DoFrame()
     m_wnd.Gfx().SetCamera(m_camera.GetMatrix());
     m_pointlight.Bind(m_wnd.Gfx(), m_camera.GetMatrix());
 
-    m_nanosuit.Draw(m_wnd.Gfx());
-    m_nanosuit2.Draw(m_wnd.Gfx());
+    m_wall.Draw(m_wnd.Gfx());
+    //m_nanosuit.Draw(m_wnd.Gfx());
     m_pointlight.Draw(m_wnd.Gfx());
-    m_testplane.Draw(m_wnd.Gfx());
+
 
     while (const auto e = m_wnd.kbd.ReadKey())
     {
@@ -110,9 +109,8 @@ void App::DoFrame()
     m_camera.SpawnControlWindow();
     m_pointlight.SpawnControlWindow();
     ShowImguiDemoWindow();
-    m_nanosuit.ShowWindow("Suit #1");
-    m_nanosuit2.ShowWindow("Suit #2");
-    m_testplane.SpawnControlWindow(m_wnd.Gfx());
+    //m_nanosuit.ShowWindow("Suit #1");
+    m_wall.ShowWindow("Wall");
 
     // present
     m_wnd.Gfx().EndFrame();

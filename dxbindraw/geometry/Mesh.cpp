@@ -210,7 +210,8 @@ Model::Model(Graphics &gfx, const std::string filename)
     const auto       pScene = imp.ReadFile(filename.c_str(), aiProcess_Triangulate |
                                                                    aiProcess_JoinIdenticalVertices |
                                                                    aiProcess_ConvertToLeftHanded |
-                                                                   aiProcess_GenNormals);
+                                                                   aiProcess_GenNormals |
+                                                                   aiProcess_CalcTangentSpace);
 
     if (pScene == nullptr)
         throw ModelException(__LINE__, __FILE__, imp.GetErrorString());
@@ -249,6 +250,8 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
         std::move(
             VertexLayout{}.Append(VertexLayout::Position3D)
                           .Append(VertexLayout::Normal)
+                          .Append(VertexLayout::Tangent)
+                          .Append(VertexLayout::Bitangent)
                           .Append(VertexLayout::Texture2D)));
 
     for (unsigned int i = 0; i < mesh.mNumVertices; i++)
@@ -256,6 +259,8 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
         vbuf.EmplaceBack(
             *reinterpret_cast<dx::XMFLOAT3 *>(&mesh.mVertices[i]),
             *reinterpret_cast<dx::XMFLOAT3 *>(&mesh.mNormals[i]),
+            *reinterpret_cast<dx::XMFLOAT3 *>(&mesh.mTangents[i]),
+            *reinterpret_cast<dx::XMFLOAT3 *>(&mesh.mBitangents[i]),
             *reinterpret_cast<dx::XMFLOAT2*>(&mesh.mTextureCoords[0][i]));
     }
 
@@ -272,7 +277,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
 
     std::vector<std::shared_ptr<Bindable>> bindablePtrs;
     using namespace std::string_literals;
-    const auto base = "models\\nano_textured\\"s;
+    const auto base = "models\\brick_wall\\"s;
 
     bool hasSpecularMap = false;
     float shininess = 35.0f;
@@ -293,6 +298,10 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
         else
             material.Get(AI_MATKEY_SHININESS, shininess);
 
+        // get normal map from model
+        material.GetTexture(aiTextureType_NORMALS, 0, &textFilename);
+        bindablePtrs.push_back(Texture::Resolve(gfx,base + textFilename.C_Str(), 2));
+
         bindablePtrs.push_back(Sampler::Resolve(gfx));
     }
 
@@ -300,7 +309,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
     bindablePtrs.push_back(VertexBuffer::Resolve(gfx, mesh_tag, vbuf));
     bindablePtrs.push_back(IndexBuffer::Resolve(gfx, mesh_tag, indices));
 
-    auto pvs = VertexShader::Resolve(gfx, "shaders/Phong.vs.cso");
+    auto pvs = VertexShader::Resolve(gfx, "shaders/PhongNormalMap.vs.cso");
     auto pvsbc = pvs->GetBytecode();
     bindablePtrs.push_back(std::move(pvs));
 
@@ -308,16 +317,26 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
 
     if (hasSpecularMap)
     {
-        bindablePtrs.push_back(PixelShader::Resolve(gfx, "shaders/PhongSpecMap.ps.cso"));
+        bindablePtrs.push_back(PixelShader::Resolve(gfx, "shaders/PhongSpecNormalMap.ps.cso"));
+        struct PSMaterialConstant
+        {
+            BOOL normalMapEnabled = TRUE;
+            float padding[3];
+        }pmc;
+        // this is CLEARLY an issue... all meshes will share same mat const, but may have different
+        // Ns (specular power) specified for each in the material properties... bad conflict
+        bindablePtrs.push_back(PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, pmc,1u));
     }
     else
     {
-        bindablePtrs.push_back(PixelShader::Resolve(gfx, "shaders/Phong.ps.cso"));
+        bindablePtrs.push_back(PixelShader::Resolve(gfx, "shaders/PhongNormalMap.ps.cso"));
+
         struct PSMaterialConstant
         {
             float        specularIntensity = 0.8f;
             float        SpecularPower;
-            float        padding[2];
+            BOOL normalMapEnabled = TRUE;
+            float        padding[1];
         } pmc;
         pmc.SpecularPower = shininess;
 
@@ -325,6 +344,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
         // Ns (specular power) specified for each in the material properties... bad conflict
         bindablePtrs.push_back(PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, pmc, 1u));
     }
+
     return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));
 }
 
