@@ -17,12 +17,6 @@ cbuffer ObjectCBuf
 	 float padding[1];
 };
 
-cbuffer TransformCbuf
-{
-	matrix modelView;
-	matrix modelViewProj;
-};
-
 Texture2D tex;
 Texture2D nmap;
 SamplerState smplr;
@@ -38,7 +32,6 @@ float4 PSMain(float3 worldPos : Position, float3 n : Normal, float2 uv : Texcoor
 		n.y = -normalSample.y * 2.0f + 1.0f;  // flip y_component because briks normal map is for opengl
         									  // for opengl this is same as for x_component: normalSample.y * 2.0f - 1.0f;
 		n.z = -normalSample.z;
-		n = mul(n,(float3x3)modelView);
     }
 
     // fragment to light vector data
