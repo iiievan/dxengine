@@ -25,6 +25,8 @@ App::App()
 {
     PrintAssimpVersion();
 
+    m_wall.SetRootTransform(dx::XMMatrixTranslation(-1.5f,0.0f,0.0f));
+    m_tp.SetPos({1.5f,0.0f,0.0f});
     m_wnd.Gfx().SetProjection(dx::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 50.0f));
 }
 
@@ -54,6 +56,7 @@ void App::DoFrame()
     m_pointlight.Bind(m_wnd.Gfx(), m_camera.GetMatrix());
 
     m_wall.Draw(m_wnd.Gfx());
+    m_tp.Draw(m_wnd.Gfx());
     //m_nanosuit.Draw(m_wnd.Gfx());
     m_pointlight.Draw(m_wnd.Gfx());
 
@@ -111,6 +114,7 @@ void App::DoFrame()
     ShowImguiDemoWindow();
     //m_nanosuit.ShowWindow("Suit #1");
     m_wall.ShowWindow("Wall");
+    m_tp.SpawnControlWindow(m_wnd.Gfx());
 
     // present
     m_wnd.Gfx().EndFrame();

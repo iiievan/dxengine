@@ -2,6 +2,7 @@
 #include "geometry/Plane.h"
 #include "bindable/BindableCommon.h"
 #include "imgui.h"
+#include "bindable/TransformCbufDouble.h"
 
 TestPlane::TestPlane(Graphics &gfx, float size)
 {
@@ -21,12 +22,12 @@ TestPlane::TestPlane(Graphics &gfx, float size)
     auto pvs = VertexShader::Resolve(gfx, "shaders\\Phong.vs.cso");
     auto pvsbc = pvs->GetBytecode();
     AddBind(std::move(pvs));
-    AddBind(PixelShader::Resolve(gfx, "shaders\\PhongNormalMap.ps.cso"));
+    AddBind(PixelShader::Resolve(gfx, "shaders\\PhongNormalMapObject.ps.cso"));
 
     AddBind(PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx,m_pmc,1u));
     AddBind(InputLayout::Resolve(gfx,model.vertices.GetLayout(),pvsbc ));
     AddBind(Topology::Resolve(gfx, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-    AddBind(std::make_shared<TransformCbuf>(gfx, *this));
+    AddBind(std::make_shared<TransformCbufDouble>(gfx, *this, 0u, 2u));
 }
 
 void TestPlane::SetPos(DirectX::XMFLOAT3 pos) noexcept

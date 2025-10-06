@@ -16,8 +16,8 @@ public:
 private:
     struct PSMaterialConstant
     {
-        float specularIntencity = 0.1f;
-        float specularPower = 20.0f;
+        float specularIntencity = 0.18f;
+        float specularPower = 18.0f;
         BOOL normalMapEnabled = TRUE;   // takes up 4 bytes in shader
         float padding[1];               // also takes up 4 bytes in shader
     }m_pmc;

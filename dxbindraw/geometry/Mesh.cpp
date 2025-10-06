@@ -241,6 +241,11 @@ void Model::ShowWindow(const char *windowName) noexcept
     m_pWindow->Show(windowName,*m_pRoot);
 }
 
+void Model::SetRootTransform(DirectX::FXMMATRIX tf) noexcept
+{
+    m_pRoot->SetAppliedTransform(tf);
+}
+
 std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const aiMaterial * const *pMaterials)
 {
     using Dvtx::VertexLayout;
