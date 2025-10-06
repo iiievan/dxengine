@@ -21,7 +21,7 @@ Texture2D tex;
 Texture2D nmap : register(t2);
 SamplerState smplr;
 
-float4 PSMain(float3 worldPos : Position, float3 n : Normal, float3 tan : Tangent, float3 bitan : Bitangent, float2 uv : Texcoord) : SV_Target
+float4 PSMain(float3 viewPos : Position, float3 n : Normal, float3 tan : Tangent, float3 bitan : Bitangent, float2 uv : Texcoord) : SV_Target
 {
     // sample normal from map if normal mapping enabled
     if(normalMapEnabled)
@@ -43,7 +43,7 @@ float4 PSMain(float3 worldPos : Position, float3 n : Normal, float3 tan : Tangen
     }
 
     // fragment to light vector data
-    const float3 vToL = lightPos - worldPos;
+    const float3 vToL = lightPos - viewPos;
     const float distToL = length(vToL);
     const float3 dirToL = vToL / distToL;
 
@@ -58,8 +58,8 @@ float4 PSMain(float3 worldPos : Position, float3 n : Normal, float3 tan : Tangen
     const float3 r = w * 2.0f - vToL;	// substracion from normalized light dir and his projection get reflected light vector
 
 	// calculate specular intensity based on angle between viewing vector and reflection vector, narrow with power function
-	// dot(normalize(r), normalize(worldPos)) - give us cos of angle between reflected vector and vector to camera
-	const float3 specular = att * (diffuseColor * diffuseIntensity ) * specularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(worldPos))), specularPower);
+	// dot(normalize(r), normalize(viewPos)) - give us cos of angle between reflected vector and vector to camera
+	const float3 specular = att * (diffuseColor * diffuseIntensity ) * specularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(viewPos))), specularPower);
 
     // final color
     return float4(saturate((diffuse + ambient) * tex.Sample(smplr,uv).rgb + specular), 1.0f);

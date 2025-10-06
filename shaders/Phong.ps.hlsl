@@ -19,10 +19,10 @@ cbuffer ObjectCBuf
 Texture2D tex;
 SamplerState smplr;
 
-float4 PSMain(float3 worldPos : Position, float3 n : Normal, float2 uv : Texcoord) : SV_Target
+float4 PSMain(float3 viewPos : Position, float3 n : Normal, float2 uv : Texcoord) : SV_Target
 {
     // fragment to light vector data
-    const float3 vToL = lightPos - worldPos;
+    const float3 vToL = lightPos - viewPos;
     const float distToL = length(vToL);
     const float3 dirToL = vToL / distToL;
 
@@ -37,8 +37,8 @@ float4 PSMain(float3 worldPos : Position, float3 n : Normal, float2 uv : Texcoor
     const float3 r = w * 2.0f - vToL;	// substracion from normalized light dir and his projection get reflected light vector
 
 	// calculate specular intensity based on angle between viewing vector and reflection vector, narrow with power function
-	// dot(normalize(r), normalize(worldPos)) - give us cos of angle between reflected vector and vector to camera
-	const float3 specular = att * (diffuseColor * diffuseIntensity ) * specularIntencity * pow(max(0.0f, dot(normalize(-r), normalize(worldPos))), specularPower);
+	// dot(normalize(r), normalize(viewPos)) - give us cos of angle between reflected vector and vector to camera
+	const float3 specular = att * (diffuseColor * diffuseIntensity ) * specularIntencity * pow(max(0.0f, dot(normalize(-r), normalize(viewPos))), specularPower);
 
 
     // final color
