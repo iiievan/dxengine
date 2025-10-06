@@ -32,21 +32,11 @@ float4 PSMain(float3 viewPos : Position, float3 n : Normal, float2 uv : Texcoord
 {
     if(normalMapEnabled)
     {
-        // unpack the normal from map into tangent space
-        const float3 normalSample = nmap.Sample(smplr, uv).xyz;
-		n.x = normalSample.x * 2.0f - 1.0f;
-		n.y = -normalSample.y * 2.0f + 1.0f;  // flip y_component because bricks normal map is for opengl
-        									  // for opengl this is same as for x_component: normalSample.y * 2.0f - 1.0f;
-		n.z = -normalSample.z;
-    	n = mul(n, (float3x3) modelView);
-    }
-    else
-    {
     	// unpack normal data
     	const float3 normalSample = nmap.Sample(smplr, uv).xyz;
-    	n.x = normalSample.x * 2.0f - 1.0f;
-    	n.y = -normalSample.y * 2.0f + 1.0f;
-    	n.z = -normalSample.z * 2.0f + 1.0f;
+    	n = normalSample * 2.0f - 1.0f;
+    	n.y = -n.y;
+    	n.z = -normalSample.z;
     	n = mul(n, (float3x3) modelView);
     }
 

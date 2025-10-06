@@ -18,13 +18,15 @@ public:
         assert(divisions_x >= 1);
         assert(divisions_y >= 1);
 
-        constexpr float width = 1.0f;
-        constexpr float height = 1.0f;
+        constexpr float width = 2.0f;
+        constexpr float height = 2.0f;
         const int       nVertices_x = divisions_x + 1;
         const int       nVertices_y = divisions_y + 1;
         Dvtx::VertexBuffer vb{std::move(layout)};
 
         {
+            const float side_x = width / 2.0f;
+            const float side_y = height / 2.0f;
             const float divisionSize_x = width / float(divisions_x);
             const float divisionSize_y = height / float(divisions_y);
             const float divisionSize_x_uv = 1.0f/float(divisions_x);
@@ -32,11 +34,11 @@ public:
 
             for (int y = 0, i = 0; y < nVertices_y; y++)
             {
-                const float y_pos = float(y) * divisionSize_y - 1.0f;
+                const float y_pos = float(y) * divisionSize_y - side_y;
                 const float y_pos_uv = 1.0f - float(y) * divisionSize_y_uv;
                 for (int x = 0; x < nVertices_x; x++, i++)
                 {
-                    const float x_pos = float(x) * divisionSize_x - 1.0f;
+                    const float x_pos = float(x) * divisionSize_x - side_x;
                     const float x_pos_uv = float(x) * divisionSize_x_uv;
 
                     vb.EmplaceBack(dx::XMFLOAT3{x_pos, y_pos,0.0f},
