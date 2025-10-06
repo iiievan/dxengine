@@ -8,6 +8,11 @@ namespace Bind
     class TransformCbufDouble : public TransformCbuf
     {
     public:
+        /* Creates a constant transform buffer in both the vertex and pixel shaders.
+         * @param 'parent' - Drawable parent link adress(usually this pointer)
+         * @param  'slotV' - Vertex shader slot num for constant transform buffer(usually 0)
+         * @param  'slotP' - Pixel shader slot num for constant transform buffer(usually 2)
+         */
         TransformCbufDouble(Graphics &gfx, const Drawable &parent, UINT slotV = 0u, UINT slotP = 0u);
         void Bind(Graphics &gfx) noexcept override;
 

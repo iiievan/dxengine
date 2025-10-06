@@ -87,9 +87,18 @@ namespace Dvtx
     : m_vertex(v)
     {}
 
-    VertexBuffer::VertexBuffer(VertexLayout layout) NOXND
+    VertexBuffer::VertexBuffer(VertexLayout layout, size_t size) NOXND
     : m_layout(std::move(layout))
-    {}
+    {
+        Resize(size);
+    }
+
+    void VertexBuffer::Resize(size_t newSize) NOXND
+    {
+        const auto size = Size();
+        if (size < newSize)
+            m_buffer.resize(m_buffer.size() + m_layout.Size()*(newSize - size));
+    }
 
     Vertex VertexBuffer::Back() NOXND
     {

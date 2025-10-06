@@ -242,10 +242,11 @@ namespace Dvtx
     class VertexBuffer
     {
     public:
-        VertexBuffer(VertexLayout layout) NOXND;
+        VertexBuffer(VertexLayout layout, size_t size = 0u) NOXND;
 
         const VertexLayout &GetLayout() const noexcept { return m_layout; }
         const char* GetGata() const NOXND { return m_buffer.data(); }
+        void Resize(size_t newSize) NOXND; // resize in vertices num
         size_t Size() const NOXND { return m_buffer.size() / m_layout.Size(); } // return this size IS NOT of bytes, but returns size in vertices num.
         size_t SizeBytes() const NOXND { return m_buffer.size(); }
 

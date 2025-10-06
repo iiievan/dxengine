@@ -7,6 +7,7 @@
 #include "PointLight.h"
 #include "geometry/Mesh.h"
 #include "drawable/TestPlane.h"
+#include "drawable/TestCube.h"
 
 
 #define MAIN_SCREEN_WIDTH (1280)
@@ -36,6 +37,7 @@ private:
     Model m_nanosuit{m_wnd.Gfx(), "models\\nano_textured\\nanosuit.obj"};
     Model m_nanosuit2{m_wnd.Gfx(), "models\\nano_textured\\nanosuit.obj"};
     TestPlane m_testplane;
+    TestCube m_testcube;
 
     bool  m_showDemoWindow{false};
 };

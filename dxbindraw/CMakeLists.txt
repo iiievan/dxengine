@@ -35,11 +35,13 @@ set(BINDABLE_HEADERS bindable/Bindable.h
 
 set(DRAWABLE_SOURCES drawable/Drawable.cpp
                      drawable/SolidSphere.cpp
-                     drawable/TestPlane.cpp)
+                     drawable/TestPlane.cpp
+                     drawable/TestCube.cpp)
 
 set(DRAWABLE_HEADERS drawable/Drawable.h
                      drawable/SolidSphere.h
-                     drawable/TestPlane.h)
+                     drawable/TestPlane.h
+                     drawable/TestCube.h)
 
 set(GEOMETRY_SOURCES  geometry/Cone.h
                       geometry/IndexedTriangleList.h
