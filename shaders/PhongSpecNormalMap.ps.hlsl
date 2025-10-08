@@ -32,9 +32,6 @@ float4 PSMain(float3 viewPos : Position, float3 n : Normal, float3 tan : Tangent
         // unpack normal data 
         const float3 normalSample = nmap.Sample(smplr, uv).xyz;
         n = normalSample * 2.0f - 1.0f;
-        n.y = -n.y;                     // flip y_component because briks normal map is for opengl
-        								// for opengl this is same as for x_component: normalSample.y * 2.0f - 1.0f;
-        n.z = -normalSample.z;
 
         // bring normal from tangspace into view space
         n = mul(n, tanToView);

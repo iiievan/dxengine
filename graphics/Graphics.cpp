@@ -1,6 +1,7 @@
 #include "Graphics.h"
 #include <d3dcompiler.h>
 #include <sstream>
+#include <algorithm>
 #include "Utils.hpp"
 #include "dxerr.h"
 #include <directxmath.h>
@@ -10,6 +11,7 @@
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
+#pragma comment(lib, "dxgi.lib")
 
 namespace wrl = Microsoft::WRL;
 namespace dx = DirectX;
@@ -91,6 +93,10 @@ const char *Graphics::DeviceRemovedException::GetType() const noexcept
 
 Graphics::Graphics(HWND hWnd, int width, int height)
 {
+    HRESULT hr;
+    m_pActiveAdapter = SelectBestAdapter();
+    LogAdapters();
+
     DXGI_SWAP_CHAIN_DESC swchd = {};
     swchd.BufferDesc.Width = width;                               // if Width and Height not set
     swchd.BufferDesc.Height = height;                              // it will use hWnd to set window proportions
@@ -113,22 +119,51 @@ Graphics::Graphics(HWND hWnd, int width, int height)
     swapCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-    // for checking results of d3d functions
-    HRESULT hr;
+    // Create device and swap chain using the selected adapter
+    if (m_pActiveAdapter)
+    {
+        // Use specific adapter
+        GFX_THROW_INFO(
+            D3D11CreateDevice(
+                m_pActiveAdapter.Get(),
+                D3D_DRIVER_TYPE_UNKNOWN,
+                nullptr,
+                swapCreateFlags,
+                nullptr,
+                0,
+                D3D11_SDK_VERSION,
+                &m_pDevice,
+                nullptr,
+                &m_pContext));
 
-    GFX_THROW_INFO(D3D11CreateDeviceAndSwapChain(
-        nullptr,
-        D3D_DRIVER_TYPE_HARDWARE,
-        nullptr,
-        swapCreateFlags,
-        nullptr,
-        0,
-        D3D11_SDK_VERSION,
-        &swchd,
-        &m_pSwapChain,
-        &m_pDevice,
-        nullptr,
-        &m_pContext));
+        // Create swap chain using the same factory as the adapter
+        Microsoft::WRL::ComPtr<IDXGIFactory> pFactory;
+        m_pActiveAdapter->GetParent(__uuidof(IDXGIFactory), &pFactory);
+
+        GFX_THROW_INFO(
+            pFactory->CreateSwapChain(
+                m_pDevice.Get(),
+                &swchd,
+                &m_pSwapChain));
+    }
+    else
+    {
+        // Fallback to default creation
+        GFX_THROW_INFO(
+            D3D11CreateDeviceAndSwapChain(
+                nullptr,
+                D3D_DRIVER_TYPE_HARDWARE,
+                nullptr,
+                swapCreateFlags,
+                nullptr,
+                0,
+                D3D11_SDK_VERSION,
+                &swchd,
+                &m_pSwapChain,
+                &m_pDevice,
+                nullptr,
+                &m_pContext));
+    }
 
     wrl::ComPtr<ID3D11Resource> pBackBuffer;
     GFX_THROW_INFO(m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBackBuffer));
@@ -237,5 +272,109 @@ void Graphics::SetProjection(DirectX::FXMMATRIX proj) noexcept
 DirectX::XMMATRIX Graphics::GetProjection() const noexcept
 {
     return m_projection;
+}
+
+void Graphics::LogAdapters()
+{
+    Microsoft::WRL::ComPtr<IDXGIFactory> pFactory;
+
+    if (FAILED(CreateDXGIFactory(__uuidof(IDXGIFactory), &pFactory)))
+        return;
+
+    Microsoft::WRL::ComPtr<IDXGIAdapter> pAdapter;
+    UINT i = 0;
+
+    OutputDebugStringA("=== Available Graphics Adapters ===\n");
+
+    while (pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND)
+    {
+        DXGI_ADAPTER_DESC desc;
+        pAdapter->GetDesc(&desc);
+
+        char description[128];
+        size_t convertedChars = 0;
+        wcstombs_s(&convertedChars, description, desc.Description, 128);
+
+        std::stringstream ss;
+        ss << "Adapter " << i << ": " << description
+           << " [VRAM: " << (desc.DedicatedVideoMemory / (1024 * 1024)) << " MB]"
+           << " [Type: " << (desc.DedicatedVideoMemory > 0 ? "Discrete" : "Integrated") << "]\n";
+
+        OutputDebugStringA(ss.str().c_str());
+        ++i;
+        pAdapter.Reset();
+    }
+
+    OutputDebugStringA("=== Active Adapter: ");
+    OutputDebugStringA(m_adapterDescription.c_str());
+    OutputDebugStringA(" ===\n");
+}
+
+std::string Graphics::GetActiveAdapterInfo() const
+{
+    std::stringstream ss;
+    ss << m_adapterDescription << " [VRAM: " << m_adapterMemory << " MB]";
+    return ss.str();
+}
+
+Microsoft::WRL::ComPtr<IDXGIAdapter> Graphics::SelectBestAdapter()
+{
+    Microsoft::WRL::ComPtr<IDXGIFactory> pFactory;
+    Microsoft::WRL::ComPtr<IDXGIAdapter> pSelectedAdapter;
+    HRESULT hr;
+
+    // Create DXGI factory
+    GFX_THROW_INFO(CreateDXGIFactory(__uuidof(IDXGIFactory), &pFactory));
+
+    Microsoft::WRL::ComPtr<IDXGIAdapter> pAdapter;
+    UINT i = 0;
+    long long maxMemory = 0;
+
+    // Enumerate all adapters
+    while (pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND)
+    {
+        DXGI_ADAPTER_DESC desc;
+        pAdapter->GetDesc(&desc);
+
+        // Prefer discrete GPU (DedicatedVideoMemory > 0)
+        bool isDiscrete = desc.DedicatedVideoMemory > 0;
+        long long memory = desc.DedicatedVideoMemory;
+
+        // Select adapter with most video memory
+        if (isDiscrete && memory > maxMemory)
+        {
+            maxMemory = memory;
+            pSelectedAdapter = pAdapter;
+            m_adapterMemory = memory / (1024 * 1024); // Convert to MB
+
+            // Convert wide string to regular string
+            char description[128];
+            size_t convertedChars = 0;
+            wcstombs_s(&convertedChars, description, desc.Description, 128);
+            m_adapterDescription = description;
+        }
+
+        ++i;
+        pAdapter.Reset();
+    }
+
+    // If no discrete GPU found, use the first adapter
+    if (!pSelectedAdapter)
+    {
+        pFactory->EnumAdapters(0, &pSelectedAdapter);
+        if (pSelectedAdapter)
+        {
+            DXGI_ADAPTER_DESC desc;
+            pSelectedAdapter->GetDesc(&desc);
+            m_adapterMemory = desc.DedicatedVideoMemory / (1024 * 1024);
+
+            char description[128];
+            size_t convertedChars = 0;
+            wcstombs_s(&convertedChars, description, desc.Description, 128);
+            m_adapterDescription = description;
+        }
+    }
+
+    return pSelectedAdapter;
 }
 

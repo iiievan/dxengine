@@ -33,8 +33,9 @@ private:
     PointLight   m_pointlight;
 
     float m_speed_factor{1.0f};
-    Model     m_wall{m_wnd.Gfx(), "models\\brick_wall\\brick_wall.obj"};
-    TestPlane m_tp{m_wnd.Gfx(), 1.0f};
+    //Model     m_wall{m_wnd.Gfx(), "models\\brick_wall\\brick_wall.obj"};
+    //TestPlane m_tp{m_wnd.Gfx(), 1.0f};
+    Model m_Gobber{m_wnd.Gfx(),"models\\gobber\\GoblinX.obj"};
     //Model m_nanosuit{m_wnd.Gfx(), "models\\nano_textured\\nanosuit.obj"};
 
 

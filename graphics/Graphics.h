@@ -11,6 +11,7 @@
 #include <memory>
 #include <random>
 #include "ConditionalNoexcept.h"
+#include <dxgi.h>
 
 namespace Bind
 {
@@ -81,6 +82,17 @@ public:
     void EnableImgui() noexcept { m_imguiEnabled = true; }
     void DisableImgui() noexcept { m_imguiEnabled = false; }
     bool IsImguiEnabled() const noexcept { return m_imguiEnabled; }
+
+    void LogAdapters();
+    std::string GetActiveAdapterInfo() const;
+
+private:
+    // Adapter information
+    Microsoft::WRL::ComPtr<IDXGIAdapter> SelectBestAdapter();
+
+    Microsoft::WRL::ComPtr<IDXGIAdapter> m_pActiveAdapter;
+    std::string m_adapterDescription;
+    long long m_adapterMemory;
 
 private:
     DirectX::XMMATRIX m_projection;

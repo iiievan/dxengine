@@ -34,9 +34,9 @@ float4 PSMain(float3 viewPos : Position, float3 n : Normal, float2 uv : Texcoord
     {
     	// unpack normal data
     	const float3 normalSample = nmap.Sample(smplr, uv).xyz;
-    	n = normalSample * 2.0f - 1.0f;
-    	n.y = -n.y;
-    	n.z = -normalSample.z;
+    	n.x = normalSample.x * 2.0f - 1.0f;
+    	n.y = -normalSample.y * 2.0f + 1.0f;
+    	n.z = -normalSample.z * 2.0f + 1.0f;
     	n = mul(n, (float3x3) modelView);
     }
 
