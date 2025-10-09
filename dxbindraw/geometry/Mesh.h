@@ -8,6 +8,8 @@
 #include "bindable/BindableCommon.h"
 #include "drawable/Drawable.h"
 #include "bindable/ConstantBuffer.h"
+#include "type_traits"
+#include "imgui.h"
 
 class ModelException : public ChiliException
 {
@@ -46,13 +48,67 @@ public:
         float specularMapWeight = 0.671f;
     };
 
+    struct PSMaterialConstantNoTex
+    {
+        DirectX::XMFLOAT4 materialColor = {0.447970f,0.327254f,0.176283f,1.0f};
+        float specularIntensity = 0.65f;
+        float specularPower = 120.0f;
+        float padding[2];
+    };
+
 public:
     Node(int id, const std::string &name, std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform_in) NOXND;
     void Draw(Graphics &gfx, DirectX::FXMMATRIX accumulateTransform) const NOXND;
     void ShowTree(Node *&pSelectedNode) const noexcept;
     void SetAppliedTransform(DirectX::FXMMATRIX transform) noexcept;
     int  GetId() const noexcept { return m_ID; }
-    void ControlMeDaddy(Graphics &gfx, PSMaterialConstantFullmonte &c);
+
+    template<class T>
+    bool ControlMeDaddy(Graphics &gfx, T &c)
+    {
+        if (m_meshPtrs.empty())
+            return false;
+
+        if constexpr(std::is_same<T,PSMaterialConstantFullmonte>::value)
+        {
+            if (auto pcb = m_meshPtrs.front()->QueryBindable<Bind::PixelConstantBuffer<T>>())
+            {
+                ImGui::Text("Material");
+
+                bool normalMapEnabled = (bool)c.normalMapEnabled;
+                ImGui::Checkbox("Normal Map", &normalMapEnabled);
+                c.normalMapEnabled = normalMapEnabled ? TRUE : FALSE;
+
+                bool specularMapEnabled = (bool)c.specularMapEnabled;
+                ImGui::Checkbox("Specular Map", &specularMapEnabled);
+                c.specularMapEnabled = specularMapEnabled ? TRUE : FALSE;
+
+                bool hasGlossMap = (bool)c.hasGlossMap;
+                ImGui::Checkbox("Gloss Alpha", &hasGlossMap);
+                c.hasGlossMap = hasGlossMap ? TRUE : FALSE;
+
+                ImGui::SliderFloat("Spec weight", &c.specularMapWeight, 0.0f, 2.0f);
+                ImGui::SliderFloat("Spec pow", &c.specularPower, 0.0f, 1000.0f, "%f",5.0f);
+                ImGui::ColorPicker3("Spec color", reinterpret_cast<float*>(&c.specularColor));
+                pcb->Update(gfx, c);
+                return true;
+            }
+        }
+        else
+        if constexpr(std::is_same<T,PSMaterialConstantNoTex>::value)
+        {
+            if (auto pcb = m_meshPtrs.front()->QueryBindable<Bind::PixelConstantBuffer<T>>())
+            {
+                ImGui::Text("Material");
+                ImGui::SliderFloat("Spec inten.", &c.specularIntensity, 0.0f, 1.0f);
+                ImGui::SliderFloat("Spec pow", &c.specularPower, 0.0f, 1000.0f, "%f",5.0f);
+                ImGui::ColorPicker3("Diff color", reinterpret_cast<float*>(&c.materialColor));
+                pcb->Update(gfx, c);
+                return true;
+            }
+        }
+        return false;
+    }
 
 private:
     void AddChild(std::unique_ptr<Node> pChild) NOXND;

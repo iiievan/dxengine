@@ -1,8 +1,6 @@
 #include "Mesh.h"
-#include "imgui.h"
 #include <unordered_map>
 #include <sstream>
-
 #include "Surface.h"
 
 namespace dx = DirectX;
@@ -134,34 +132,6 @@ void Node::SetAppliedTransform(DirectX::FXMMATRIX transform) noexcept
     dx::XMStoreFloat4x4(&m_appliedTransform, transform);
 }
 
-void Node::ControlMeDaddy(Graphics &gfx, PSMaterialConstantFullmonte &c)
-{
-    if (m_meshPtrs.empty())
-        return;
-
-    if (auto pcb = m_meshPtrs.front()->QueryBindable<Bind::PixelConstantBuffer<PSMaterialConstantFullmonte>>())
-    {
-        ImGui::Text("Material");
-
-        bool normalMapEnabled = (bool)c.normalMapEnabled;
-        ImGui::Checkbox("Normal Map", &normalMapEnabled);
-        c.normalMapEnabled = normalMapEnabled ? TRUE : FALSE;
-
-        bool specularMapEnabled = (bool)c.specularMapEnabled;
-        ImGui::Checkbox("Specular Map", &specularMapEnabled);
-        c.specularMapEnabled = specularMapEnabled ? TRUE : FALSE;
-
-        bool hasGlossMap = (bool)c.hasGlossMap;
-        ImGui::Checkbox("Gloss Alpha", &hasGlossMap);
-        c.hasGlossMap = hasGlossMap ? TRUE : FALSE;
-
-        ImGui::SliderFloat("Spec weight", &c.specularMapWeight, 0.0f, 2.0f);
-        ImGui::SliderFloat("Spec pow", &c.specularPower, 0.0f, 1000.0f, "%f",5.0f);
-        ImGui::ColorPicker3("Spec color", reinterpret_cast<float*>(&c.specularMapWeight));
-        pcb->Update(gfx, c);
-    }
-}
-
 void Node::AddChild(std::unique_ptr<Node> pChild) NOXND
 {
     assert(pChild != nullptr);
@@ -198,7 +168,9 @@ public:
                 ImGui::SliderFloat("X",&transform.x, -20.0f, 20.0f);
                 ImGui::SliderFloat("Y",&transform.y, -20.0f, 20.0f);
                 ImGui::SliderFloat("Z",&transform.z, -20.0f, 20.0f);
-                m_selectedNode->ControlMeDaddy(gfx,mc);
+
+                if (!m_selectedNode->ControlMeDaddy(gfx,m_skinMaterial))
+                    m_selectedNode->ControlMeDaddy(gfx,m_ringMaterial);
             }
         }
         ImGui::End();
@@ -230,7 +202,8 @@ private:
     //                        Экономия памяти - хранятся только трансформации для узлов, которые когда-либо выбирались
     std::unordered_map<int, m_TransformParameters> m_transforms;
     Node *                                         m_selectedNode;
-    Node::PSMaterialConstantFullmonte mc;
+    Node::PSMaterialConstantFullmonte m_skinMaterial;
+    Node::PSMaterialConstantNoTex m_ringMaterial;
 };
 
 Model::Model(Graphics &gfx, const std::string filename)
@@ -517,19 +490,13 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
         bindablePtrs.push_back(PixelShader::Resolve(gfx, "shaders/PhongNoTex.ps.cso"));
         bindablePtrs.push_back(InputLayout::Resolve(gfx, vbuf.GetLayout(), pvsbc));
 
-        struct PSMaterialConstantNoTex
-        {
-            dx::XMFLOAT4 materialColor;
-            float specularIntensity = 0.18f;
-            float specularPower;
-            float padding[2];
-        } pmc;
+        Node::PSMaterialConstantNoTex pmc;
         pmc.specularPower = shininess;
         pmc.specularIntensity = (specularColor.x + specularColor.y + specularColor.z) / 3.0f;
         pmc.materialColor = diffuseColor;
         // this is CLEARLY an issue... all meshes will share same mat const, but may have different
         // Ns (specular power) specified for each in the material properties... bad conflict
-        bindablePtrs.push_back( PixelConstantBuffer<PSMaterialConstantNoTex>::Resolve( gfx,pmc,1u ) );
+        bindablePtrs.push_back( PixelConstantBuffer<Node::PSMaterialConstantNoTex>::Resolve( gfx,pmc,1u ) );
     }
     else
         throw std::runtime_error( "terrible combination of textures in material smh" );
