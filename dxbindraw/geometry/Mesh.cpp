@@ -256,7 +256,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
     using namespace Bind;
 
     std::vector<std::shared_ptr<Bindable>> bindablePtrs;
-    const auto base = "models\\gobber\\"s;
+    const auto base = "models\\dwarf\\"s;
     bool hasSpecularMap = false;
     bool hasNormalMap = false;
     bool hasDiffuseMap = false;
@@ -305,7 +305,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
     }
 
     auto mesh_tag = base + "%" + mesh.mName.C_Str();
-    const float scale = 6.0f;
+    const float scale = 1.0f;
 
     if (hasDiffuseMap && hasSpecularMap && hasNormalMap)
     {

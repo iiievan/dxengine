@@ -1,0 +1,53 @@
+# Blender MTL File: 'Stylized Dwarf Low-poly 3D model.blend'
+# Material Count: 5
+
+newmtl Body
+Ns 199.999995
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd mat0_c.jpg
+map_Ks mat0_g.jpg
+map_Kn mat0_n.jpg
+
+newmtl Head
+Ns 199.999995
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd mat1_c.jpg
+map_Ks mat1_g.jpg
+map_Kn mat1_n.jpg
+
+newmtl Micro
+Ns 199.999995
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd mat2_c.jpg
+map_Ks mat2_g.jpg
+
+newmtl Other
+Ns 199.999995
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd mat3_c.jpg
+map_Ks mat3_g.jpg
+map_Kn mat3_n.jpg
