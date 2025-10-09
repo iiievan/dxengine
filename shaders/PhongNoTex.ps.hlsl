@@ -11,10 +11,9 @@ cbuffer LightCBuf
 
 cbuffer ObjectCBuf
 {
-    float3 materialColor;
-     float specularIntencity;
+    float4 materialColor;
+    float4 specularColor;
      float specularPower;
-	 float padding[2];
 };
 
 float4 PSMain(float3 viewPos : Position, float3 n : Normal) : SV_Target
@@ -36,8 +35,8 @@ float4 PSMain(float3 viewPos : Position, float3 n : Normal) : SV_Target
 
     // calculate specular intensity based on angle between viewing vector and reflection vector, narrow with power function
 	// dot(normalize(r), normalize(viewPos)) - give us cos of angle between reflected vector and vector to camera
-	const float3 specular = att * (diffuseColor * diffuseIntensity ) * specularIntencity * pow(max(0.0f, dot(normalize(-r), normalize(viewPos))), specularPower);
+	const float4 specular = att * (float4(diffuseColor,1.0f) * diffuseIntensity ) * specularColor * pow(max(0.0f, dot(normalize(-r), normalize(viewPos))), specularPower);
 
     // final color
-    return float4(saturate((diffuse + ambient) * materialColor + specular), 1.0f);
+    return saturate(float4(diffuse + ambient, 1.0f) * materialColor + specular);
 }

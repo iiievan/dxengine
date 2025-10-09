@@ -43,7 +43,7 @@ public:
         BOOL normalMapEnabled = TRUE;
         BOOL specularMapEnabled = TRUE;
         BOOL hasGlossMap = FALSE;
-        float specularPower = 3.1f;
+        float specularPower = 20.0f;
         DirectX::XMFLOAT3 specularColor = {0.75f, 0.75f, 0.75f};
         float specularMapWeight = 0.671f;
     };
@@ -51,9 +51,9 @@ public:
     struct PSMaterialConstantNoTex
     {
         DirectX::XMFLOAT4 materialColor = {0.447970f,0.327254f,0.176283f,1.0f};
-        float specularIntensity = 0.65f;
+        DirectX::XMFLOAT4 specularColor = {0.65f,0.65f,0.65f,1.0f};
         float specularPower = 120.0f;
-        float padding[2];
+        float padding[3];
     };
 
 public:
@@ -100,7 +100,7 @@ public:
             if (auto pcb = m_meshPtrs.front()->QueryBindable<Bind::PixelConstantBuffer<T>>())
             {
                 ImGui::Text("Material");
-                ImGui::SliderFloat("Spec inten.", &c.specularIntensity, 0.0f, 1.0f);
+                ImGui::ColorPicker3("Spec Color.", reinterpret_cast<float*>(&c.specularColor));
                 ImGui::SliderFloat("Spec pow", &c.specularPower, 0.0f, 1000.0f, "%f",5.0f);
                 ImGui::ColorPicker3("Diff color", reinterpret_cast<float*>(&c.materialColor));
                 pcb->Update(gfx, c);
