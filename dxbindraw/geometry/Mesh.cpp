@@ -256,7 +256,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(Graphics &gfx, const aiMesh &mesh,  const
     using namespace Bind;
 
     std::vector<std::shared_ptr<Bindable>> bindablePtrs;
-    const auto base = "models\\dwarf\\"s;
+    const auto base = "models\\backpack\\"s;
     bool hasSpecularMap = false;
     bool hasNormalMap = false;
     bool hasDiffuseMap = false;
