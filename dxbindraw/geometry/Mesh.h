@@ -7,6 +7,7 @@
 #include "ConditionalNoexcept.h"
 #include "bindable/BindableCommon.h"
 #include "drawable/Drawable.h"
+#include "bindable/ConstantBuffer.h"
 
 class ModelException : public ChiliException
 {
@@ -34,7 +35,16 @@ private:
 class Node
 {
     friend class Model;
-    friend class ModelWindow;
+public:
+    struct PSMaterialConstantFullmonte
+    {
+        BOOL normalMapEnabled = TRUE;
+        BOOL specularMapEnabled = TRUE;
+        BOOL hasGlossMap = FALSE;
+        float specularPower = 3.1f;
+        DirectX::XMFLOAT3 specularColor = {0.75f, 0.75f, 0.75f};
+        float specularMapWeight = 0.671f;
+    };
 
 public:
     Node(int id, const std::string &name, std::vector<Mesh *> meshPtrs, const DirectX::XMMATRIX &transform_in) NOXND;
@@ -42,6 +52,7 @@ public:
     void ShowTree(Node *&pSelectedNode) const noexcept;
     void SetAppliedTransform(DirectX::FXMMATRIX transform) noexcept;
     int  GetId() const noexcept { return m_ID; }
+    void ControlMeDaddy(Graphics &gfx, PSMaterialConstantFullmonte &c);
 
 private:
     void AddChild(std::unique_ptr<Node> pChild) NOXND;
@@ -61,7 +72,7 @@ public:
     ~Model() noexcept;
 
     void Draw(Graphics &gfx) const NOXND;
-    void ShowWindow(const char *windowName = nullptr) noexcept;
+    void ShowWindow(Graphics &gfx, const char *windowName = nullptr) noexcept;
     void SetRootTransform(DirectX::FXMMATRIX tf) noexcept;
 
 private:

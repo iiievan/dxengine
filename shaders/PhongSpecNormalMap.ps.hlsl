@@ -12,9 +12,11 @@ cbuffer LightCBuf
 cbuffer ObjectCbuf
 {
     bool normalMapEnabled;  // bool takes up 4 bytes in hlsl
+    bool specularMapEnabled;
     bool hasGloss;
     float specularPowerConst;
-    float padding[1];
+    float3 specularColor;
+    float specularMapWeight;
 };
 
 Texture2D tex;
@@ -53,17 +55,18 @@ float4 PSMain(float3 viewPos : Position, float3 n : Normal, float3 tan : Tangent
 	const float3 w = n * dot(vToL, n);	// get projection of normalized light dir on normal
     const float3 r = w * 2.0f - vToL;	// substracion from normalized light dir and his projection get reflected light vector
 
-    const float4 specularSample = spec.Sample(smplr, uv);
-    const float3 specularReflectionColor = specularSample.rgb;
-    float specularPower;
-    if(hasGloss)
+    float3 specularReflectionColor;
+    float specularPower = specularPowerConst;
+    if(specularMapEnabled)
     {
-        specularPower = pow(2.0f, specularSample.a * 13.0f);
+        const float4 specularSample = spec.Sample(smplr, uv);
+        specularReflectionColor = specularSample.rgb * specularMapWeight;
+        if(hasGloss)
+            specularPower = pow(2.0f,specularSample.a * 13.0f);
     }
     else
-    {
-        specularPower = specularPowerConst;
-    }
+        specularReflectionColor = specularColor;
+
     // calculate specular intensity based on angle between viewing vector and reflection vector, narrow with power function
 	// dot(normalize(r), normalize(viewPos)) - give us cos of angle between reflected vector and vector to camera
 	const float3 specular = att * (diffuseColor * diffuseIntensity) * pow(max(0.0f, dot(normalize(-r), normalize(viewPos))), specularPower);

@@ -116,7 +116,7 @@ void App::DoFrame()
     //m_nanosuit.ShowWindow("Suit #1");
     //m_wall.ShowWindow("Wall");
     //m_tp.SpawnControlWindow(m_wnd.Gfx());
-    m_Gobber.ShowWindow("Gobber");
+    m_Gobber.ShowWindow(m_wnd.Gfx(), "Gobber");
 
     // present
     m_wnd.Gfx().EndFrame();
