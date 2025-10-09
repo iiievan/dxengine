@@ -1,0 +1,84 @@
+# Blender MTL File: 'Rhinoceros beetle Low-poly 3D model_blue.blend'
+# Material Count: 7
+
+newmtl None
+Ns 500
+Ka 0.8 0.8 0.8
+Kd 0.8 0.8 0.8
+Ks 0.8 0.8 0.8
+d 1
+illum 2
+
+newmtl Skin3_Mat_body
+Ns 199.999995
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd mat0_c.jpg
+map_Ks mat0_s.jpg
+map_Kn mat0_n.jpg
+
+newmtl Skin3_Mat_body.001
+Ns 199.999995
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd mat0_c.jpg
+map_Ks mat0_s.jpg
+map_Kn mat0_n.jpg
+
+newmtl Skin3_Mat_whool
+Ns 199.999995
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd mat1_c.jpg
+
+newmtl Skin3_Mat_whool.001
+Ns 199.999995
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd mat1_c.jpg
+
+newmtl Skin3_Mat_wings
+Ns 199.999995
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd mat2_c.jpg
+map_Ks mat2_g.jpg
+map_Kn mat2_n.jpg
+
+newmtl Skin3_Mat_wings.001
+Ns 199.999995
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd mat2_c.jpg
+map_Ks mat2_g.jpg
+map_Kn mat2_n.jpg

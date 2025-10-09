@@ -38,7 +38,8 @@ private:
     //Model m_Gobber{m_wnd.Gfx(),"models\\gobber\\GoblinX.obj"};
     //Model m_nanosuit{m_wnd.Gfx(), "models\\nano_textured\\nanosuit.obj"};
     //Model m_Dwarf{m_wnd.Gfx(),"models\\dwarf\\dwarf.obj"};
-    Model m_backpack{m_wnd.Gfx(), "models\\backpack\\backpack.obj"};
+    //Model m_backpack{m_wnd.Gfx(), "models\\backpack\\backpack.obj"};
+    Model m_rhinoceros_beetle{m_wnd.Gfx(), "models\\rhinoceros_beetle\\rhinoceros_beetle.obj"};
 
 
 bool  m_showDemoWindow{false};

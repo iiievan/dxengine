@@ -60,7 +60,8 @@ void App::DoFrame()
     //m_nanosuit.Draw(m_wnd.Gfx());
     //m_Gobber.Draw(m_wnd.Gfx());
     //m_Dwarf.Draw(m_wnd.Gfx());
-    m_backpack.Draw(m_wnd.Gfx());
+    //m_backpack.Draw(m_wnd.Gfx());
+    m_rhinoceros_beetle.Draw(m_wnd.Gfx());
     m_pointlight.Draw(m_wnd.Gfx());
 
 
@@ -120,7 +121,8 @@ void App::DoFrame()
     //m_tp.SpawnControlWindow(m_wnd.Gfx());
     //m_Gobber.ShowWindow(m_wnd.Gfx(), "Gobber");
     //m_Dwarf.ShowWindow(m_wnd.Gfx(), "Dwarf");
-    m_backpack.ShowWindow(m_wnd.Gfx(), "Backpack");
+    //m_backpack.ShowWindow(m_wnd.Gfx(), "Backpack");
+    m_rhinoceros_beetle.ShowWindow(m_wnd.Gfx()), "Rhinoceros_beetle";
 
     // present
     m_wnd.Gfx().EndFrame();
